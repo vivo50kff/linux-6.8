@@ -1,0 +1,10 @@
+此处应显示 Yat_Casched 性能对比图表
+
+运行以下命令生成实际图表：
+1. cd test_visualization
+2. make test
+3. make visualize
+
+图表文件将生成为：
+- performance_comparison.png
+- performance_timeline.png

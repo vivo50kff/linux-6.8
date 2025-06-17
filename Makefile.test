@@ -1,0 +1,27 @@
+# Makefile for Yat_Casched test programs
+
+CC = gcc
+CFLAGS = -Wall -Wextra -O2 -pthread
+TARGETS = simple_test test_yat_casched
+
+.PHONY: all clean
+
+all: $(TARGETS)
+
+simple_test: simple_test.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+test_yat_casched: test_yat_casched.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+clean:
+	rm -f $(TARGETS)
+
+test: all
+	@echo "=== Running simple test ==="
+	./simple_test
+	@echo ""
+	@echo "=== Running advanced test ==="
+	./test_yat_casched
+
+.PHONY: test

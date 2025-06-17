@@ -1,0 +1,88 @@
+#!/bin/busybox sh
+
+echo "=== Yat_Casched 测试环境启动 ==="
+echo "Linux 内核启动完成，正在初始化测试环境..."
+
+# 挂载基本文件系统
+/bin/busybox mount -t proc proc /proc
+/bin/busybox mount -t sysfs sysfs /sys
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+
+# 设置环境变量
+export PATH=/bin:/sbin
+export HOME=/root
+cd /root
+
+echo "环境初始化完成！"
+echo ""
+
+# 创建 busybox 符号链接（避免循环）
+echo "设置基本命令链接..."
+for cmd in sh ls cat echo ps mount umount grep; do
+    if [ ! -e /bin/$cmd ]; then
+        /bin/busybox ln -sf /bin/busybox /bin/$cmd
+    fi
+done
+
+echo ""
+echo "=== Yat_Casched 调度器测试 ==="
+echo "系统信息："
+echo "  内核版本: $(cat /proc/version | cut -d' ' -f1-3)"
+echo "  CPU 数量: $(cat /proc/cpuinfo | grep processor | wc -l)"
+echo ""
+
+# 显示调度器信息
+echo "=== 调度器信息 ==="
+if [ -f /proc/sched_debug ]; then
+    echo "检查 Yat_Casched 调度器..."
+    if grep -q "yat_casched" /proc/sched_debug 2>/dev/null; then
+        echo "✓ 发现 Yat_Casched 调度器！"
+        echo "Yat_Casched 相关信息："
+        grep -i yat /proc/sched_debug | head -5
+    else
+        echo "! 在 /proc/sched_debug 中未找到 yat_casched"
+        echo "显示前几行调度器信息："
+        head -20 /proc/sched_debug
+    fi
+else
+    echo "! /proc/sched_debug 不存在"
+fi
+
+echo ""
+echo "=== 运行用户态测试程序 ==="
+
+# 运行完整测试程序
+if [ -x /bin/test_yat_casched_complete ]; then
+    echo "开始运行完整测试程序 test_yat_casched_complete..."
+    echo "-----------------------------------"
+    /bin/test_yat_casched_complete
+    echo "-----------------------------------"
+    echo "完整测试程序运行完成！"
+    echo ""
+fi
+
+# 运行简单测试程序作为备用
+if [ -x /bin/test_yat_casched ]; then
+    echo "开始运行简单测试程序 test_yat_casched..."
+    echo "-----------------------------------"
+    /bin/test_yat_casched
+    echo "-----------------------------------"
+    echo "简单测试程序运行完成！"
+else
+    echo "! test_yat_casched 不存在或不可执行"
+fi
+
+echo ""
+echo "=== 其他测试命令 ==="
+echo "您可以运行以下命令进行更多测试："
+echo "  /bin/test_yat_casched_complete           # 运行完整测试程序"
+echo "  /bin/test_yat_casched                    # 运行简单测试程序"
+echo "  cat /proc/sched_debug | grep -i sched    # 查看调度器信息"
+echo "  ps -eo pid,class,comm                    # 查看进程调度类"
+echo "  cat /proc/schedstat                      # 查看调度统计"
+echo ""
+
+# 启动交互式 shell
+echo "启动交互式 shell..."
+echo "提示：输入 'exit' 退出"
+exec /bin/busybox sh
