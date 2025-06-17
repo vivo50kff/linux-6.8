@@ -213,9 +213,18 @@ void __init init_real_mode(void)
 
 	pr_info("Initializing real mode trampoline at %p\n", real_mode_header);
 	
-	/* Add safety check before accessing real_mode_header */
-	if (!virt_addr_valid(real_mode_header)) {
-		pr_err("Real mode header at invalid virtual address, disabling SMP\n");
+	/* Add comprehensive safety checks */
+	if (!virt_addr_valid(real_mode_header) || 
+	    !pfn_valid(__pa(real_mode_header) >> PAGE_SHIFT)) {
+		pr_err("Real mode header at invalid address, disabling SMP\n");
+		setup_max_cpus = 0;
+		return;
+	}
+	
+	/* Test actual memory access safety */
+	u32 test_val;
+	if (copy_from_kernel_nofault(&test_val, real_mode_header, sizeof(u32))) {
+		pr_err("Cannot safely access real mode header, disabling SMP\n");
 		setup_max_cpus = 0;
 		return;
 	}

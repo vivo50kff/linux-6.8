@@ -76,8 +76,8 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
     int cpu;
     unsigned long min_load = ULONG_MAX;
     
-    /* 如果是第一次运行，记录为无效CPU */
-    if (last_cpu == -1) {
+    /* 如果是第一次运行或last_cpu无效，记录当前CPU并返回 */
+    if (last_cpu == -1 || last_cpu >= NR_CPUS) {
         p->yat_casched.last_cpu = task_cpu;
         return task_cpu;
     }
@@ -118,7 +118,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     if (list_empty(&p->yat_casched.run_list)) {
         INIT_LIST_HEAD(&p->yat_casched.run_list);
         p->yat_casched.vruntime = 0;
-        p->yat_casched.last_cpu = 0;  /* 使用0而不是-1 */
+        p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化 */
     }
     
     /* 添加到运行队列 */

@@ -4551,7 +4551,7 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
 	INIT_LIST_HEAD(&p->yat_casched.run_list);
 	p->yat_casched.vruntime = 0;
 	p->yat_casched.slice = 0;
-	p->yat_casched.last_cpu = 0;  /* 使用0而不是-1 */
+	p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化状态 */
 #endif
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS

@@ -22,20 +22,41 @@ echo "  内核: $KERNEL_IMAGE"
 echo "  文件系统: $DISK_IMAGE"
 echo ""
 
-# 方案1: 尝试使用KVM加速（更接近真实硬件）
-echo "尝试方案1: KVM加速启动"
+# 方案1: 尝试使用KVM加速（Intel VT-x/EPT优化）
+echo "尝试方案1: KVM加速启动 (Intel VT-x/EPT)"
 echo "=================================="
 
-timeout 10s qemu-system-x86_64 \
-    -enable-kvm \
-    -cpu host \
-    -smp 4 \
-    -m 2G \
-    -kernel "$KERNEL_IMAGE" \
-    -initrd "$DISK_IMAGE" \
-    -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7" \
-    -nographic \
-    -no-reboot 2>/dev/null
+# 检查KVM可用性
+if [ ! -c /dev/kvm ]; then
+    echo "✗ /dev/kvm 不存在，跳过KVM"
+elif ! groups | grep -q kvm && [ "$EUID" -ne 0 ]; then
+    echo "⚠ 用户不在kvm组，尝试sudo运行..."
+    sudo qemu-system-x86_64 \
+        -enable-kvm \
+        -cpu host,+vmx,+ept \
+        -machine pc,accel=kvm \
+        -smp cores=4,threads=1,sockets=1 \
+        -m 2G \
+        -kernel "$KERNEL_IMAGE" \
+        -initrd "$DISK_IMAGE" \
+        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=4" \
+        -nographic \
+        -no-reboot
+    exit $?
+else
+    echo "✓ KVM可用，正常启动..."
+    timeout 30s qemu-system-x86_64 \
+        -enable-kvm \
+        -cpu host,+vmx,+ept \
+        -machine pc,accel=kvm \
+        -smp cores=4,threads=1,sockets=1 \
+        -m 2G \
+        -kernel "$KERNEL_IMAGE" \
+        -initrd "$DISK_IMAGE" \
+        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=4" \
+        -nographic \
+        -no-reboot
+fi
 
 if [ $? -ne 0 ]; then
     echo ""
