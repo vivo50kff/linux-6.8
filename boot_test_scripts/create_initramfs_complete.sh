@@ -35,12 +35,12 @@ chmod +x bin/busybox
 
 # 复制基础测试程序
 for prog in test_yat_casched_complete test_cache_aware_fixed verify_real_scheduling; do
-    if [ -f "$PROJECT_ROOT/$prog" ]; then
+    if [ -f "$SCRIPT_DIR/$prog" ]; then
         echo "✓ 复制 $prog"
-        cp "$PROJECT_ROOT/$prog" bin/
+        cp "$SCRIPT_DIR/$prog" bin/
         chmod +x bin/$prog
     else
-        echo "⚠ 测试程序未找到: $PROJECT_ROOT/$prog"
+        echo "⚠ 测试程序未找到: $SCRIPT_DIR/$prog"
     fi
     done
 

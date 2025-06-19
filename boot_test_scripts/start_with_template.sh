@@ -38,7 +38,7 @@ elif ! groups | grep -q kvm && [ "$EUID" -ne 0 ]; then
     echo "⚠ 用户不在kvm组，尝试sudo运行..."
     sudo qemu-system-x86_64 \
         -enable-kvm \
-        -cpu host,+vmx,+ept \
+        -cpu host \
         -machine pc,accel=kvm \
         -smp cores=4,threads=1,sockets=1 \
         -m 2G \
@@ -52,7 +52,7 @@ else
     echo "✓ KVM可用，正常启动..."
     timeout 30s qemu-system-x86_64 \
         -enable-kvm \
-        -cpu host,+vmx,+ept \
+        -cpu host \
         -machine pc,accel=kvm \
         -smp cores=4,threads=1,sockets=1 \
         -m 2G \
