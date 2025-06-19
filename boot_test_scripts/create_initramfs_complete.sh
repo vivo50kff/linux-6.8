@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# 获取脚本所在目录，确保相对路径正确
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 echo "=== Yat_Casched 调度器测试环境创建脚本 ==="
 echo "创建包含基础测试程序的 initramfs..."
 
@@ -17,46 +21,28 @@ echo "正在配置基础环境..."
 
 # 复制busybox（确保存在）
 if [ -f "/bin/busybox" ]; then
-    cp /bin/busybox bin/busybox
     echo "✓ 复制 busybox 从 /bin/"
+    cp /bin/busybox bin/
 elif [ -f "/usr/bin/busybox" ]; then
-    cp /usr/bin/busybox bin/busybox
     echo "✓ 复制 busybox 从 /usr/bin/"
+    cp /usr/bin/busybox bin/
 else
-    echo "⚠ busybox 未找到，尝试安装..."
-    sudo apt-get update && sudo apt-get install -y busybox-static
-    if [ -f "/bin/busybox" ]; then
-        cp /bin/busybox bin/busybox
-        echo "✓ 安装并复制 busybox"
-    else
-        echo "✗ 无法获取 busybox"
-        exit 1
-    fi
+    echo "✗ 未找到 busybox，请先安装 busybox"
+    exit 1
 fi
 
 chmod +x bin/busybox
 
 # 复制基础测试程序
-# 获取脚本所在的绝对路径
-SCRIPT_DIR="/home/lwd/桌面/linux-6.8/boot_test_scripts"
-TEST_PROGRAMS=(
-    "test_yat_casched_complete"
-    "test_cache_aware_fixed" 
-    "verify_real_scheduling"
-    "performance_test"
-)
-
-echo "脚本目录: $SCRIPT_DIR"
-
-for prog in "${TEST_PROGRAMS[@]}"; do
-    if [ -f "$SCRIPT_DIR/$prog" ]; then
-        cp "$SCRIPT_DIR/$prog" bin/
-        chmod +x "bin/$prog"
-        echo "✓ 复制测试程序: $prog"
+for prog in test_yat_casched_complete test_cache_aware_fixed verify_real_scheduling; do
+    if [ -f "$PROJECT_ROOT/$prog" ]; then
+        echo "✓ 复制 $prog"
+        cp "$PROJECT_ROOT/$prog" bin/
+        chmod +x bin/$prog
     else
-        echo "⚠ 测试程序未找到: $SCRIPT_DIR/$prog"
+        echo "⚠ 测试程序未找到: $PROJECT_ROOT/$prog"
     fi
-done
+    done
 
 # 创建功能完整的 init 脚本
 cat > init << 'EOF'
