@@ -1,16 +1,15 @@
 # Yat_Casched 缓存感知调度器完整实现文档
 
 ## 目录
-1. [项目概述与设计理念](#项目概述与设计理念)
-2. [技术背景与实现思路](#技术背景与实现思路)  
-3. [开发环境配置](#开发环境配置)
-4. [内核集成与配置](#内核集成与配置)
-5. [调度器核心实现](#调度器核心实现)
-6. [用户态测试程序](#用户态测试程序)
-7. [编译和测试流程](#编译和测试流程)
-8. [实验结果与性能测试](#实验结果与性能测试)
-9. [最终代码版本](#最终代码版本)
-10. [项目总结](#项目总结)
+1. 项目概述与设计理念
+2. 技术背景与实现思路  
+3. 开发环境配置
+4. 内核集成与配置
+5. 调度器核心实现
+6. 用户态测试程序
+7. 编译和测试流程
+8. 实验结果与性能测试
+9. 项目总结
 
 ---
 
@@ -301,7 +300,7 @@ obj-$(CONFIG_SCHED_CLASS_YAT_CASCHED) += yat_casched.o
 
 ### 第二步：内核编译配置
 
-#### 1. 配置内核选项（一步到位脚本）
+#### 1. 配置内核选项
 
 ```bash
 # 进入内核源码目录
@@ -361,7 +360,7 @@ Failed to generate BTF for vmlinux
 SSL error: sign-file: ./signing_key.pem
 ```
 
-**系统性解决方案（一步到位）**：
+**系统性解决方案**：
 ```bash
 # 1. 安装必要的调试工具
 sudo apt install dwarves
@@ -486,117 +485,21 @@ grep -r "CONFIG_SCHED_CLASS_YAT_CASCHED" include/ kernel/
 
 ---
 
-## 调度器核心实现
+## 5. 调度器核心实现
 
-成功完成内核集成和编译配置后，我们开始实现Yat_Casched调度器的核心逻辑。为了便于理解和分步实现，我们首先提供一个基础的空调度版本，然后逐步添加缓存感知功能。
+### 关键内核文件及修改位置说明
 
-### 空调度版本（基础框架）
+- `include/linux/sched/yat_casched.h`：调度实体结构体定义
+- `kernel/sched/yat_casched.c`：调度器核心算法实现
+- `include/uapi/linux/sched.h`：调度策略ID定义
+- `kernel/sched/core.c`：调度策略注册与调度器初始化
+- `init/init_task.c`：init_task结构体初始化
+- `init/Kconfig`、`kernel/sched/Makefile`：配置与编译集成
 
-这是一个最基本的调度器实现，只包含必要的调度功能，不包含任何缓存感知逻辑：
+### 主要代码片段与修改说明
 
-#### 基础数据结构
-
-```c
-// include/linux/sched.h 中添加
-#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-struct sched_yat_casched_entity {
-    u64 vruntime;           /* 虚拟运行时间 */
-    struct list_head run_list;  /* 运行队列链表节点 */
-};
-#endif
-
-// kernel/sched/sched.h 中添加
-struct yat_casched_rq {
-    struct list_head queue;     /* 简单的FIFO队列 */
-    unsigned int nr_running;    /* 队列中任务数量 */
-};
-```
-
-#### 基础调度器实现
-
-```c
-// kernel/sched/yat_casched.c
-#include "sched.h"
-
-static void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* 简单的FIFO入队 */
-    list_add_tail(&p->yat_casched.run_list, &yat_rq->queue);
-    yat_rq->nr_running++;
-}
-
-static void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* 从队列中移除 */
-    list_del(&p->yat_casched.run_list);
-    yat_rq->nr_running--;
-}
-
-static struct task_struct *pick_next_task_yat_casched(struct rq *rq)
-{
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    struct sched_yat_casched_entity *se;
-    
-    if (list_empty(&yat_rq->queue))
-        return NULL;
-    
-    /* 选择队列头部任务（FIFO） */
-    se = list_first_entry(&yat_rq->queue, struct sched_yat_casched_entity, run_list);
-    return container_of(se, struct task_struct, yat_casched);
-}
-
-static void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
-{
-    /* 基础版本不需要特殊处理 */
-}
-
-static int select_task_rq_yat_casched(struct task_struct *p, int prev_cpu, int flags)
-{
-    /* 基础版本：直接返回前一个CPU */
-    return prev_cpu;
-}
-
-static void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
-{
-    /* 基础版本：简单的时间片轮转 */
-    if (++p->yat_casched.vruntime >= NICE_0_LOAD) {
-        resched_curr(rq);
-        p->yat_casched.vruntime = 0;
-    }
-}
-
-/* 调度类定义 */
-DEFINE_SCHED_CLASS(yat_casched) = {
-    .enqueue_task       = enqueue_task_yat_casched,
-    .dequeue_task       = dequeue_task_yat_casched,
-    .pick_next_task     = pick_next_task_yat_casched,
-    .put_prev_task      = put_prev_task_yat_casched,
-    .select_task_rq     = select_task_rq_yat_casched,
-    .task_tick          = task_tick_yat_casched,
-};
-```
-
-这个空调度版本提供了：
-- 简单的FIFO调度策略
-- 基本的任务入队/出队功能
-- 简单的时间片轮转
-- 无缓存感知功能
-
-
-之后我们将在空调度版本的基础上添加缓存感知功能。
-
-
----
-
-## 最终代码版本
-
-这里提供完整的Yat_Casched调度器代码，包含当前实现的所有缓存感知功能：
-
-### include/linux/sched/yat_casched.h
+#### 1. include/linux/sched/yat_casched.h
+（新增文件，定义调度实体结构体）
 
 ```c
 #ifndef _LINUX_SCHED_YAT_CASCHED_H
@@ -630,7 +533,43 @@ extern const struct sched_class yat_casched_sched_class;
 #endif /* _LINUX_SCHED_YAT_CASCHED_H */
 ```
 
-### kernel/sched/yat_casched.c
+#### 2. include/uapi/linux/sched.h
+（在调度策略定义部分添加）
+```c
+#define SCHED_YAT_CASCHED    8
+```
+
+#### 3. kernel/sched/core.c
+（在 __sched_setscheduler() 和 sched_init() 相关位置添加）
+```c
+// ...existing code...
+case SCHED_YAT_CASCHED:
+    if (param->sched_priority != 0)
+        return -EINVAL;
+    break;
+// ...existing code...
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+    init_yat_casched_rq(&rq->yat_casched);
+#endif
+// ...existing code...
+```
+
+#### 4. init/init_task.c
+（在 init_task 定义中添加）
+```c
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+    .yat_casched = {
+        .vruntime = 0,
+        .last_cpu = -1,
+        .last_run_time = 0,
+        .cache_hot = 0,
+        .run_list = LIST_HEAD_INIT(init_task.yat_casched.run_list),
+    },
+#endif
+```
+
+#### 5. kernel/sched/yat_casched.c
+（调度器核心算法实现，见下）
 
 ```c
 #include "sched.h"
@@ -796,368 +735,58 @@ DEFINE_SCHED_CLASS(yat_casched) = {
 };
 ```
 
-### 内核修改文件
+---
 
-#### include/uapi/linux/sched.h
-```c
-/* 在调度策略定义部分添加 */
-#define SCHED_YAT_CASCHED    8
-```
+## 6. 用户态测试程序
 
-#### kernel/sched/core.c
-```c
-/* 在 __sched_setscheduler() 函数中添加策略验证 */
-case SCHED_YAT_CASCHED:
-    if (param->sched_priority != 0)
-        return -EINVAL;
-    break;
+所有测试程序源码和可执行文件均位于 `boot_test_scripts/` 目录下。
 
-/* 在 sched_init() 函数中添加初始化 */
-#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-    init_yat_casched_rq(&rq->yat_casched);
-#endif
-```
+- `test_yat_casched_complete.c`：完整功能测试，自动验证调度器各项能力。
+- `test_cache_aware_fixed.c`：缓存感知专项测试。
+- `verify_real_scheduling.c`：调度器真实性验证。
 
-#### init/init_task.c
-```c
-/* 在 init_task 定义中添加 */
-#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-    .yat_casched = {
-        .vruntime = 0,
-        .last_cpu = -1,
-        .last_run_time = 0,
-        .cache_hot = 0,
-        .run_list = LIST_HEAD_INIT(init_task.yat_casched.run_list),
-    },
-#endif
-```
-
-### 配置文件
-
-#### init/Kconfig
-```kconfig
-config SCHED_CLASS_YAT_CASCHED
-    bool "Yat_Casched cache-aware scheduler"
-    default n
-    help
-      Enable the Yat_Casched cache-aware scheduler.
-      This scheduler optimizes CPU cache utilization by keeping
-      tasks on the same CPU when their cache is still hot.
-```
-
-### 测试程序
-
-#### test_yat_casched.c
-```c
-#define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sched.h>
-#include <errno.h>
-#include <string.h>
-#include <pthread.h>
-#include <sys/types.h>
-
-#define SCHED_YAT_CASCHED 8
-#define NUM_THREADS 4
-
-void* test_task(void* arg) {
-    int thread_id = *(int*)arg;
-    struct sched_param param = {.sched_priority = 0};
-    
-    printf("Thread %d: Setting Yat_Casched policy\n", thread_id);
-    
-    if (sched_setscheduler(0, SCHED_YAT_CASCHED, &param) == -1) {
-        printf("Thread %d: Failed to set Yat_Casched policy: %s\n", 
-               thread_id, strerror(errno));
-        return NULL;
-    }
-    
-    printf("Thread %d: Successfully set to Yat_Casched policy\n", thread_id);
-    
-    /* 执行一些CPU密集型工作 */
-    for (int i = 0; i < 1000000; i++) {
-        volatile int cpu = sched_getcpu();
-        if (i % 100000 == 0) {
-            printf("Thread %d: Running on CPU %d\n", thread_id, cpu);
-        }
-    }
-    
-    return NULL;
-}
-
-int main() {
-    pthread_t threads[NUM_THREADS];
-    int thread_ids[NUM_THREADS];
-    
-    printf("=== Yat_Casched Scheduler Test ===\n");
-    printf("Creating %d test threads...\n", NUM_THREADS);
-    
-    for (int i = 0; i < NUM_THREADS; i++) {
-        thread_ids[i] = i;
-        if (pthread_create(&threads[i], NULL, test_task, &thread_ids[i]) != 0) {
-            printf("Failed to create thread %d\n", i);
-            exit(1);
-        }
-    }
-    
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pthread_join(threads[i], NULL);
-    }
-    
-    printf("=== Test completed ===\n");
-    return 0;
-}
-```
-
-### 编译说明
-
-1. **内核编译**：
+编译命令示例：
 ```bash
-make menuconfig  # 启用 CONFIG_SCHED_CLASS_YAT_CASCHED
+cd boot_test_scripts
+gcc -O2 -o test_yat_casched_complete test_yat_casched_complete.c
+gcc -O2 -o test_cache_aware_fixed test_cache_aware_fixed.c
+gcc -O2 -o verify_real_scheduling verify_real_scheduling.c
+```
+
+---
+
+## 7. 编译和测试流程
+
+1. 编译内核（bzImage）：
+```bash
 make -j$(nproc)
 ```
-
-2. **测试程序编译**：
+2. 编译测试程序：
 ```bash
-gcc -o test_yat_casched test_yat_casched.c -lpthread
+cd boot_test_scripts
+gcc -O2 -o test_yat_casched_complete test_yat_casched_complete.c
+gcc -O2 -o test_cache_aware_fixed test_cache_aware_fixed.c
+gcc -O2 -o verify_real_scheduling verify_real_scheduling.c
 ```
-
-这个完整版本包含了所有必要的代码和配置，可以直接用于实际的内核编译和测试。
+3. 生成initramfs：
+```bash
+./create_initramfs_complete.sh
+```
+4. 启动QEMU测试环境：
+```bash
+./start_with_template.sh
+# 或
+./start_with_intel_vtx.sh
+```
 
 ---
 
-## 实验结果与性能测试
+## 8. 实验结果与性能测试
 
-### 测试环境配置
-
-本项目在以下环境中进行了全面的性能测试：
-
-- **硬件平台**: Intel i7-13700K, 32GB DDR5, NVMe SSD
-- **操作系统**: Linux 6.8 内核 + Ubuntu 24.04  
-- **测试工具**: 自研性能测试程序 + perf 工具
-- **测试类型**: CPU密集型并发任务，模拟缓存敏感的工作负载
-
-### 性能测试方法
-
-我们设计了专门的测试程序来验证Yat_Casched调度器的性能表现：
-
-1. **并发任务测试**: 4个CPU密集型进程同时运行
-2. **缓存敏感性**: 频繁访问相同数据集，测试缓存利用率
-3. **时长控制**: 每次测试持续10秒，确保数据稳定性
-4. **对比基准**: 与CFS调度器进行直接对比
-
-测试程序位于 `test_visualization/performance_test.c`，可执行以下命令运行：
-
-```bash
-cd test_visualization
-make test
-```
-
-### 关键性能指标
-
-通过大量重复测试，我们获得了以下关键性能数据：
-
-#### 1. 上下文切换优化
-
-![上下文切换对比](test_visualization/performance_comparison.png)
-
-详细测试结果显示（见上方测试结果截图）：
-- CFS调度器平均上下文切换次数较高
-- Yat_Casched显著减少了不必要的上下文切换
-- **改进效果**: 见test_visualization/目录中的详细数据
-
-#### 2. 缓存命中率提升
-
-![缓存性能对比](test_visualization/performance_timeline.png)
-
-缓存命中率测试结果（见下方测试结果截图）：
-- L1/L2缓存利用率得到显著改善
-- 缓存失效次数明显减少
-- **性能提升**: 见test_visualization/目录中的具体数据
-
-#### 3. 整体执行效率
-
-执行时间对比测试显示（见下方测试结果截图）：
-- CPU密集型任务执行速度提升
-- 并行执行效率改善
-- **综合性能**: 见test_visualization/目录中的性能报告
-
-#### 4. 任务迁移控制
-
-任务迁移统计结果（见下方测试结果截图）：
-- 跨CPU任务迁移次数大幅减少
-- 缓存局部性得到有效保持
-- **迁移优化**: 见test_visualization/目录中的详细分析
-
-### 可视化测试结果
-
-为了更直观地展示性能改进效果，我们开发了可视化分析工具：
-
-```bash
-cd test_visualization  
-python3 visualize_results.py
-```
-
-该脚本将生成以下图表：
-- `performance_comparison.png`: 多维度性能对比图
-- `performance_timeline.png`: 性能时间线分析图  
-- `performance_report.md`: 详细的性能测试报告
-
-### 长期稳定性测试
-
-除了性能测试外，我们还进行了长期稳定性验证：
-
-- **测试时长**: 连续运行72小时
-- **系统稳定性**: 无异常重启或崩溃
-- **兼容性**: 与现有应用程序完全兼容
-- **资源消耗**: 调度器本身开销极小
-
-### 测试结论
-
-综合测试结果表明，Yat_Casched调度器在以下方面取得了显著改进：
-
-1. **缓存感知效果显著**: 通过智能的缓存热度管理，有效提高了缓存利用率
-2. **系统开销降低**: 减少了不必要的任务迁移和上下文切换
-3. **性能提升明显**: 在CPU密集型工作负载中实现了可观的性能改进
-4. **工程实用性强**: 具备良好的稳定性和兼容性，适合实际部署
-
-所有详细的测试数据和图表都保存在 `test_visualization/` 目录中，供进一步分析和验证。
+（此处可插入你的测试结果截图、性能数据、分析结论等）
 
 ---
 
-## 项目总结
+## 9. 项目总结
 
-### 项目成果
-
-通过这个项目，我们成功实现了一个名为Yat_Casched的缓存感知调度器，主要成果包括：
-
-#### 1. 技术实现成果
-
-- **完整的内核调度器**：从零开始实现了一个完整的Linux内核调度类
-- **缓存感知机制**：实现了简单有效的缓存热度管理机制
-- **系统集成**：成功集成到Linux 6.8内核中，可正常运行
-- **测试验证**：开发了完整的测试程序和验证方案
-
-#### 2. 性能改进效果
-
-根据我们的实际测试数据显示（详见上方"实验结果与性能测试"章节），我们的调度器在多个方面都有明显改进：
-
-- **任务迁移显著减少**：大幅减少了不必要的CPU间任务迁移（见test_visualization/性能测试截图）
-- **缓存命中率明显提升**：L1和L2缓存的利用率显著提高（见下方测试结果截图）
-- **整体性能改善**：在CPU密集型任务中有可观的性能提升（见test_visualization/目录）
-- **系统稳定性良好**：长时间运行无异常，兼容性好
-
-#### 3. 工程实践价值
-
-- **设计思路简洁**：用简单的方法解决复杂的问题
-- **实现高效**：O(1)复杂度的调度决策，开销很小
-- **可扩展性好**：架构设计支持未来的功能扩展
-- **实用性强**：在实际应用中确实能带来性能提升
-
-### 核心创新点
-
-#### 1. 10ms缓存热度时间窗口机制
-
-我们的核心创新是设计了一个10ms的缓存热度时间窗口：
-- **窗口内**：任务优先回到上次运行的CPU，保护缓存
-- **窗口外**：允许正常的负载均衡，保证系统稳定
-
-这个简单的机制在缓存保护和负载均衡之间取得了很好的平衡。
-
-#### 2. 三种调度策略
-
-我们的调度器会智能地选择调度策略：
-- **首次运行**：建立CPU亲和性记录
-- **缓存热度高**：优先回到历史CPU
-- **缓存热度低**：执行负载均衡
-
-#### 3. 简化而有效的实现
-
-与复杂的理论模型不同，我们选择了简化但有效的实现方式：
-- 不需要复杂的数学计算
-- 不需要大量的内存开销
-- 但能带来实实在在的性能提升
-
-### 项目特色
-
-#### 1. 完整的工程实现
-
-这不仅仅是一个理论设计，而是一个完整可运行的系统：
-- 完整的源代码实现
-- 详细的集成步骤
-- 全面的测试验证
-- 自动化的构建脚本
-
-#### 2. 实用导向的设计
-
-我们的设计以实用性为主导：
-- 简单易懂的核心算法
-- 较小的系统开销
-- 良好的兼容性
-- 明显的性能改进
-
-#### 3. 详细的文档说明
-
-本文档提供了完整的实现指导：
-- 从环境配置到最终测试的全流程
-- 详细的代码解释和设计思路
-- 丰富的测试数据和性能分析
-- 便于复现和进一步开发
-
-### 学到的经验
-
-#### 1. 系统级开发的复杂性
-
-在开发过程中，我们深刻体会到系统级开发的复杂性：
-- 内核开发需要极高的稳定性要求
-- 调试困难，错误代价很高
-- 需要深入理解Linux内核架构
-
-#### 2. 简单有效的设计哲学
-
-我们认识到，在系统软件开发中：
-- 简单的方案往往更容易实现和维护
-- 小的改进也能带来可观的效果
-- 实用性比理论完美性更重要
-- 为后续改进奠定基础
-#### 3. 测试验证的重要性
-
-通过大量测试，我们确认了：
-- 必须有完整的测试方案来验证功能
-- 性能测试要在多种场景下进行
-- 稳定性测试同样重要
-
-### 未来改进方向
-
-虽然当前的实现已经取得了不错的效果，但仍有改进空间：
-
-#### 1. 更智能的参数调整
-
-- 可以根据系统负载动态调整缓存热度时间窗口
-- 针对不同类型的任务采用不同策略
-- 学习任务的历史行为模式
-
-#### 2. 更好的硬件适配
-
-- 适配不同的CPU架构（ARM、RISC-V等）
-- 考虑不同的缓存层次结构
-- 支持NUMA系统的优化
-
-#### 3. 更丰富的应用场景
-
-- 在容器化环境中的应用
-- 在虚拟化环境中的优化
-- 在嵌入式系统中的应用
-
-### 结语
-
-通过这个项目，我们不仅实现了一个有效的缓存感知调度器，更重要的是学会了如何将理论想法转化为实际可用的系统。我们的调度器虽然简单，但确实能够带来性能提升，体现了"简单有效"的设计哲学。
-
-这个项目展示了：
-- 深入理解系统原理的重要性
-- 工程实践中平衡各种因素的必要性  
-- 完整实现和验证的价值
-
-我们相信，这样的实践经验对于未来的系统软件开发具有重要的指导意义。
+（此处可补充你的项目收获、创新点、未来展望等）

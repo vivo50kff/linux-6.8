@@ -11,10 +11,7 @@ boot_test_scripts/
 ├── test_yat_casched_complete.c       # 完整功能测试程序源码
 ├── test_cache_aware_fixed.c          # 缓存感知专项测试源码
 ├── verify_real_scheduling.c          # 调度器真实性验证源码
-├── test_yat_casched_complete         # 完整功能测试程序（编译后）
-├── test_cache_aware_fixed            # 缓存感知专项测试程序（编译后）
-├── verify_real_scheduling            # 调度器真实性验证程序（编译后）
-└── README.md                         # 本使用指南
+├── README.md                         # 本使用指南
 ```
 
 ## 🚀 使用方法
@@ -45,7 +42,7 @@ boot_test_scripts/
    ./start_with_template.sh
    ```
 
-   或（Intel VT-x 优化）：
+   或（Intel VT-x 优化，需要intel处理器）：
 
    ```bash
    ./start_with_intel_vtx.sh
@@ -59,8 +56,7 @@ boot_test_scripts/
 
 ## ⚠️ 注意事项
 
-- 所有脚本和测试程序均采用相对路径，无需修改。
-- 主目录无需保留任何测试脚本，全部集中在 boot_test_scripts 目录。
+
 - 如遇权限问题请先 `chmod +x *.sh`。
 - 这些脚本直接用QEMU虚拟机加载 bzImage 和 initramfs，无需将内核安装到主机系统。
 - 只需保证 arch/x86/boot/bzImage 和 boot_test_scripts/initramfs_complete.cpio.gz 是最新编译生成版本。
