@@ -1,0 +1,17 @@
+Scheduler,Thread_ID,CPU_Switches,Execution_Time,CPU_Affinity_Score
+CFS,0,16,1.155,0.387
+Yat_Casched,0,0,1.144,1.000
+CFS,1,7,1.160,0.484
+Yat_Casched,1,1,1.160,0.715
+CFS,2,8,1.175,0.463
+Yat_Casched,2,3,1.146,0.421
+CFS,3,22,1.158,0.540
+Yat_Casched,3,5,1.160,0.514
+CFS,4,22,1.164,0.593
+Yat_Casched,4,2,1.154,0.735
+CFS,5,21,1.163,0.390
+Yat_Casched,5,0,1.153,1.000
+CFS,6,27,1.175,0.458
+Yat_Casched,6,3,1.148,0.940
+CFS,7,5,1.138,0.865
+Yat_Casched,7,4,1.143,0.626
