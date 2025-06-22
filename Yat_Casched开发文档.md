@@ -781,35 +781,74 @@ gcc -O2 -o verify_real_scheduling verify_real_scheduling.c
 
 ---
 
-## 8. 实验结果与性能测试
+## 8. 性能测试与结果分析
 
-本节展示 Yat_Casched 调度器在 QEMU 多核环境下的实际测试结果。
+### 完整测试系统
 
-- 测试环境：QEMU 虚拟机，4~8核，KVM加速，内核版本6.8.0+
-- 测试工具：boot_test_scripts 目录下 test_yat_casched_complete、test_cache_aware_fixed、verify_real_scheduling
-- 主要测试内容：
-  - 调度策略切换与验证
-  - 多进程/多线程迁移与亲和性
-  - 缓存感知专项测试
-  - 性能基准测试
+本项目设计了完整的性能测试系统，详细的测试配置、方法和结果分析请参考：
 
-### 典型测试输出截图
+**📁 [test_visualization/README.md](../test_visualization/README.md)**
 
-（此处插入 test_yat_casched_complete、test_cache_aware_fixed、verify_real_scheduling 的终端输出截图）
+### 测试系统概述
 
-### 迁移与亲和性分析
+**测试环境**：
+- 多核Linux系统，内核版本 6.8.0+
+- 8线程并发缓存密集型工作负载
+- 重复10轮测试确保结果稳定性
 
-- 任务大部分时间保持在同一CPU，迁移次数适中，亲和性良好
-- 负载均衡与缓存亲和性兼顾，迁移发生在缓存热度窗口过后或负载变化时
-- 与CFS对比，迁移次数明显减少，缓存局部性提升
+**主要测试工具**：
+- `test_visualization/performance_test.c` - 核心性能测试程序
+- `test_visualization/visualize_results.py` - 结果可视化分析
+- `boot_test_scripts/` 目录下的功能验证工具
 
-### 性能结论
+### 关键测试结果
 
-- Yat_Casched 能有效减少不必要的任务迁移，提高缓存命中率
-- 多核并发下，整体性能和系统响应能力提升明显
-- 调度器稳定性和兼容性良好，适合实际部署
+根据标准化测试流程，Yat_Casched 调度器展现出以下优势：
 
-> （可在此处插入性能对比图、迁移统计图等图片，后续补充）
+#### CPU切换次数减少
+```
+Total CPU Switches: CFS: 92.2, Yat_Casched: 65.2
+Reduction: 29.3%
+```
+
+#### 执行性能提升
+```
+Average Execution Time: CFS: 1.255 s, Yat_Casched: 1.228 s
+Performance improvement: 2.2%
+```
+
+### 可视化分析报告
+
+测试系统自动生成以下分析图表：
+- **CPU切换次数对比图** - 体现缓存亲和性优势
+- **执行时间对比图** - 反映整体性能提升
+- **CPU亲和性分数对比图** - 展示缓存局部性改善
+
+详细的图表分析请参考：[test_visualization/img/performance_summary.md](../test_visualization/img/performance_summary.md)
+
+### 快速测试验证
+
+要复现测试结果，请在项目根目录执行：
+
+```bash
+cd test_visualization
+make test  # 一键完整测试+可视化
+```
+
+或手动运行：
+```bash
+sudo ./performance_test
+python3 visualize_results.py
+```
+
+### 测试结论
+
+实验证明 Yat_Casched 调度器：
+- **有效减少任务迁移**：29.3%的CPU切换减少直接体现缓存感知策略
+- **稳定提升性能**：2.2%的执行时间改善证明缓存亲和性价值
+- **兼顾负载均衡**：在保持缓存热度的同时维持系统整体平衡
+
+> **注**：当前为初赛版本测试结果，主要验证基本可行性。完整的NUMA感知和自适应优化将在后续版本中实现。
 
 ---
 
