@@ -10,18 +10,87 @@
 
 #include "sched.h"
 #include <linux/sched/yat_casched.h>
+#include <linux/hashtable.h>
+#include <linux/slab.h>
 
 /* 缓存热度阈值（jiffies）*/
 #define YAT_CACHE_HOT_TIME	(HZ / 100)	/* 10ms */
 #define YAT_MIN_GRANULARITY	(NSEC_PER_SEC / HZ)
 
 /*
+ * 哈希表操作函数
+ */
+
+/* 查找CPU历史记录 */
+static struct yat_cpu_history_entry *yat_find_history_entry(struct yat_casched_rq *yat_rq, pid_t pid)
+{
+    struct yat_cpu_history_entry *entry;
+    
+    hash_for_each_possible(yat_rq->cpu_history_hash, entry, hash_node, pid) {
+        if (entry->pid == pid)
+            return entry;
+    }
+    return NULL;
+}
+
+/* 更新或创建CPU历史记录 */
+static void yat_update_history_entry(struct yat_casched_rq *yat_rq, pid_t pid, int cpu)
+{
+    struct yat_cpu_history_entry *entry;
+    
+    entry = yat_find_history_entry(yat_rq, pid);
+    if (entry) {
+        /* 更新现有记录 */
+        entry->last_cpu = cpu;
+        entry->last_update_time = jiffies;
+    } else {
+        /* 创建新记录 */
+        entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+        if (entry) {
+            entry->pid = pid;
+            entry->last_cpu = cpu;
+            entry->last_update_time = jiffies;
+            hash_add(yat_rq->cpu_history_hash, &entry->hash_node, pid);
+        }
+    }
+}
+
+/* 获取任务的上次运行CPU */
+static int yat_get_last_cpu(struct yat_casched_rq *yat_rq, pid_t pid)
+{
+    struct yat_cpu_history_entry *entry;
+    
+    entry = yat_find_history_entry(yat_rq, pid);
+    if (entry) {
+        /* 检查记录是否过期 */
+        if (time_after(jiffies, entry->last_update_time + YAT_CACHE_HOT_TIME)) {
+            return -1;  /* 缓存已冷 */
+        }
+        return entry->last_cpu;
+    }
+    return -1;  /* 未找到记录 */
+}
+
+/* 清理过期的历史记录 */
+static void yat_cleanup_expired_entries(struct yat_casched_rq *yat_rq)
+{
+    struct yat_cpu_history_entry *entry;
+    struct hlist_node *tmp;
+    int bkt;
+    
+    hash_for_each_safe(yat_rq->cpu_history_hash, bkt, tmp, entry, hash_node) {
+        if (time_after(jiffies, entry->last_update_time + YAT_CACHE_HOT_TIME * 10)) {
+            hash_del(&entry->hash_node);
+            kfree(entry);
+        }
+    }
+}
+
+/*
  * 初始化Yat_Casched运行队列
  */
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
-    int i;
-    
     printk(KERN_INFO "======init yat_casched rq======\n");
     
     INIT_LIST_HEAD(&rq->tasks);
@@ -30,10 +99,8 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     rq->cache_decay_jiffies = jiffies;
     spin_lock_init(&rq->history_lock);
     
-    /* 初始化CPU历史表 */
-    for (i = 0; i < NR_CPUS; i++) {
-        rq->cpu_history[i] = NULL;
-    }
+    /* 初始化CPU历史哈希表 */
+    hash_init(rq->cpu_history_hash);
 }
 
 /*
@@ -71,14 +138,23 @@ void update_curr_yat_casched(struct rq *rq)
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
     struct yat_casched_rq *yat_rq;
-    int last_cpu = p->yat_casched.last_cpu;
+    int last_cpu;
     int best_cpu = task_cpu;
     int cpu;
     unsigned long min_load = ULONG_MAX;
     
-    /* 如果是第一次运行或last_cpu无效，记录当前CPU并返回 */
-    if (last_cpu == -1 || last_cpu >= NR_CPUS) {
-        p->yat_casched.last_cpu = task_cpu;
+    /* 从哈希表中获取上次运行的CPU */
+    yat_rq = &cpu_rq(task_cpu)->yat_casched;
+    spin_lock(&yat_rq->history_lock);
+    last_cpu = yat_get_last_cpu(yat_rq, p->pid);
+    spin_unlock(&yat_rq->history_lock);
+    
+    /* 如果是第一次运行或找不到历史记录 */
+    if (last_cpu == -1) {
+        /* 更新历史记录并返回当前CPU */
+        spin_lock(&yat_rq->history_lock);
+        yat_update_history_entry(yat_rq, p->pid, task_cpu);
+        spin_unlock(&yat_rq->history_lock);
         return task_cpu;
     }
     
@@ -163,10 +239,16 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
     }
     
     if (p) {
-        /* 更新CPU历史表 - 添加边界检查 */
+        /* 更新CPU历史表 - 使用哈希表 */
         if (rq->cpu >= 0 && rq->cpu < NR_CPUS) {
             spin_lock(&yat_rq->history_lock);
-            yat_rq->cpu_history[rq->cpu] = p;
+            yat_update_history_entry(yat_rq, p->pid, rq->cpu);
+            
+            /* 定期清理过期记录 */
+            if (time_after(jiffies, yat_rq->cache_decay_jiffies + YAT_CACHE_HOT_TIME * 100)) {
+                yat_cleanup_expired_entries(yat_rq);
+                yat_rq->cache_decay_jiffies = jiffies;
+            }
             spin_unlock(&yat_rq->history_lock);
             
             /* 记录当前CPU为任务的最后运行CPU */
@@ -248,7 +330,18 @@ void rq_online_yat_casched(struct rq *rq)
 
 void rq_offline_yat_casched(struct rq *rq)
 {
-    /* CPU下线处理 */
+    struct yat_casched_rq *yat_rq = &rq->yat_casched;
+    struct yat_cpu_history_entry *entry;
+    struct hlist_node *tmp;
+    int bkt;
+    
+    /* CPU下线处理 - 清理所有历史记录 */
+    spin_lock(&yat_rq->history_lock);
+    hash_for_each_safe(yat_rq->cpu_history_hash, bkt, tmp, entry, hash_node) {
+        hash_del(&entry->hash_node);
+        kfree(entry);
+    }
+    spin_unlock(&yat_rq->history_lock);
 }
 
 struct task_struct *pick_task_yat_casched(struct rq *rq)
