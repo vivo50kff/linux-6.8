@@ -114,7 +114,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
         printk(KERN_INFO "yat_casched: enqueue first task\n");
     }
     
-    /* 初始化任务的Yat_Casched实体 */
+    /* 初始化任务的Yat_Casched实体 */  
     if (list_empty(&p->yat_casched.run_list)) {
         INIT_LIST_HEAD(&p->yat_casched.run_list);
         p->yat_casched.vruntime = 0;
