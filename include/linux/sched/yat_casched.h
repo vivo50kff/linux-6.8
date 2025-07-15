@@ -8,12 +8,19 @@
 /* 哈希表大小的位数 (2^6 = 64个桶) */
 #define YAT_HISTORY_HASH_BITS  6
 
-/* CPU历史记录项 */
-struct yat_cpu_history_entry {
+/* 每个CPU的任务执行历史记录项 */
+struct yat_task_history_entry {
     struct hlist_node hash_node;   /* 哈希表节点 */
     pid_t pid;                     /* 任务PID作为键 */
-    int last_cpu;                  /* 上次运行的CPU */
+    u64 exec_time;                 /* 在此CPU上的执行时间戳 */
     u64 last_update_time;          /* 最后更新时间 */
+};
+
+/* 每个CPU的历史表 */
+struct yat_cpu_history {
+    DECLARE_HASHTABLE(task_hash, YAT_HISTORY_HASH_BITS); /* 该CPU上的任务历史表 */
+    spinlock_t lock;               /* 该CPU历史表的锁 */
+    u64 last_cleanup_time;         /* 上次清理时间 */
 };
 
 struct sched_yat_casched_entity {
@@ -29,7 +36,7 @@ struct yat_casched_rq {
     struct task_struct *agent;     /* 代理任务 */
     u64 cache_decay_jiffies;       /* 缓存衰减时间 */
     spinlock_t history_lock;       /* 历史表锁 */
-    DECLARE_HASHTABLE(cpu_history_hash, YAT_HISTORY_HASH_BITS); /* CPU历史哈希表 */
+    struct yat_cpu_history cpu_history[NR_CPUS]; /* 每个CPU的二维历史表 */
 };
 
 struct rq;
