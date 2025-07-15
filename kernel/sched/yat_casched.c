@@ -25,8 +25,13 @@
 static struct yat_task_history_entry *yat_find_task_entry(struct yat_cpu_history *cpu_hist, pid_t pid)
 {
     struct yat_task_history_entry *entry;
+    struct hlist_node *node;
+    u32 hash_val = hash_32(pid, YAT_CASCHED_HASH_BITS);
     
-    hash_for_each_possible(cpu_hist->task_hash, entry, hash_node, pid) {
+    if (!cpu_hist->task_hash)
+        return NULL;
+        
+    hlist_for_each_entry(entry, &cpu_hist->task_hash[hash_val], hash_node) {
         if (entry->pid == pid)
             return entry;
     }
@@ -37,6 +42,10 @@ static struct yat_task_history_entry *yat_find_task_entry(struct yat_cpu_history
 static void yat_update_task_entry(struct yat_cpu_history *cpu_hist, pid_t pid, u64 exec_time)
 {
     struct yat_task_history_entry *entry;
+    u32 hash_val = hash_32(pid, YAT_CASCHED_HASH_BITS);
+    
+    if (!cpu_hist->task_hash)
+        return;
     
     entry = yat_find_task_entry(cpu_hist, pid);
     if (entry) {
@@ -50,7 +59,7 @@ static void yat_update_task_entry(struct yat_cpu_history *cpu_hist, pid_t pid, u
             entry->pid = pid;
             entry->exec_time = exec_time;
             entry->last_update_time = jiffies;
-            hash_add(cpu_hist->task_hash, &entry->hash_node, pid);
+            hlist_add_head(&entry->hash_node, &cpu_hist->task_hash[hash_val]);
         }
     }
 }
@@ -76,12 +85,17 @@ static void yat_cleanup_cpu_expired_entries(struct yat_cpu_history *cpu_hist)
 {
     struct yat_task_history_entry *entry;
     struct hlist_node *tmp;
-    int bkt;
+    int i;
     
-    hash_for_each_safe(cpu_hist->task_hash, bkt, tmp, entry, hash_node) {
-        if (time_after(jiffies, entry->last_update_time + YAT_CACHE_HOT_TIME * 10)) {
-            hash_del(&entry->hash_node);
-            kfree(entry);
+    if (!cpu_hist->task_hash)
+        return;
+    
+    for (i = 0; i < (1 << YAT_CASCHED_HASH_BITS); i++) {
+        hlist_for_each_entry_safe(entry, tmp, &cpu_hist->task_hash[i], hash_node) {
+            if (time_after(jiffies, entry->last_update_time + YAT_CACHE_HOT_TIME * 10)) {
+                hlist_del(&entry->hash_node);
+                kfree(entry);
+            }
         }
     }
     cpu_hist->last_cleanup_time = jiffies;
@@ -127,7 +141,14 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     
     /* 初始化每个CPU的二维历史哈希表 */
     for (i = 0; i < NR_CPUS; i++) {
-        hash_init(rq->cpu_history[i].task_hash);
+        /* 分配哈希表内存 */
+        rq->cpu_history[i].task_hash = kcalloc(1 << YAT_CASCHED_HASH_BITS, sizeof(struct hlist_head), GFP_KERNEL);
+        if (rq->cpu_history[i].task_hash) {
+            int j;
+            for (j = 0; j < (1 << YAT_CASCHED_HASH_BITS); j++) {
+                INIT_HLIST_HEAD(&rq->cpu_history[i].task_hash[j]);
+            }
+        }
         spin_lock_init(&rq->cpu_history[i].lock);
         rq->cpu_history[i].last_cleanup_time = jiffies;
     }
@@ -356,17 +377,24 @@ void rq_offline_yat_casched(struct rq *rq)
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
     struct yat_task_history_entry *entry;
     struct hlist_node *tmp;
-    int bkt, cpu;
+    int i, cpu;
     
     /* CPU下线处理 - 清理所有CPU的历史记录 */
     for (cpu = 0; cpu < NR_CPUS; cpu++) {
         struct yat_cpu_history *cpu_hist = &yat_rq->cpu_history[cpu];
         
+        if (!cpu_hist->task_hash)
+            continue;
+            
         spin_lock(&cpu_hist->lock);
-        hash_for_each_safe(cpu_hist->task_hash, bkt, tmp, entry, hash_node) {
-            hash_del(&entry->hash_node);
-            kfree(entry);
+        for (i = 0; i < (1 << YAT_CASCHED_HASH_BITS); i++) {
+            hlist_for_each_entry_safe(entry, tmp, &cpu_hist->task_hash[i], hash_node) {
+                hlist_del(&entry->hash_node);
+                kfree(entry);
+            }
         }
+        kfree(cpu_hist->task_hash);
+        cpu_hist->task_hash = NULL;
         spin_unlock(&cpu_hist->lock);
     }
 }

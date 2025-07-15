@@ -1,12 +1,13 @@
 #ifndef _LINUX_SCHED_YAT_CASCHED_H
 #define _LINUX_SCHED_YAT_CASCHED_H
 
-#include <linux/hashtable.h>
-
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 
 /* 哈希表大小的位数 (2^6 = 64个桶) */
-#define YAT_HISTORY_HASH_BITS  6
+#define YAT_CASCHED_HASH_BITS  6
+
+/* 前向声明哈希表节点 */
+struct hlist_node;
 
 /* 每个CPU的任务执行历史记录项 */
 struct yat_task_history_entry {
@@ -18,7 +19,7 @@ struct yat_task_history_entry {
 
 /* 每个CPU的历史表 */
 struct yat_cpu_history {
-    DECLARE_HASHTABLE(task_hash, YAT_HISTORY_HASH_BITS); /* 该CPU上的任务历史表 */
+    struct hlist_head *task_hash;  /* 该CPU上的任务历史表 */
     spinlock_t lock;               /* 该CPU历史表的锁 */
     u64 last_cleanup_time;         /* 上次清理时间 */
 };

@@ -7,7 +7,7 @@
 
 ### 头文件 `include/linux/sched/yat_casched.h`
 - 引入 `<linux/hashtable.h>`。
-- 新增 `YAT_HISTORY_HASH_BITS` 宏定义，设置哈希桶数量。
+- 新增 `YAT_CASCHED_HASH_BITS` 宏定义，设置哈希桶数量。
 - 新增 `struct yat_task_history_entry` 结构体，包含 `pid`、`exec_time`、`last_update_time`。
 - 新增 `struct yat_cpu_history` 结构体，每个CPU一个独立的哈希表和锁。
 - 将 `struct yat_casched_rq` 中的 `cpu_history[NR_CPUS]` 替换为 `struct yat_cpu_history cpu_history[NR_CPUS]`。
@@ -36,7 +36,7 @@ struct yat_task_history_entry {
 };
 
 struct yat_cpu_history {
-    DECLARE_HASHTABLE(task_hash, YAT_HISTORY_HASH_BITS);
+    DECLARE_HASHTABLE(task_hash, YAT_CASCHED_HASH_BITS);
     spinlock_t lock;            // 每个CPU独立的锁
     u64 last_cleanup_time;
 };
