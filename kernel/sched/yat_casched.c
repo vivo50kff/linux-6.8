@@ -10,6 +10,52 @@
 
 #include "sched.h"
 #include <linux/sched/yat_casched.h>
+#include <linux/hashtable.h>
+#include <linux/slab.h>
+
+/* --- 全局数据结构 --- */
+
+// 全局任务池，用于存放所有待调度的Yat_Casched任务
+static LIST_HEAD(yat_global_task_pool);
+static DEFINE_SPINLOCK(yat_pool_lock);
+
+// 全局哈希加速表
+#define ACCELERATOR_BITS 10
+static DEFINE_HASHTABLE(accelerator_table, ACCELERATOR_BITS);
+static DEFINE_SPINLOCK(accelerator_lock);
+
+// 哈希表中的条目
+struct accelerator_entry {
+    struct task_struct *p;
+    int cpu;
+    u64 benefit;
+    struct hlist_node node; // 哈希链表节点
+};
+
+/*
+ * 模拟CRP模型函数
+ * 输入: recency (ns) - 任务上次运行距今的时间
+ * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比
+ */
+static u64 get_crp_ratio(u64 recency)
+{
+    // 这是一个简化的分段函数，模拟CRP曲线
+    if (recency < 10000) // 10us以内，极热
+        return 600; // 实际执行时间是WCET的60%
+    if (recency < 100000) // 100us以内，温
+        return 800; // 实际执行时间是WCET的80%
+    
+    return 1000; // 否则视为完全冷，执行时间=WCET
+}
+
+/*
+ * 模拟获取任务WCET的函数
+ */
+static u64 get_wcet(struct task_struct *p)
+{
+    // 初步实现：给所有任务一个固定的WCET，例如10ms
+    return 10 * 1000 * 1000; // 10ms in ns
+}
 
 /* 缓存热度阈值（jiffies）*/
 #define YAT_CACHE_HOT_TIME	(HZ / 100)	/* 10ms */
@@ -65,116 +111,70 @@ void update_curr_yat_casched(struct rq *rq)
 }
 
 /*
- * 缓存感知的CPU选择算法
- * 优先选择任务上次运行的CPU，如果不可用则选择负载最轻的CPU
+ * select_task_rq - 职责减弱
+ * 在我们的新模型中，决策由全局调度器做出。
+ * 这个函数只在特殊情况下被调用，或者可以简单返回一个默认值。
  */
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
-    struct yat_casched_rq *yat_rq;
-    int last_cpu = p->yat_casched.last_cpu;
-    int best_cpu = task_cpu;
-    int cpu;
-    unsigned long min_load = ULONG_MAX;
-    
-    /* 如果是第一次运行或last_cpu无效，记录当前CPU并返回 */
-    if (last_cpu == -1 || last_cpu >= NR_CPUS) {
-        p->yat_casched.last_cpu = task_cpu;
-        return task_cpu;
-    }
-    
-    /* 检查上次运行的CPU是否可用 */
-    if (cpu_online(last_cpu) && cpumask_test_cpu(last_cpu, &p->cpus_mask)) {
-        return last_cpu;  /* 优先选择上次的CPU */
-    }
-    
-    /* 缓存已冷或上次CPU不可用，选择负载最轻的CPU */
-    for_each_cpu(cpu, &p->cpus_mask) {
-        if (!cpu_online(cpu))
-            continue;
-            
-        yat_rq = &cpu_rq(cpu)->yat_casched;
-        if (yat_rq->nr_running < min_load) {
-            min_load = yat_rq->nr_running;
-            best_cpu = cpu;
-        }
-    }
-    
-    return best_cpu;
+    // 决策已移至全局调度器，这里返回task_cpu以兼容框架
+    return task_cpu;
 }
 
 /*
- * 将任务加入运行队列
+ * 将任务加入全局任务池，并保持有序
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* 减少printk频率 - 只在第一次enqueue时打印 */
-    if (yat_rq->nr_running == 0) {
-        printk(KERN_INFO "yat_casched: enqueue first task\n");
+    struct list_head *pos;
+    struct task_struct *entry;
+
+    // 初始化新任务
+    if (p->yat_casched.wcet == 0) {
+        p->yat_casched.wcet = get_wcet(p);
+        // ... 其他初始化 ...
     }
+
+    spin_lock(&yat_pool_lock);
     
-    /* 初始化任务的Yat_Casched实体 */  
-    if (list_empty(&p->yat_casched.run_list)) {
-        INIT_LIST_HEAD(&p->yat_casched.run_list);
-        p->yat_casched.vruntime = 0;
-        p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化 */
+    // 寻找正确的插入位置（按prio和wcet排序）
+    list_for_each(pos, &yat_global_task_pool) {
+        entry = list_entry(pos, struct task_struct, yat_casched.run_list);
+        if (p->prio < entry->prio || 
+            (p->prio == entry->prio && p->yat_casched.wcet > entry->yat_casched.wcet)) {
+            break;
+        }
     }
-    
-    /* 添加到运行队列 */
-    list_add_tail(&p->yat_casched.run_list, &yat_rq->tasks);
-    yat_rq->nr_running++;
+    list_add_tail(&p->yat_casched.run_list, pos);
+
+    spin_unlock(&yat_pool_lock);
 }
 
 /*
- * 将任务从运行队列移除
+ * 将任务从全局任务池移除
  */
 void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
+    spin_lock(&yat_pool_lock);
     if (!list_empty(&p->yat_casched.run_list)) {
         list_del_init(&p->yat_casched.run_list);
-        yat_rq->nr_running--;
     }
+    spin_unlock(&yat_pool_lock);
 }
 
 /*
- * 选择下一个要运行的任务
- * 使用简单的FIFO策略，但考虑缓存亲和性
+ * pick_next_task - 从本地运行队列取任务
+ * 因为我们保证每个核心最多一个任务，所以逻辑很简单
  */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    struct task_struct *p = NULL;
     
-    if (!yat_rq || yat_rq->nr_running == 0)
+    if (yat_rq->nr_running == 0)
         return NULL;
     
-    /* 选择队列中的第一个任务 */
-    if (!list_empty(&yat_rq->tasks)) {
-        struct sched_yat_casched_entity *yat_se;
-        yat_se = list_first_entry(&yat_rq->tasks, 
-                                 struct sched_yat_casched_entity, 
-                                 run_list);
-        if (yat_se) {
-            p = container_of(yat_se, struct task_struct, yat_casched);
-        }
-    }
-    
-    if (p) {
-        /* 更新CPU历史表 - 添加边界检查 */
-        if (rq->cpu >= 0 && rq->cpu < NR_CPUS) {
-            spin_lock(&yat_rq->history_lock);
-            yat_rq->cpu_history[rq->cpu] = p;
-            spin_unlock(&yat_rq->history_lock);
-            
-            /* 记录当前CPU为任务的最后运行CPU */
-            p->yat_casched.last_cpu = rq->cpu;
-        }
-    }
-    
-    return p;
+    // 直接返回队列中的唯一任务
+    return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
 }
 
 /*
@@ -191,6 +191,9 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
     update_curr_yat_casched(rq);
+    
+    /* --- 新增逻辑：更新recency时间戳 --- */
+    p->yat_casched.per_cpu_recency[rq->cpu] = ktime_get();
 }
 
 /*
@@ -216,12 +219,94 @@ void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     resched_curr(rq);
 }
 
+/* --- 全局调度逻辑 --- */
+
+static void update_accelerator_table(void)
+{
+    struct task_struct *p;
+    int i;
+    struct hlist_node *tmp;
+    struct accelerator_entry *entry;
+    int bkt;
+
+    spin_lock(&accelerator_lock);
+    // 清空哈希表，释放内存
+    hash_for_each_safe(accelerator_table, bkt, tmp, entry, node) {
+        hash_del(&entry->node);
+        kfree(entry);
+    }
+
+    spin_lock(&yat_pool_lock);
+    list_for_each_entry(p, &yat_global_task_pool, yat_casched.run_list) {
+        for_each_cpu(i, p->cpus_ptr) {
+            if (!cpu_online(i) || cpu_rq(i)->yat_casched.nr_running > 0)
+                continue;
+
+            u64 recency = ktime_get() - p->yat_casched.per_cpu_recency[i];
+            u64 crp_ratio = get_crp_ratio(recency);
+            u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
+
+            if (benefit > 0) {
+                entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+                if (!entry) continue;
+                entry->p = p;
+                entry->cpu = i;
+                entry->benefit = benefit;
+                hash_add(accelerator_table, &entry->node, (unsigned long)p + i);
+            }
+        }
+    }
+    spin_unlock(&yat_pool_lock);
+    spin_unlock(&accelerator_lock);
+}
+
+static void schedule_yat_casched_tasks(void)
+{
+    struct task_struct *p_to_run = NULL;
+    int best_cpu = -1;
+    u64 max_benefit = 0;
+    struct accelerator_entry *entry;
+    int bkt;
+
+    update_accelerator_table();
+
+    spin_lock(&accelerator_lock);
+    hash_for_each(accelerator_table, bkt, entry, node) {
+        if (entry->benefit > max_benefit) {
+            max_benefit = entry->benefit;
+            p_to_run = entry->p;
+            best_cpu = entry->cpu;
+        }
+    }
+    spin_unlock(&accelerator_lock);
+
+    if (p_to_run) {
+        // 从全局池移除
+        spin_lock(&yat_pool_lock);
+        list_del_init(&p_to_run->yat_casched.run_list);
+        spin_unlock(&yat_pool_lock);
+
+        // 加入目标CPU的本地运行队列
+        struct rq *target_rq = cpu_rq(best_cpu);
+        struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
+        list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
+        target_yat_rq->nr_running++;
+        
+        // 唤醒目标CPU
+        resched_curr(target_rq);
+    }
+}
+
 /*
- * 负载均衡
+ * 负载均衡 - 现在是我们的主调度入口
  */
 int balance_yat_casched(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
 {
-    return 0;  /* 暂时不实现复杂的负载均衡 */
+    // 只在CPU 0上执行全局调度，避免多核竞争
+    if (rq->cpu == 0) {
+        schedule_yat_casched_tasks();
+    }
+    return 0;
 }
 
 /* 以下是其他必需的接口函数的简单实现 */

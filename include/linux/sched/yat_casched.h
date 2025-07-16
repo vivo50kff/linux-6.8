@@ -7,6 +7,8 @@ struct sched_yat_casched_entity {
     struct list_head run_list;      /* 运行队列链表节点 */
     u64 vruntime;                   /* 虚拟运行时间 */
     u64 slice;                      /* 时间片，与CFS保持一致 */
+    u64 per_cpu_recency[NR_CPUS]; 
+    u64 wcet; 
     int last_cpu;                   /* 上次运行的CPU */
 };
 
