@@ -1,0 +1,1118 @@
+  SYNC    include/config/auto.conf.cmd
+.config:273:warning: symbol value 'n' invalid for BASE_SMALL
+.config:4767:warning: symbol value 'm' invalid for SERIAL_SC16IS7XX_I2C
+.config:4768:warning: symbol value 'm' invalid for SERIAL_SC16IS7XX_SPI
+.config:10984:warning: symbol value 'm' invalid for ANDROID_BINDER_IPC
+.config:10985:warning: symbol value 'm' invalid for ANDROID_BINDERFS
+*
+* Restart config...
+*
+*
+* Configure standard kernel features (expert users)
+*
+Configure standard kernel features (expert users) (EXPERT) [Y/n/?] y
+  Enable 16-bit UID system calls (UID16) [Y/n/?] y
+  Multiple users, groups and capabilities support (MULTIUSER) [Y/n/?] y
+  sgetmask/ssetmask syscalls support (SGETMASK_SYSCALL) [Y/n/?] y
+  Sysfs syscall support (SYSFS_SYSCALL) [Y/n/?] y
+  open by fhandle syscalls (FHANDLE) [Y/n/?] y
+  Posix Clocks & timers (POSIX_TIMERS) [Y/n/?] y
+  Enable support for printk (PRINTK) [Y/n/?] y
+  BUG() support (BUG) [Y/n/?] y
+  Enable ELF core dumps (ELF_CORE) [Y/n/?] y
+  Enable PC-Speaker support (PCSPKR_PLATFORM) [Y/n/?] y
+  Enable full-sized data structures for core (BASE_FULL) [Y/n/?] (NEW) yes "" | make oldconfig
+  Enable full-sized data structures for core (BASE_FULL) [Y/n/?] (NEW) 
+  Enable futex support (FUTEX) [Y/n/?] y
+  Enable eventpoll support (EPOLL) [Y/n/?] y
+  Enable signalfd() system call (SIGNALFD) [Y/n/?] y
+  Enable timerfd() system call (TIMERFD) [Y/n/?] y
+  Enable eventfd() system call (EVENTFD) [Y/?] y
+  Use full shmem filesystem (SHMEM) [Y/?] y
+  Enable AIO support (AIO) [Y/n/?] y
+  Enable IO uring support (IO_URING) [Y/?] y
+  Enable madvise/fadvise syscalls (ADVISE_SYSCALLS) [Y/n/?] y
+  Enable membarrier() system call (MEMBARRIER) [Y/?] y
+  Enable kcmp() system call (KCMP) [Y/?] y
+  Enable rseq() system call (RSEQ) [Y/n/?] y
+    Enable debugging of rseq() system call (DEBUG_RSEQ) [N/y/?] n
+  Enable cachestat() system call (CACHESTAT_SYSCALL) [Y/n/?] y
+  PC/104 support (PC104) [Y/n/?] y
+  Load all symbols for debugging/ksymoops (KALLSYMS) [Y/?] y
+    Test the basic functions and performance of kallsyms (KALLSYMS_SELFTEST) [N/y/?] n
+    Include all symbols in kallsyms (KALLSYMS_ALL) [Y/?] y
+*
+* Processor type and features
+*
+Symmetric multi-processing support (SMP) [Y/n/?] y
+Support x2apic (X86_X2APIC) [Y/?] y
+Enable MPS table (X86_MPPARSE) [Y/n/?] y
+x86 CPU resource control support (X86_CPU_RESCTRL) [Y/n/?] y
+Support for extended (non-PC) x86 platforms (X86_EXTENDED_PLATFORM) [Y/n/?] y
+Numascale NumaChip (X86_NUMACHIP) [Y/n/?] y
+ScaleMP vSMP (X86_VSMP) [N/y/?] n
+SGI Ultraviolet (X86_UV) [Y/n/?] y
+Goldfish (Virtual Platform) (X86_GOLDFISH) [N/y/?] n
+Intel MID platform support (X86_INTEL_MID) [N/y/?] n
+Intel Low Power Subsystem Support (X86_INTEL_LPSS) [Y/n/?] y
+AMD ACPI2Platform devices support (X86_AMD_PLATFORM_DEVICE) [Y/n/?] y
+Intel SoC IOSF Sideband support for SoC platforms (IOSF_MBI) [Y/?] y
+  Enable IOSF sideband access through debugfs (IOSF_MBI_DEBUG) [Y/n/?] y
+Single-depth WCHAN output (SCHED_OMIT_FRAME_POINTER) [Y/n/?] y
+Processor family
+  1. Opteron/Athlon64/Hammer/K8 (MK8)
+  2. Intel P4 / older Netburst based Xeon (MPSC)
+  3. Core 2/newer Xeon (MCORE2)
+  4. Intel Atom (MATOM)
+> 5. Generic-x86-64 (GENERIC_CPU)
+choice[1-5?]: 5
+Enable DMI scanning (DMI) [Y/?] y
+Old AMD GART IOMMU support (GART_IOMMU) [Y/n/?] y
+Enable Maximum number of SMP Processors and NUMA Nodes (MAXSMP) [Y/n/?] y
+Cluster scheduler support (SCHED_CLUSTER) [Y/n/?] y
+Multi-core scheduler support (SCHED_MC) [Y/n/?] y
+  CPU core priorities scheduler support (SCHED_MC_PRIO) [Y/n/?] y
+Reroute for broken boot IRQs (X86_REROUTE_FOR_BROKEN_BOOT_IRQS) [Y/n/?] y
+Machine Check / overheating reporting (X86_MCE) [Y/?] y
+  Support for deprecated /dev/mcelog character device (X86_MCELOG_LEGACY) [Y/n/?] y
+  Intel MCE features (X86_MCE_INTEL) [Y/n/?] y
+  AMD MCE features (X86_MCE_AMD) [Y/n/?] y
+Machine check injector support (X86_MCE_INJECT) [M/n/y/?] m
+Enable support for 16-bit segments (X86_16BIT) [Y/n/?] y
+Enable vsyscall emulation (X86_VSYSCALL_EMULATION) [Y/n/?] y
+IOPERM and IOPL Emulation (X86_IOPL_IOPERM) [Y/n/?] y
+Late microcode loading (DANGEROUS) (MICROCODE_LATE_LOADING) [N/y/?] n
+/dev/cpu/*/msr - Model-specific register support (X86_MSR) [M/n/y/?] m
+/dev/cpu/*/cpuid - CPU information support (X86_CPUID) [M/n/y/?] m
+Enable 5-level page tables support (X86_5LEVEL) [Y/n/?] y
+Enable statistic for Change Page Attribute (X86_CPA_STATISTICS) [N/y/?] n
+AMD Secure Memory Encryption (SME) support (AMD_MEM_ENCRYPT) [Y/n/?] y
+  Activate AMD Secure Memory Encryption (SME) by default (AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT) [N/y/?] (NEW) 
+NUMA Memory Allocation and Scheduler Support (NUMA) [Y/n/?] y
+  Old style AMD Opteron NUMA detection (AMD_NUMA) [Y/n/?] y
+  ACPI NUMA detection (X86_64_ACPI_NUMA) [Y/n/?] y
+  NUMA emulation (NUMA_EMU) [N/y/?] n
+Enable sysfs memory/probe interface (ARCH_MEMORY_PROBE) [Y/n/?] y
+Support non-standard NVDIMMs and ADR protected memory (X86_PMEM_LEGACY) [Y/n/m/?] y
+Check for low memory corruption (X86_CHECK_BIOS_CORRUPTION) [Y/n/?] y
+  Set the default setting of memory_corruption_check (X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK) [Y/n/?] y
+MTRR (Memory Type Range Register) support (MTRR) [Y/n/?] y
+  MTRR cleanup support (MTRR_SANITIZER) [Y/n/?] y
+    MTRR cleanup enable value (0-1) (MTRR_SANITIZER_ENABLE_DEFAULT) [1] 1
+    MTRR cleanup spare reg num (0-7) (MTRR_SANITIZER_SPARE_REG_NR_DEFAULT) [1] 1
+  x86 PAT support (X86_PAT) [Y/n/?] y
+User Mode Instruction Prevention (X86_UMIP) [Y/n/?] y
+Indirect Branch Tracking (X86_KERNEL_IBT) [N/y/?] n
+Memory Protection Keys (X86_INTEL_MEMORY_PROTECTION_KEYS) [Y/n/?] y
+TSX enable mode
+> 1. off (X86_INTEL_TSX_MODE_OFF)
+  2. on (X86_INTEL_TSX_MODE_ON)
+  3. auto (X86_INTEL_TSX_MODE_AUTO)
+choice[1-3?]: 1
+Software Guard eXtensions (SGX) (X86_SGX) [Y/n/?] y
+X86 userspace shadow stack (X86_USER_SHADOW_STACK) [Y/n/?] y
+EFI runtime service support (EFI) [Y/n/?] y
+  EFI stub support (EFI_STUB) [Y/n/?] y
+    EFI handover protocol (DEPRECATED) (EFI_HANDOVER_PROTOCOL) [Y/n/?] y
+    EFI mixed-mode support (EFI_MIXED) [Y/n/?] y
+  Enable EFI fake memory map (EFI_FAKE_MEMMAP) [N/y/?] (NEW) 
+  Export EFI runtime maps to sysfs (EFI_RUNTIME_MAP) [Y/?] y
+Timer frequency
+  1. 100 HZ (HZ_100)
+  2. 250 HZ (HZ_250)
+  3. 300 HZ (HZ_300)
+> 4. 1000 HZ (HZ_1000)
+choice[1-4?]: 4
+Physical address where the kernel is loaded (PHYSICAL_START) [0x1000000] 0x1000000
+Build a relocatable kernel (RELOCATABLE) [Y/?] y
+  Randomize the address of the kernel image (KASLR) (RANDOMIZE_BASE) [Y/n/?] y
+Alignment value to which kernel should be aligned (PHYSICAL_ALIGN) [0x200000] 0x200000
+Randomize the kernel memory sections (RANDOMIZE_MEMORY) [Y/n/?] y
+  Physical memory mapping padding (RANDOMIZE_MEMORY_PHYSICAL_PADDING) [0xa] 0xa
+Linear Address Masking support (ADDRESS_MASKING) [N/y/?] (NEW) 
+Disable the 32-bit vDSO (needed for glibc 2.3.3) (COMPAT_VDSO) [N/y/?] n
+vsyscall table for legacy applications
+> 1. Emulate execution only (LEGACY_VSYSCALL_XONLY)
+  2. None (LEGACY_VSYSCALL_NONE)
+choice[1-2?]: 1
+Built-in kernel command line (CMDLINE_BOOL) [N/y/?] n
+Enable the LDT (local descriptor table) (MODIFY_LDT_SYSCALL) [Y/n/?] y
+Enforce strict size checking for sigaltstack (STRICT_SIGALTSTACK_SIZE) [N/y/?] n
+Kernel Live Patching (LIVEPATCH) [Y/n/?] y
+*
+* Mitigations for speculative execution vulnerabilities
+*
+Mitigations for speculative execution vulnerabilities (SPECULATION_MITIGATIONS) [Y/n/?] (NEW) 
+  Remove the kernel mapping in user mode (PAGE_TABLE_ISOLATION) [Y/n/?] (NEW) 
+  Avoid speculative indirect branches in kernel (RETPOLINE) [Y/n/?] (NEW) 
+    Enable return-thunks (RETHUNK) [Y/n/?] (NEW) 
+      Enable UNRET on kernel entry (CPU_UNRET_ENTRY) [Y/n/?] (NEW) 
+  Mitigate RSB underflow with call depth tracking (CALL_DEPTH_TRACKING) [Y/n/?] (NEW) 
+    Enable call thunks and call depth tracking debugging (CALL_THUNKS_DEBUG) [N/y/?] n
+  Enable IBPB on kernel entry (CPU_IBPB_ENTRY) [Y/n/?] (NEW) 
+  Enable IBRS on kernel entry (CPU_IBRS_ENTRY) [Y/n/?] (NEW) 
+  Mitigate speculative RAS overflow on AMD (CPU_SRSO) [Y/n/?] (NEW) 
+  Mitigate Straight-Line-Speculation (SLS) [N/y/?] (NEW) 
+  Force GDS Mitigation (GDS_FORCE_MITIGATION) [N/y/?] (NEW) 
+*
+* ACPI (Advanced Configuration and Power Interface) Support
+*
+ACPI (Advanced Configuration and Power Interface) Support (ACPI) [Y/n/?] y
+  AML debugger interface (ACPI_DEBUGGER) [Y/n/?] y
+    Userspace debugger accessibility (ACPI_DEBUGGER_USER) [Y/n/m/?] y
+  ACPI Serial Port Console Redirection Support (ACPI_SPCR_TABLE) [Y/n/?] y
+  ACPI Firmware Performance Data Table (FPDT) support (ACPI_FPDT) [Y/n/?] y
+  Allow supported ACPI revision to be overridden (ACPI_REV_OVERRIDE_POSSIBLE) [Y/n/?] y
+  EC read/write access through /sys/kernel/debug/ec (ACPI_EC_DEBUGFS) [M/n/y/?] m
+  AC Adapter (ACPI_AC) [Y/n/m/?] y
+  Battery (ACPI_BATTERY) [Y/n/m/?] y
+  Button (ACPI_BUTTON) [Y/m/?] y
+  Video (ACPI_VIDEO) [M/?] m
+  Fan (ACPI_FAN) [Y/m/?] y
+  ACPI Time and Alarm (TAD) Device Support (ACPI_TAD) [M/n/y/?] m
+  Dock (ACPI_DOCK) [Y/n/?] y
+  Processor (ACPI_PROCESSOR) [Y/?] y
+  IPMI (ACPI_IPMI) [M/n/?] m
+  Processor Aggregator (ACPI_PROCESSOR_AGGREGATOR) [M/n/y/?] m
+  Thermal Zone (ACPI_THERMAL) [Y/n/m/?] y
+  Custom DSDT Table file to include (ACPI_CUSTOM_DSDT_FILE) [] 
+  Allow upgrading ACPI tables via initrd (ACPI_TABLE_UPGRADE) [Y/n/?] y
+  Debug Statements (ACPI_DEBUG) [Y/?] y
+  PCI slot detection driver (ACPI_PCI_SLOT) [Y/n/?] y
+  Container and Module Devices (ACPI_CONTAINER) [Y/?] y
+  Memory Hotplug (ACPI_HOTPLUG_MEMORY) [Y/n/?] y
+  Smart Battery System (ACPI_SBS) [M/n/y/?] m
+  Hardware Error Device (ACPI_HED) [Y/?] y
+  Allow ACPI methods to be inserted/replaced at run time (ACPI_CUSTOM_METHOD) [N/m/y/?] (NEW) 
+  Boottime Graphics Resource Table support (ACPI_BGRT) [Y/n/?] y
+  Hardware-reduced ACPI support only (ACPI_REDUCED_HARDWARE_ONLY) [N/y/?] n
+  ACPI NVDIMM Firmware Interface Table (NFIT) (ACPI_NFIT) [M/n/y/?] m
+    Enable debug for NVDIMM security commands (NFIT_SECURITY_DEBUG) [N/y/?] n
+  NUMA support (ACPI_NUMA) [Y/?] y
+    ACPI Heterogeneous Memory Attribute Table Support (ACPI_HMAT) [Y/?] y
+  ACPI Platform Error Interface (APEI) (ACPI_APEI) [Y/n/?] y
+    APEI Generic Hardware Error Source (ACPI_APEI_GHES) [Y/n/?] y
+    APEI PCIe AER logging/recovering support (ACPI_APEI_PCIEAER) [Y/n/?] y
+  APEI memory error recovering support (ACPI_APEI_MEMORY_FAILURE) [Y/n/?] y
+  APEI Error INJection (EINJ) (ACPI_APEI_EINJ) [M/n/y/?] m
+  APEI Error Record Serialization Table (ERST) Debug Support (ACPI_APEI_ERST_DEBUG) [N/m/y/?] n
+  Extended Error Log support (ACPI_EXTLOG) [M/n/y/?] m
+  ACPI configfs support (ACPI_CONFIGFS) [M/n/y/?] m
+  ACPI Platform Firmware Runtime Update and Telemetry (ACPI_PFRUT) [M/n/y/?] m
+  ACPI PCC Address Space (ACPI_PCC) [Y/n/?] y
+  ACPI FFH Address Space (ACPI_FFH) [Y/n/?] y
+  ACPI operation region support for TPS68470 PMIC (TPS68470_PMIC_OPREGION) [Y/n/?] y
+  Platform Runtime Mechanism Support (ACPI_PRMT) [Y/n/?] y
+*
+* Enable the block layer
+*
+Enable the block layer (BLOCK) [Y/n/?] y
+  Legacy autoloading support (BLOCK_LEGACY_AUTOLOAD) [Y/?] y
+  Block layer SG support v4 helper lib (BLK_DEV_BSGLIB) [Y/?] y
+  Block layer data integrity support (BLK_DEV_INTEGRITY) [Y/?] y
+  Allow writing to mounted block devices (BLK_DEV_WRITE_MOUNTED) [Y/n/?] y
+  Zoned block device support (BLK_DEV_ZONED) [Y/n/?] y
+  Block layer bio throttling support (BLK_DEV_THROTTLING) [Y/n/?] y
+    Block throttling .low limit interface support (EXPERIMENTAL) (BLK_DEV_THROTTLING_LOW) [N/y/?] (NEW) 
+  Enable support for block device writeback throttling (BLK_WBT) [Y/n/?] y
+    Enable writeback throttling by default (BLK_WBT_MQ) [Y/n/?] y
+  Enable support for latency based cgroup IO protection (BLK_CGROUP_IOLATENCY) [N/y/?] n
+  Enable support to track FC I/O Traffic across cgroup applications (BLK_CGROUP_FC_APPID) [Y/n/?] y
+  Enable support for cost model based cgroup IO controller (BLK_CGROUP_IOCOST) [Y/n/?] y
+  Cgroup I/O controller for assigning an I/O priority class (BLK_CGROUP_IOPRIO) [Y/n/?] y
+  Block layer debugging information in debugfs (BLK_DEBUG_FS) [Y/n/?] y
+  Logic for interfacing with Opal enabled SEDs (BLK_SED_OPAL) [Y/n/?] y
+  Enable inline encryption support in block layer (BLK_INLINE_ENCRYPTION) [Y/n/?] y
+    Enable crypto API fallback for blk-crypto (BLK_INLINE_ENCRYPTION_FALLBACK) [Y/n/?] y
+*
+* Support for paging of anonymous memory (swap)
+*
+Support for paging of anonymous memory (swap) (SWAP) [Y/n/?] y
+  Compressed cache for swap pages (ZSWAP) [Y/n/?] y
+    Enable the compressed cache for swap pages by default (ZSWAP_DEFAULT_ON) [N/y/?] n
+    Invalidate zswap entries when pages are loaded (ZSWAP_EXCLUSIVE_LOADS_DEFAULT_ON) [N/y/?] (NEW) 
+    Shrink the zswap pool on memory pressure (ZSWAP_SHRINKER_DEFAULT_ON) [Y/n/?] y
+    Default compressor
+      1. Deflate (ZSWAP_COMPRESSOR_DEFAULT_DEFLATE)
+    > 2. LZO (ZSWAP_COMPRESSOR_DEFAULT_LZO)
+      3. 842 (ZSWAP_COMPRESSOR_DEFAULT_842)
+      4. LZ4 (ZSWAP_COMPRESSOR_DEFAULT_LZ4)
+      5. LZ4HC (ZSWAP_COMPRESSOR_DEFAULT_LZ4HC)
+      6. zstd (ZSWAP_COMPRESSOR_DEFAULT_ZSTD)
+    choice[1-6?]: 2
+    Default allocator
+    > 1. zbud (ZSWAP_ZPOOL_DEFAULT_ZBUD)
+      2. z3fold (ZSWAP_ZPOOL_DEFAULT_Z3FOLD) (NEW)
+      3. zsmalloc (ZSWAP_ZPOOL_DEFAULT_ZSMALLOC)
+    choice[1-3?]: 
+    2:1 compression allocator (zbud) (ZBUD) [Y/?] y
+    3:1 compression allocator (z3fold) (Z3FOLD) [N/m/y/?] (NEW) 
+    N:1 compression allocator (zsmalloc) (ZSMALLOC) [Y/m/?] y
+      Export zsmalloc statistics (ZSMALLOC_STAT) [N/y/?] n
+      Maximum number of physical pages per-zspage (ZSMALLOC_CHAIN_SIZE) [8] 8
+*
+* QoS and/or fair queueing
+*
+QoS and/or fair queueing (NET_SCHED) [Y/n/?] y
+  *
+  * Queueing/Scheduling
+  *
+  Hierarchical Token Bucket (HTB) (NET_SCH_HTB) [M/n/y/?] m
+  Hierarchical Fair Service Curve (HFSC) (NET_SCH_HFSC) [M/n/y/?] m
+  Multi Band Priority Queueing (PRIO) (NET_SCH_PRIO) [M/n/y/?] m
+  Hardware Multiqueue-aware Multi Band Queuing (MULTIQ) (NET_SCH_MULTIQ) [M/n/y/?] m
+  Random Early Detection (RED) (NET_SCH_RED) [M/n/y/?] m
+  Stochastic Fair Blue (SFB) (NET_SCH_SFB) [M/n/y/?] m
+  Stochastic Fairness Queueing (SFQ) (NET_SCH_SFQ) [M/n/y/?] m
+  True Link Equalizer (TEQL) (NET_SCH_TEQL) [M/n/y/?] m
+  Token Bucket Filter (TBF) (NET_SCH_TBF) [M/n/y/?] m
+  Credit Based Shaper (CBS) (NET_SCH_CBS) [M/n/y/?] m
+  Earliest TxTime First (ETF) (NET_SCH_ETF) [M/n/y/?] m
+  Time Aware Priority (taprio) Scheduler (NET_SCH_TAPRIO) [M/n/y/?] m
+  Generic Random Early Detection (GRED) (NET_SCH_GRED) [M/n/y/?] m
+  Network emulator (NETEM) (NET_SCH_NETEM) [M/n/y/?] m
+  Deficit Round Robin scheduler (DRR) (NET_SCH_DRR) [M/n/y/?] m
+  Multi-queue priority scheduler (MQPRIO) (NET_SCH_MQPRIO) [M/n/y/?] m
+  SKB priority queue scheduler (SKBPRIO) (NET_SCH_SKBPRIO) [M/n/y/?] m
+  CHOose and Keep responsive flow scheduler (CHOKE) (NET_SCH_CHOKE) [M/n/y/?] m
+  Quick Fair Queueing scheduler (QFQ) (NET_SCH_QFQ) [M/n/y/?] m
+  Controlled Delay AQM (CODEL) (NET_SCH_CODEL) [M/n/y/?] m
+  Fair Queue Controlled Delay AQM (FQ_CODEL) (NET_SCH_FQ_CODEL) [M/n/y/?] m
+  Common Applications Kept Enhanced (CAKE) (NET_SCH_CAKE) [M/n/y/?] m
+  Fair Queue (NET_SCH_FQ) [M/n/y/?] m
+  Heavy-Hitter Filter (HHF) (NET_SCH_HHF) [M/n/y/?] m
+  Proportional Integral controller Enhanced (PIE) scheduler (NET_SCH_PIE) [M/n/y/?] m
+    Flow Queue Proportional Integral controller Enhanced (FQ-PIE) (NET_SCH_FQ_PIE) [M/n/?] m
+  Ingress/classifier-action Qdisc (NET_SCH_INGRESS) [M/n/y/?] m
+  Plug network traffic until release (PLUG) (NET_SCH_PLUG) [M/n/y/?] m
+  Enhanced transmission selection scheduler (ETS) (NET_SCH_ETS) [M/n/y/?] m
+  *
+  * Classification
+  *
+  Elementary classification (BASIC) (NET_CLS_BASIC) [M/n/y/?] m
+  Routing decision (ROUTE) (NET_CLS_ROUTE4) [M/n/y/?] m
+  Netfilter mark (FW) (NET_CLS_FW) [M/n/y/?] m
+  Universal 32bit comparisons w/ hashing (U32) (NET_CLS_U32) [M/n/y/?] m
+    Performance counters support (CLS_U32_PERF) [N/y/?] n
+    Netfilter marks support (CLS_U32_MARK) [Y/n/?] y
+  Flow classifier (NET_CLS_FLOW) [M/n/y/?] m
+  Control Group Classifier (NET_CLS_CGROUP) [M/n/y/?] m
+  BPF-based classifier (NET_CLS_BPF) [M/n/y/?] m
+  Flower classifier (NET_CLS_FLOWER) [M/n/y/?] m
+  Match-all classifier (NET_CLS_MATCHALL) [M/n/y/?] m
+  Extended Matches (NET_EMATCH) [Y/n/?] y
+    Stack size (NET_EMATCH_STACK) [32] 32
+    Simple packet data comparison (NET_EMATCH_CMP) [M/n/y/?] m
+    Multi byte comparison (NET_EMATCH_NBYTE) [M/n/y/?] m
+    U32 key (NET_EMATCH_U32) [M/n/y/?] m
+    Metadata (NET_EMATCH_META) [M/n/y/?] m
+    Textsearch (NET_EMATCH_TEXT) [M/n/y/?] m
+    CAN Identifier (NET_EMATCH_CANID) [M/n/y/?] m
+    IPset (NET_EMATCH_IPSET) [M/n/?] m
+    IPtables Matches (NET_EMATCH_IPT) [M/n/?] m
+  Actions (NET_CLS_ACT) [Y/n/?] y
+    Traffic Policing (NET_ACT_POLICE) [M/n/y/?] m
+    Generic actions (NET_ACT_GACT) [M/n/y/?] m
+      Probability support (GACT_PROB) [Y/n/?] y
+    Redirecting and Mirroring (NET_ACT_MIRRED) [M/n/y/?] m
+    Traffic Sampling (NET_ACT_SAMPLE) [M/n/y/?] m
+    IPtables targets (NET_ACT_IPT) [N/m/?] (NEW) 
+    Stateless NAT (NET_ACT_NAT) [M/n/y/?] m
+    Packet Editing (NET_ACT_PEDIT) [M/n/y/?] m
+    Simple Example (Debug) (NET_ACT_SIMP) [M/n/y/?] m
+    SKB Editing (NET_ACT_SKBEDIT) [M/n/y/?] m
+    Checksum Updating (NET_ACT_CSUM) [M/n/y/?] m
+    MPLS manipulation (NET_ACT_MPLS) [M/n/y/?] m
+    Vlan manipulation (NET_ACT_VLAN) [M/n/y/?] m
+    BPF based action (NET_ACT_BPF) [M/n/y/?] m
+    Netfilter Connection Mark Retriever (NET_ACT_CONNMARK) [M/n/?] m
+    Netfilter Connection Mark Actions (NET_ACT_CTINFO) [M/n/?] m
+    skb data modification action (NET_ACT_SKBMOD) [M/n/y/?] m
+    Inter-FE action based on IETF ForCES InterFE LFB (NET_ACT_IFE) [N/m/y/?] n
+    IP tunnel metadata manipulation (NET_ACT_TUNNEL_KEY) [M/n/y/?] m
+    connection tracking tc action (NET_ACT_CT) [M/n/?] m
+    Frame gate entry list control tc action (NET_ACT_GATE) [M/n/y/?] m
+  TC recirculation support (NET_TC_SKB_EXT) [Y/n/?] y
+*
+* Bluetooth subsystem support
+*
+Bluetooth subsystem support (BT) [M/n/y/?] m
+  Bluetooth Classic (BR/EDR) features (BT_BREDR) [Y/n/?] y
+    RFCOMM protocol support (BT_RFCOMM) [M/n/y/?] m
+      RFCOMM TTY support (BT_RFCOMM_TTY) [Y/n/?] y
+    BNEP protocol support (BT_BNEP) [M/n/y/?] m
+      Multicast filter support (BT_BNEP_MC_FILTER) [Y/n/?] y
+      Protocol filter support (BT_BNEP_PROTO_FILTER) [Y/n/?] y
+    CMTP protocol support (BT_CMTP) [M/n/y/?] m
+    HIDP protocol support (BT_HIDP) [M/n/y/?] m
+    Bluetooth High Speed (HS) features (BT_HS) [N/y/?] (NEW) 
+  Bluetooth Low Energy (LE) features (BT_LE) [Y/n/?] y
+    Bluetooth L2CAP Enhanced Credit Flow Control (BT_LE_L2CAP_ECRED) [Y/n/?] y
+    Bluetooth 6LoWPAN support (BT_6LOWPAN) [M/n/?] m
+  Enable LED triggers (BT_LEDS) [Y/n/?] y
+  Enable Microsoft extensions (BT_MSFTEXT) [Y/n/?] y
+  Enable Android Open Source Project extensions (BT_AOSPEXT) [Y/n/?] y
+  Export Bluetooth internals in debugfs (BT_DEBUGFS) [Y/n/?] y
+  Bluetooth self testing support (BT_SELFTEST) [N/y/?] n
+*
+* EISA support
+*
+EISA support (EISA) [N/y/?] (NEW) 
+*
+* Mapping drivers for chip access
+*
+Support non-linear mappings of flash chips (MTD_COMPLEX_MAPPINGS) [Y/?] y
+Flash device in physical memory map (MTD_PHYSMAP) [M/n/?] m
+  Physmap compat support (MTD_PHYSMAP_COMPAT) [N/y/?] n
+  GPIO-assisted Flash Chip Support (MTD_PHYSMAP_GPIO_ADDR) [Y/n/?] y
+CFI Flash device mapped on Arcom SBC-GXx boards (MTD_SBC_GXX) [M/n/?] m
+BIOS flash chip on AMD76x southbridge (MTD_AMD76XROM) [M/n/?] m
+BIOS flash chip on Intel Controller Hub 2/3/4/5 (MTD_ICHXROM) [M/n/?] m
+BIOS flash chip on Intel ESB Controller Hub 2 (MTD_ESB2ROM) [M/n/?] m
+BIOS flash chip on Nvidia CK804 (MTD_CK804XROM) [M/n/?] m
+BIOS flash chip on Intel SCB2 boards (MTD_SCB2_FLASH) [M/n/?] m
+CFI flash device on SnapGear/SecureEdge (MTD_NETtel) [M/n/?] m
+BIOS flash chip on Intel L440GX boards (MTD_L440GX) [M/n/?] m
+PCI MTD driver (MTD_PCI) [M/n/?] m
+PCMCIA MTD driver (MTD_PCMCIA) [M/n/?] m
+  Use PCMCIA MTD drivers for anonymous PCMCIA cards (MTD_PCMCIA_ANONYMOUS) [N/y/?] n
+NOR flash on Intel Vermilion Range Expansion Bus CS0 (MTD_INTEL_VR_NOR) [N/m/?] (NEW) 
+Map driver for platform device RAM (mtd-ram) (MTD_PLATRAM) [M/n/?] m
+*
+* Realtek Ethernet switch family support
+*
+Realtek Ethernet switch family support (NET_DSA_REALTEK) [M/n/?] m
+  Realtek RTL8365MB switch subdriver (NET_DSA_REALTEK_RTL8365MB) [N/m/?] (NEW) 
+  Realtek RTL8366RB switch subdriver (NET_DSA_REALTEK_RTL8366RB) [N/m/?] (NEW) 
+*
+* Network device support
+*
+Network device support (NETDEVICES) [Y/?] y
+  Network core driver support (NET_CORE) [Y/n/?] y
+    Bonding driver support (BONDING) [M/n/?] m
+    Dummy net driver support (DUMMY) [M/n/y/?] m
+    WireGuard secure network tunnel (WIREGUARD) [M/n/y/?] m
+      Debugging checks and verbose messages (WIREGUARD_DEBUG) [N/y/?] n
+    EQL (serial line load balancing) support (EQUALIZER) [M/n/y/?] m
+    Fibre Channel driver support (NET_FC) [Y/n/?] y
+    Intermediate Functional Block support (IFB) [M/n/?] m
+    MAC-VLAN support (MACVLAN) [M/n/y/?] m
+      MAC-VLAN based tap driver (MACVTAP) [M/n/?] m
+    IP-VLAN support (IPVLAN) [M/n/y/?] m
+      IP-VLAN based tap driver (IPVTAP) [M/n/?] m
+    Virtual eXtensible Local Area Network (VXLAN) (VXLAN) [M/n/y/?] m
+    Generic Network Virtualization Encapsulation (GENEVE) [M/n/y/?] m
+    Bare UDP Encapsulation (BAREUDP) [M/n/y/?] m
+    GPRS Tunneling Protocol datapath (GTP-U) (GTP) [M/n/y/?] m
+    Automatic Multicast Tunneling (AMT) (AMT) [M/n/y/?] m
+    IEEE 802.1AE MAC-level encryption (MACsec) (MACSEC) [M/n/y/?] m
+    Network console logging support (NETCONSOLE) [M/n/y/?] m
+      Dynamic reconfiguration of logging targets (NETCONSOLE_DYNAMIC) [Y/n/?] y
+      Set kernel extended message by default (NETCONSOLE_EXTENDED_LOG) [N/y/?] n
+    Virtual Ethernet over NTB Transport (NTB_NETDEV) [M/n/?] m
+    RapidIO Ethernet over messaging driver support (RIONET) [M/n/y/?] m
+      Number of outbound queue entries (RIONET_TX_SIZE) [128] 128
+      Number of inbound queue entries (RIONET_RX_SIZE) [128] 128
+    Universal TUN/TAP device driver support (TUN) [Y/n/m/?] y
+    Support for cross-endian vnet headers on little-endian kernels (TUN_VNET_CROSS_LE) [N/y/?] n
+    Virtual ethernet pair device (VETH) [M/n/y/?] m
+    Virtio network driver (VIRTIO_NET) [Y/n/m/?] y
+    Virtual netlink monitoring device (NLMON) [M/n/y/?] m
+    BPF-programmable network device (NETKIT) [Y/n/?] y
+    Virtual Routing and Forwarding (Lite) (NET_VRF) [M/n/y/?] m
+    Virtual vsock monitoring device (VSOCKMON) [M/n/?] m
+    MHI network driver (MHI_NET) [M/n/?] m
+  FDDI driver support (FDDI) [Y/n/m/?] y
+    Digital DEFTA/DEFEA/DEFPA adapter support (DEFXX) [M/n/y/?] m
+    SysKonnect FDDI PCI support (SKFP) [M/n/y/?] m
+  HIPPI driver support (HIPPI) [N/y/?] n
+  General Instruments Surfboard 1000 (NET_SB1000) [N/m/y/?] (NEW) 
+  Micrel KS8995MA 5-ports 10/100 managed Ethernet switch (MICREL_KS8995MA) [M/n/y/?] m
+  PLIP (parallel port) support (PLIP) [M/n/?] m
+  PPP (point-to-point protocol) support (PPP) [Y/m/?] y
+    PPP BSD-Compress compression (PPP_BSDCOMP) [M/n/y/?] m
+    PPP Deflate compression (PPP_DEFLATE) [M/n/y/?] m
+    PPP filtering (PPP_FILTER) [Y/n/?] y
+    PPP MPPE compression (encryption) (PPP_MPPE) [M/n/y/?] m
+    PPP multilink support (PPP_MULTILINK) [Y/n/?] y
+    PPP over ATM (PPPOATM) [M/n/?] m
+    PPP over Ethernet (PPPOE) [M/n/y/?] m
+      Number of PPPoE hash bits
+        1. 1 bit (2 buckets) (PPPOE_HASH_BITS_1)
+        2. 2 bits (4 buckets) (PPPOE_HASH_BITS_2)
+      > 3. 4 bits (16 buckets) (PPPOE_HASH_BITS_4)
+        4. 8 bits (256 buckets) (PPPOE_HASH_BITS_8)
+      choice[1-4?]: 3
+    PPP over IPv4 (PPTP) (PPTP) [M/n/?] m
+    PPP over L2TP (PPPOL2TP) [M/n/?] m
+    PPP support for async serial ports (PPP_ASYNC) [M/n/y/?] m
+    PPP support for sync tty ports (PPP_SYNC_TTY) [M/n/y/?] m
+  SLIP (serial line) support (SLIP) [M/n/y/?] m
+  CSLIP compressed headers (SLIP_COMPRESSED) [Y/n/?] y
+  Keepalive and linefill (SLIP_SMART) [Y/n/?] y
+  Six bit SLIP encapsulation (SLIP_MODE_SLIP6) [Y/n/?] y
+  Xen network device frontend driver (XEN_NETDEV_FRONTEND) [Y/n/m/?] y
+  Xen backend network device (XEN_NETDEV_BACKEND) [M/n/y/?] m
+  VMware VMXNET3 ethernet driver (VMXNET3) [M/n/y/?] m
+  FUJITSU Extended Socket Network Device driver (FUJITSU_ES) [M/n/y/?] m
+  Networking over USB4 and Thunderbolt cables (USB4_NET) [M/n/?] m
+  Microsoft Hyper-V virtual network driver (HYPERV_NET) [M/n/?] m
+  Simulated networking device (NETDEVSIM) [M/n/?] m
+  Failover driver (NET_FAILOVER) [Y/?] y
+*
+* Serial drivers
+*
+8250/16550 and compatible serial support (SERIAL_8250) [Y/m/?] y
+  Support 8250_core.* kernel options (DEPRECATED) (SERIAL_8250_DEPRECATED_OPTIONS) [N/y/?] n
+  8250/16550 PNP device support (SERIAL_8250_PNP) [Y/n/?] y
+  Support for variants of the 16550A serial port (SERIAL_8250_16550A_VARIANTS) [Y/n/?] y
+  Support for Fintek variants (SERIAL_8250_FINTEK) [Y/n/?] y
+  Console on 8250/16550 and compatible serial port (SERIAL_8250_CONSOLE) [Y/n/?] y
+  DMA support for 16550 compatible UART controllers (SERIAL_8250_DMA) [Y/n/?] y
+8250/16550 PCI device support (SERIAL_8250_PCI) [Y/n/m/?] y
+8250/16550 Exar/Commtech PCI/PCIe device support (SERIAL_8250_EXAR) [M/n/y/?] m
+8250/16550 PCMCIA device support (SERIAL_8250_CS) [M/n/?] m
+MEN MCB UART device support (SERIAL_8250_MEN_MCB) [M/n/?] m
+Maximum number of 8250/16550 serial ports (SERIAL_8250_NR_UARTS) [48] 48
+Number of 8250/16550 serial ports to register at runtime (SERIAL_8250_RUNTIME_UARTS) [32] 32
+Extended 8250/16550 serial driver options (SERIAL_8250_EXTENDED) [Y/n/?] y
+  Support more than 4 legacy serial ports (SERIAL_8250_MANY_PORTS) [Y/n/?] y
+Microchip 8250 based serial port (SERIAL_8250_PCI1XXXX) [M/n/y/?] m
+Support for sharing serial interrupts (SERIAL_8250_SHARE_IRQ) [Y/n/?] y
+Autodetect IRQ on standard ports (unsafe) (SERIAL_8250_DETECT_IRQ) [N/y/?] n
+Support RSA serial ports (SERIAL_8250_RSA) [Y/n/?] y
+DFL bus driver for Altera 16550 UART (SERIAL_8250_DFL) [M/n/?] m
+Support for Synopsys DesignWare 8250 quirks (SERIAL_8250_DW) [M/n/y/?] m
+Ralink RT288x/RT305x/RT3662/RT3883 serial port support (SERIAL_8250_RT288X) [Y/n/?] y
+Support for serial ports on Intel LPSS platforms (SERIAL_8250_LPSS) [M/n/y/?] m
+Support for serial ports on Intel MID platforms (SERIAL_8250_MID) [Y/n/m/?] y
+Support for Pericom and Acces I/O serial ports (SERIAL_8250_PERICOM) [M/n/y/?] m
+*
+* Non-8250 serial port support
+*
+Serial console over KGDB NMI debugger port (SERIAL_KGDB_NMI) [Y/n/?] y
+MAX3100 support (SERIAL_MAX3100) [M/n/y/?] m
+MAX310X support (SERIAL_MAX310X) [Y/n/m/?] y
+Xilinx uartlite serial port support (SERIAL_UARTLITE) [M/n/y/?] m
+  Maximum number of uartlite serial ports (SERIAL_UARTLITE_NR_UARTS) [1] 1
+Digi International NEO and Classic PCI Support (SERIAL_JSM) [M/n/y/?] m
+Lantiq serial driver (SERIAL_LANTIQ) [M/n/y/?] m
+SCCNXP serial port support (SERIAL_SCCNXP) [Y/n/m/?] y
+  Console on SCCNXP serial port (SERIAL_SCCNXP_CONSOLE) [Y/n/?] y
+SC16IS7xx serial support (SERIAL_SC16IS7XX) [M/n/y/?] m
+  SC16IS7xx for I2C interface (SERIAL_SC16IS7XX_I2C) [Y/n/?] (NEW) 
+  SC16IS7xx for spi interface (SERIAL_SC16IS7XX_SPI) [N/y/?] (NEW) 
+Altera JTAG UART support (SERIAL_ALTERA_JTAGUART) [M/n/y/?] m
+Altera UART support (SERIAL_ALTERA_UART) [M/n/y/?] m
+  Maximum number of Altera UART ports (SERIAL_ALTERA_UART_MAXPORTS) [4] 4
+  Default baudrate for Altera UART ports (SERIAL_ALTERA_UART_BAUDRATE) [115200] 115200
+ARC UART driver support (SERIAL_ARC) [M/n/y/?] m
+  Number of ARC UART ports (SERIAL_ARC_NR_PORTS) [1] 1
+Comtrol RocketPort EXPRESS/INFINITY support (SERIAL_RP2) [M/n/y/?] m
+  Maximum number of RocketPort EXPRESS/INFINITY ports (SERIAL_RP2_NR_UARTS) [32] 32
+Freescale lpuart serial port support (SERIAL_FSL_LPUART) [M/n/y/?] m
+Freescale LINFlexD UART serial port support (SERIAL_FSL_LINFLEXUART) [M/n/y/?] m
+MEN 16z135 Support (SERIAL_MEN_Z135) [M/n/?] m
+Support for Spreadtrum serial (SERIAL_SPRD) [M/n/y/?] m
+*
+* Graphics support
+*
+Parallel port LCD/Keypad Panel support (OLD OPTION) (PANEL) [M/n/?] m
+Laptop Hybrid Graphics - GPU switching support (VGA_SWITCHEROO) [Y/n/?] y
+Enable backtrace history for lock contention (DRM_DEBUG_MODESET_LOCK) [N/y/?] n
+Enable legacy fbdev support for your modesetting driver (DRM_FBDEV_EMULATION) [Y/n/?] y
+  Overallocation of the fbdev buffer (DRM_FBDEV_OVERALLOC) [100] 100
+  Shamelessly allow leaking of fbdev physical address (DANGEROUS) (DRM_FBDEV_LEAK_PHYS_SMEM) [N/y/?] n
+Allow to specify an EDID data set instead of probing for it (DRM_LOAD_EDID_FIRMWARE) [Y/n/?] y
+DRM DP AUX Interface (DRM_DP_AUX_CHARDEV) [N/y/?] (NEW) 
+Enable DisplayPort CEC-Tunneling-over-AUX HDMI support (DRM_DP_CEC) [N/y/?] (NEW) 
+ATI Radeon (DRM_RADEON) [M/n/y/?] m
+  Always enable userptr support (DRM_RADEON_USERPTR) [N/y/?] n
+AMD GPU (DRM_AMDGPU) [M/n/y/?] m
+  Enable amdgpu support for SI parts (DRM_AMDGPU_SI) [Y/n/?] y
+  Enable amdgpu support for CIK parts (DRM_AMDGPU_CIK) [Y/n/?] y
+  Always enable userptr write support (DRM_AMDGPU_USERPTR) [Y/?] y
+  Force the compiler to throw an error instead of a warning when compiling (DRM_AMDGPU_WERROR) [N/y/?] n
+  HSA kernel driver for AMD GPU devices (HSA_AMD) [Y/n/?] y
+    Enable HMM-based shared virtual memory manager (HSA_AMD_SVM) [Y/n/?] y
+    HSA kernel driver support for peer-to-peer for AMD GPU devices (HSA_AMD_P2P) [Y/n/?] y
+Nouveau (NVIDIA) cards (DRM_NOUVEAU) [M/n/y/?] m
+  Maximum debug level (NOUVEAU_DEBUG) [5] 5
+  Default debug level (NOUVEAU_DEBUG_DEFAULT) [3] 3
+  Enable additional MMU debugging (NOUVEAU_DEBUG_MMU) [N/y/?] n
+  Enable additional push buffer debugging (NOUVEAU_DEBUG_PUSH) [N/y/?] n
+  Support for backlight control (DRM_NOUVEAU_BACKLIGHT) [Y/n/?] y
+  (EXPERIMENTAL) Enable SVM (Shared Virtual Memory) support (DRM_NOUVEAU_SVM) [N/y/?] n
+  Use GSP firmware for Turing/Ampere (needs firmware installed) (DRM_NOUVEAU_GSP_DEFAULT) [N/y/?] n
+Intel 8xx/9xx/G3x/G4x/HD Graphics (DRM_I915) [M/n/y/?] m
+  Force probe i915 for selected Intel hardware IDs (DRM_I915_FORCE_PROBE) [] 
+  Enable capturing GPU state following a hang (DRM_I915_CAPTURE_ERROR) [Y/n/?] y
+    Compress GPU error state (DRM_I915_COMPRESS_ERROR) [Y/n/?] y
+  Always enable userptr support (DRM_I915_USERPTR) [Y/n/?] y
+  Enable KVM host support Intel GVT-g graphics virtualization (DRM_I915_GVT_KVMGT) [M/n/?] m
+  Enable Intel PXP support (DRM_I915_PXP) [Y/n/?] y
+Intel Xe Graphics (DRM_XE) [M/n/?] m
+  Enable display support (DRM_XE_DISPLAY) [Y/n/?] y
+  Force probe xe for selected Intel hardware IDs (DRM_XE_FORCE_PROBE) [] 
+  *
+  * drm/Xe Debugging
+  *
+  Force GCC to throw an error instead of a warning when compiling (DRM_XE_WERROR) [N/y/?] n
+  Enable additional driver debugging (DRM_XE_DEBUG) [N/y/?] n
+  Enable extra VM debugging info (DRM_XE_DEBUG_VM) [N/y/?] n
+  Enable extra SR-IOV debugging (DRM_XE_DEBUG_SRIOV) [N/y/?] n
+  Enable passing SYS/VRAM addresses to user space (DRM_XE_DEBUG_MEM) [N/y/?] n
+  Enable simple error capture to dmesg on job timeout (DRM_XE_SIMPLE_ERROR_CAPTURE) [N/y/?] (NEW) 
+  Enable larger guc log buffer (DRM_XE_LARGE_GUC_BUFFER) [N/y/?] n
+  Inject userptr invalidation -EINVAL errors (DRM_XE_USERPTR_INVAL_INJECT) [N/y/?] n
+Virtual GEM provider (DRM_VGEM) [M/n/y/?] m
+Virtual KMS (EXPERIMENTAL) (DRM_VKMS) [M/n/y/?] m
+DRM driver for VMware Virtual GPU (DRM_VMWGFX) [M/n/y/?] m
+  Enable mksGuestStats instrumentation of vmwgfx by default (DRM_VMWGFX_MKSSTATS) [N/y/?] n
+Intel GMA500/600/3600/3650 KMS Framebuffer (DRM_GMA500) [M/n/y/?] m
+DisplayLink (DRM_UDL) [M/n/y/?] m
+AST server chips (DRM_AST) [M/n/y/?] m
+Matrox G200 (DRM_MGAG200) [M/n/y/?] m
+QXL virtual GPU (DRM_QXL) [M/n/y/?] m
+Virtio GPU driver (DRM_VIRTIO_GPU) [M/n/y/?] m
+  Virtio GPU driver modesetting support (DRM_VIRTIO_GPU_KMS) [Y/n/?] y
+ETNAVIV (DRM support for Vivante GPU IP cores) (DRM_ETNAVIV) [N/m/y/?] n
+DRM Support for bochs dispi vga interface (qemu stdvga) (DRM_BOCHS) [M/n/y/?] m
+Cirrus driver for QEMU emulated device (DRM_CIRRUS_QEMU) [M/n/y/?] m
+GM12U320 driver for USB projectors (DRM_GM12U320) [M/n/y/?] m
+DRM support for MIPI DBI compatible panels (DRM_PANEL_MIPI_DBI) [M/n/y/?] m
+Simple framebuffer driver (DRM_SIMPLEDRM) [Y/n/m/?] y
+DRM support for HX8357D display panels (TINYDRM_HX8357D) [M/n/y/?] m
+DRM support for ILI9163 display panels (TINYDRM_ILI9163) [M/n/y/?] m
+DRM support for ILI9225 display panels (TINYDRM_ILI9225) [M/n/y/?] m
+DRM support for ILI9341 display panels (TINYDRM_ILI9341) [M/n/y/?] m
+DRM support for ILI9486 display panels (TINYDRM_ILI9486) [M/n/y/?] m
+DRM support for MI0283QT (TINYDRM_MI0283QT) [M/n/y/?] m
+DRM support for Pervasive Displays RePaper panels (V231) (TINYDRM_REPAPER) [M/n/y/?] m
+DRM support for Sitronix ST7586 display panels (TINYDRM_ST7586) [M/n/y/?] m
+DRM support for Sitronix ST7715R/ST7735R display panels (TINYDRM_ST7735R) [M/n/y/?] m
+Para-virtualized frontend driver for Xen guest OS (DRM_XEN_FRONTEND) [M/n/y/?] m
+Virtual Box Graphics Card (DRM_VBOXVIDEO) [M/n/y/?] m
+GUD USB Display (DRM_GUD) [M/n/y/?] m
+DRM support for Solomon SSD13xx OLED displays (DRM_SSD130X) [M/n/y/?] m
+  DRM support for Solomon SSD13xx OLED displays (I2C bus) (DRM_SSD130X_I2C) [M/n/?] m
+  DRM support for Solomon SSD13xx OLED displays (SPI bus) (DRM_SSD130X_SPI) [M/n/?] m
+DRM Support for Hyper-V synthetic video device (DRM_HYPERV) [M/n/?] m
+*
+* CODEC drivers
+*
+Build generic ASoC AC97 CODEC driver (SND_SOC_AC97_CODEC) [M/n/?] m
+Analog Devices ADAU1372 CODEC (I2C) (SND_SOC_ADAU1372_I2C) [M/n/?] m
+Analog Devices ADAU1372 CODEC (SPI) (SND_SOC_ADAU1372_SPI) [M/n/?] m
+Analog Devices ADAU1701 CODEC (SND_SOC_ADAU1701) [M/n/?] m
+Analog Devices AU1761 CODEC - I2C (SND_SOC_ADAU1761_I2C) [M/n/?] m
+Analog Devices AU1761 CODEC - SPI (SND_SOC_ADAU1761_SPI) [M/n/?] m
+Analog Devices ADAU7002 Stereo PDM-to-I2S/TDM Converter (SND_SOC_ADAU7002) [M/?] m
+Analog Devices ADAU7118 8 Channel PDM-to-I2S/TDM Converter - HW Mode (SND_SOC_ADAU7118_HW) [M/n/?] m
+Analog Devices ADAU7118 8 Channel PDM-to-I2S/TDM Converter - I2C (SND_SOC_ADAU7118_I2C) [M/n/?] m
+AKM AK4104 CODEC (SND_SOC_AK4104) [M/n/?] m
+AKM AK4118 CODEC (SND_SOC_AK4118) [M/n/?] m
+AKM AK4375 CODEC (SND_SOC_AK4375) [M/n/?] m
+AKM AK4458 CODEC (SND_SOC_AK4458) [M/n/?] m
+AKM AK4554 CODEC (SND_SOC_AK4554) [M/n/?] m
+AKM AK4613 CODEC (SND_SOC_AK4613) [M/n/?] m
+AKM AK4642 CODEC (SND_SOC_AK4642) [M/n/?] m
+AKM AK5638 CODEC (SND_SOC_AK5386) [M/n/?] m
+AKM AK5558 CODEC (SND_SOC_AK5558) [M/n/?] m
+Realtek ALC5623 CODEC (SND_SOC_ALC5623) [M/n/?] m
+Audio IIO Auxiliary device (SND_SOC_AUDIO_IIO_AUX) [M/n/?] m
+Awinic AW8738 Audio Amplifier (SND_SOC_AW8738) [M/n/?] m
+Soc Audio for awinic aw88395 (SND_SOC_AW88395) [M/n/?] m
+Soc Audio for awinic aw88261 (SND_SOC_AW88261) [M/n/?] m
+Soc Audio for awinic aw87390 (SND_SOC_AW87390) [M/n/?] m
+Soc Audio for awinic aw88399 (SND_SOC_AW88399) [M/n/?] m
+ROHM BD28623 CODEC (SND_SOC_BD28623) [M/n/?] m
+Dummy BT SCO codec driver (SND_SOC_BT_SCO) [M/n/?] m
+Google Chameleon v3 codec driver (SND_SOC_CHV3_CODEC) [M/n/?] m
+codec driver for ChromeOS EC (SND_SOC_CROS_EC_CODEC) [M/?] m
+Cirrus Logic CS35L32 CODEC (SND_SOC_CS35L32) [M/n/?] m
+Cirrus Logic CS35L33 CODEC (SND_SOC_CS35L33) [M/n/?] m
+Cirrus Logic CS35L34 CODEC (SND_SOC_CS35L34) [M/n/?] m
+Cirrus Logic CS35L35 CODEC (SND_SOC_CS35L35) [M/n/?] m
+Cirrus Logic CS35L36 CODEC (SND_SOC_CS35L36) [M/n/?] m
+Cirrus Logic CS35L41 CODEC (SPI) (SND_SOC_CS35L41_SPI) [M/?] m
+Cirrus Logic CS35L41 CODEC (I2C) (SND_SOC_CS35L41_I2C) [M/?] m
+Cirrus Logic CS35L45 CODEC (SPI) (SND_SOC_CS35L45_SPI) [M/n/?] m
+Cirrus Logic CS35L45 CODEC (I2C) (SND_SOC_CS35L45_I2C) [M/n/?] m
+Cirrus Logic CS35L56 CODEC (I2C) (SND_SOC_CS35L56_I2C) [M/n/?] m
+Cirrus Logic CS35L56 CODEC (SPI) (SND_SOC_CS35L56_SPI) [M/n/?] m
+Cirrus Logic CS35L56 CODEC (SDW) (SND_SOC_CS35L56_SDW) [M/?] m
+Cirrus Logic CS42L42 CODEC (I2C) (SND_SOC_CS42L42) [M/?] m
+Cirrus Logic CS42L42 CODEC on Soundwire (SND_SOC_CS42L42_SDW) [M/?] m
+Cirrus Logic CS42L43 CODEC (SND_SOC_CS42L43) [M/?] m
+  Cirrus Logic CS42L43 CODEC (SoundWire) (SND_SOC_CS42L43_SDW) [M/?] m
+Cirrus Logic CS42L51 CODEC (I2C) (SND_SOC_CS42L51_I2C) [M/n/?] m
+Cirrus Logic CS42L52 CODEC (SND_SOC_CS42L52) [M/n/?] m
+Cirrus Logic CS42L56 CODEC (SND_SOC_CS42L56) [M/n/?] m
+Cirrus Logic CS42L73 CODEC (SND_SOC_CS42L73) [M/n/?] m
+Cirrus Logic CS42L83 CODEC (SND_SOC_CS42L83) [M/n/?] m
+Cirrus Logic CS4234 CODEC (SND_SOC_CS4234) [M/n/?] m
+Cirrus Logic CS4265 CODEC (SND_SOC_CS4265) [M/n/?] m
+Cirrus Logic CS4270 CODEC (SND_SOC_CS4270) [M/n/?] m
+Cirrus Logic CS4271 CODEC (I2C) (SND_SOC_CS4271_I2C) [M/n/?] m
+Cirrus Logic CS4271 CODEC (SPI) (SND_SOC_CS4271_SPI) [M/n/?] m
+Cirrus Logic CS42448/CS42888 CODEC (I2C) (SND_SOC_CS42XX8_I2C) [M/n/?] m
+Cirrus Logic CS43130 CODEC (SND_SOC_CS43130) [M/n/?] m
+Cirrus Logic CS4341 CODEC (SND_SOC_CS4341) [M/n/?] m
+Cirrus Logic CS4349 CODEC (SND_SOC_CS4349) [M/n/?] m
+Cirrus Logic CS53L30 CODEC (SND_SOC_CS53L30) [M/n/?] m
+Conexant CX2072X CODEC (SND_SOC_CX2072X) [M/?] m
+Dialog DA7213 CODEC (SND_SOC_DA7213) [M/?] m
+Generic Digital Microphone CODEC (SND_SOC_DMIC) [M/?] m
+Everest Semi ES7134 CODEC (SND_SOC_ES7134) [M/n/?] m
+Everest Semi ES7241 CODEC (SND_SOC_ES7241) [M/n/?] m
+Everest Semi ES8316 CODEC (SND_SOC_ES8316) [M/?] m
+Everest Semi ES8326 CODEC (SND_SOC_ES8326) [M/?] m
+Everest Semi ES8328 CODEC (I2C) (SND_SOC_ES8328_I2C) [M/n/?] m
+Everest Semi ES8328 CODEC (SPI) (SND_SOC_ES8328_SPI) [M/n/?] m
+GTM601 UMTS modem audio codec (SND_SOC_GTM601) [M/n/?] m
+HD-Audio codec driver (SND_SOC_HDA) [M/?] m
+ICS43423 and compatible i2s microphones (SND_SOC_ICS43432) [M/n/?] m
+Renesas IDT821034 quad PCM codec (SND_SOC_IDT821034) [M/n/?] m
+Inno codec driver for RK3036 SoC (SND_SOC_INNO_RK3036) [N/m/?] (NEW) 
+Maxim MAX98088/9 Low-Power, Stereo Audio Codec (SND_SOC_MAX98088) [M/n/?] m
+Maxim MAX98090 CODEC (SND_SOC_MAX98090) [M/?] m
+Maxim MAX98357A CODEC (SND_SOC_MAX98357A) [M/?] m
+Maxim MAX98504 speaker amplifier (SND_SOC_MAX98504) [M/n/?] m
+Maxim MAX9867 CODEC (SND_SOC_MAX9867) [M/n/?] m
+Maxim Integrated MAX98927 Speaker Amplifier (SND_SOC_MAX98927) [M/?] m
+Maxim Integrated MAX98520 Speaker Amplifier (SND_SOC_MAX98520) [M/n/?] m
+Analog Devices MAX98363 Soundwire Speaker Amplifier (SND_SOC_MAX98363) [M/?] m
+Maxim Integrated MAX98373 Speaker Amplifier (SND_SOC_MAX98373_I2C) [M/?] m
+Maxim Integrated MAX98373 Speaker Amplifier - SDW (SND_SOC_MAX98373_SDW) [M/?] m
+Analog Devices MAX98388 Speaker Amplifier (SND_SOC_MAX98388) [M/?] m
+Maxim Integrated MAX98390 Speaker Amplifier (SND_SOC_MAX98390) [M/?] m
+Analog Devices MAX98396 Speaker Amplifier (SND_SOC_MAX98396) [M/n/?] m
+Maxim MAX9860 Mono Audio Voice Codec (SND_SOC_MAX9860) [M/n/?] m
+Qualcomm MSM8916 WCD Analog Codec (SND_SOC_MSM8916_WCD_ANALOG) [M/n/?] m
+Qualcomm MSM8916 WCD DIGITAL Codec (SND_SOC_MSM8916_WCD_DIGITAL) [M/n/?] m
+Texas Instruments PCM1681 CODEC (SND_SOC_PCM1681) [M/n/?] m
+Texas Instruments PCM1789 CODEC (I2C) (SND_SOC_PCM1789_I2C) [M/n/?] m
+Texas Instruments PCM179X CODEC (I2C) (SND_SOC_PCM179X_I2C) [M/n/?] m
+Texas Instruments PCM179X CODEC (SPI) (SND_SOC_PCM179X_SPI) [M/n/?] m
+Texas Instruments PCM186x CODECs - I2C (SND_SOC_PCM186X_I2C) [M/n/?] m
+Texas Instruments PCM186x CODECs - SPI (SND_SOC_PCM186X_SPI) [M/n/?] m
+Texas Instruments PCM3060 CODEC - I2C (SND_SOC_PCM3060_I2C) [M/n/?] m
+Texas Instruments PCM3060 CODEC - SPI (SND_SOC_PCM3060_SPI) [M/n/?] m
+Texas Instruments PCM3168A CODEC - I2C (SND_SOC_PCM3168A_I2C) [M/n/?] m
+Texas Instruments PCM3168A CODEC - SPI (SND_SOC_PCM3168A_SPI) [M/n/?] m
+Texas Instruments PCM5102A CODEC (SND_SOC_PCM5102A) [M/n/?] m
+Texas Instruments PCM512x CODECs - I2C (SND_SOC_PCM512x_I2C) [M/?] m
+Texas Instruments PCM512x CODECs - SPI (SND_SOC_PCM512x_SPI) [M/n/?] m
+Infineon PEB2466 quad PCM codec (SND_SOC_PEB2466) [M/n/?] m
+Rockchip RK3328 audio CODEC (SND_SOC_RK3328) [N/m/?] (NEW) 
+Realtek RT1017 SDCA Codec - SDW (SND_SOC_RT1017_SDCA_SDW) [M/n/?] m
+Realtek RT1308 Codec - SDW (SND_SOC_RT1308_SDW) [M/?] m
+Realtek RT1316 Codec - SDW (SND_SOC_RT1316_SDW) [M/?] m
+Realtek RT1318 Codec - SDW (SND_SOC_RT1318_SDW) [M/?] m
+Realtek RT5616 CODEC (SND_SOC_RT5616) [M/n/?] m
+Realtek ALC5631/RT5631 CODEC (SND_SOC_RT5631) [M/n/?] m
+Realtek RT5640/RT5639 Codec (SND_SOC_RT5640) [M/?] m
+Realtek RT5658/RT5659 Codec (SND_SOC_RT5659) [M/n/?] m
+Realtek RT5682 Codec - SDW (SND_SOC_RT5682_SDW) [M/?] m
+Realtek RT700 Codec - SDW (SND_SOC_RT700_SDW) [M/?] m
+Realtek RT711 Codec - SDW (SND_SOC_RT711_SDW) [M/?] m
+Realtek RT711 SDCA Codec - SDW (SND_SOC_RT711_SDCA_SDW) [M/?] m
+Realtek RT712 SDCA Codec - SDW (SND_SOC_RT712_SDCA_SDW) [M/?] m
+Realtek RT712 SDCA DMIC Codec - SDW (SND_SOC_RT712_SDCA_DMIC_SDW) [M/?] m
+Realtek RT722 SDCA Codec - SDW (SND_SOC_RT722_SDCA_SDW) [M/?] m
+Realtek RT715 Codec - SDW (SND_SOC_RT715_SDW) [M/?] m
+Realtek RT715 SDCA Codec - SDW (SND_SOC_RT715_SDCA_SDW) [M/?] m
+Richtek RT9120 Stereo Class-D Amplifier (SND_SOC_RT9120) [M/n/?] m
+Richtek RTQ9128 45W Digital Input Amplifier (SND_SOC_RTQ9128) [M/n/?] m
+SoundWire mockup codec (SND_SOC_SDW_MOCKUP) [M/n/?] m
+Freescale SGTL5000 CODEC (SND_SOC_SGTL5000) [M/n/?] m
+Simple Audio Amplifier (SND_SOC_SIMPLE_AMPLIFIER) [M/n/?] m
+Simple Audio Mux (SND_SOC_SIMPLE_MUX) [M/n/?] m
+Iron Device SMA1303 Audio Amplifier (SND_SOC_SMA1303) [M/n/?] m
+S/PDIF CODEC (SND_SOC_SPDIF) [M/n/?] m
+Texas Instruments SRC4XXX DIR/DIT and SRC codecs (SND_SOC_SRC4XXX_I2C) [M/n/?] m
+Analog Devices SSM2305 Class-D Amplifier (SND_SOC_SSM2305) [M/n/?] m
+Analog Devices SSM2518 Class-D Amplifier (SND_SOC_SSM2518) [M/n/?] m
+Analog Devices SSM2602 CODEC - SPI (SND_SOC_SSM2602_SPI) [M/n/?] m
+Analog Devices SSM2602 CODEC - I2C (SND_SOC_SSM2602_I2C) [M/n/?] m
+Analog Devices ssm4567 amplifier driver support (SND_SOC_SSM4567) [M/?] m
+STA326, STA328 and STA329 speaker amplifier (SND_SOC_STA32X) [M/n/?] m
+STA350 speaker amplifier (SND_SOC_STA350) [M/n/?] m
+codec Audio support for STI SAS codec (SND_SOC_STI_SAS) [M/n/?] m
+Texas Instruments TAS2552 Mono Audio amplifier (SND_SOC_TAS2552) [M/n/?] m
+Texas Instruments TAS2562 Mono Audio amplifier (SND_SOC_TAS2562) [M/n/?] m
+Texas Instruments TAS2764 Mono Audio amplifier (SND_SOC_TAS2764) [M/n/?] m
+Texas Instruments TAS2770 speaker amplifier (SND_SOC_TAS2770) [M/n/?] m
+Texas Instruments TAS2780 Mono Audio amplifier (SND_SOC_TAS2780) [M/n/?] m
+Texas Instruments TAS2781 speaker amplifier based on I2C (SND_SOC_TAS2781_I2C) [M/n/?] m
+Texas Instruments TAS5086 speaker amplifier (SND_SOC_TAS5086) [M/n/?] m
+Texas Instruments TAS571x power amplifiers (SND_SOC_TAS571X) [M/n/?] m
+Texas Instruments TAS5720 Mono Audio amplifier (SND_SOC_TAS5720) [M/n/?] m
+Texas Instruments TAS5805M speaker amplifier (SND_SOC_TAS5805M) [M/n/?] m
+Texas Instruments TAS6424 Quad-Channel Audio amplifier (SND_SOC_TAS6424) [M/n/?] m
+ST TDA7419 audio processor (SND_SOC_TDA7419) [M/n/?] m
+NXP Semiconductors TFA9879 amplifier (SND_SOC_TFA9879) [M/n/?] m
+NXP/Goodix TFA989X (TFA1) amplifiers (SND_SOC_TFA989X) [M/n/?] m
+Texas Instruments TLV320ADC3001/3101 audio ADC (SND_SOC_TLV320ADC3XXX) [M/n/?] m
+Texas Instruments TLV320AIC23 audio CODEC - I2C (SND_SOC_TLV320AIC23_I2C) [M/n/?] m
+Texas Instruments TLV320AIC23 audio CODEC - SPI (SND_SOC_TLV320AIC23_SPI) [M/n/?] m
+Texas Instruments TLV320AIC31xx CODECs (SND_SOC_TLV320AIC31XX) [M/n/?] m
+Texas Instruments TLV320AIC32x4 audio CODECs - I2C (SND_SOC_TLV320AIC32X4_I2C) [M/n/?] m
+Texas Instruments TLV320AIC32x4 audio CODECs - SPI (SND_SOC_TLV320AIC32X4_SPI) [M/n/?] m
+Texas Instruments TLV320AIC3x audio CODECs - I2C (SND_SOC_TLV320AIC3X_I2C) [M/n/?] m
+Texas Instruments TLV320AIC3x audio CODECs - SPI (SND_SOC_TLV320AIC3X_SPI) [M/n/?] m
+Texas Instruments TLV320ADCX140 CODEC family (SND_SOC_TLV320ADCX140) [M/n/?] m
+TI Headset/Mic detect and keypress chip (SND_SOC_TS3A227E) [M/?] m
+Tempo Semiconductor TSCS42xx CODEC (SND_SOC_TSCS42XX) [M/n/?] m
+Tempo Semiconductor TSCS454 CODEC (SND_SOC_TSCS454) [M/n/?] m
+NXP UDA1334 DAC (SND_SOC_UDA1334) [M/n/?] m
+WCD9335 Codec (SND_SOC_WCD9335) [M/n/?] m
+WCD9340/WCD9341 Codec (SND_SOC_WCD934X) [M/n/?] m
+WCD9380/WCD9385 Codec - SDW (SND_SOC_WCD938X_SDW) [M/n/?] m
+Wolfson Microelectronics WM8510 CODEC (SND_SOC_WM8510) [M/n/?] m
+Wolfson Microelectronics WM8523 DAC (SND_SOC_WM8523) [M/n/?] m
+Wolfson Microelectronics WM8524 DAC (SND_SOC_WM8524) [M/n/?] m
+Wolfson Microelectronics WM8580 and WM8581 CODECs (SND_SOC_WM8580) [M/n/?] m
+Wolfson Microelectronics WM8711 CODEC (SND_SOC_WM8711) [M/n/?] m
+Wolfson Microelectronics WM8728 DAC (SND_SOC_WM8728) [M/n/?] m
+Wolfson Microelectronics WM8731 CODEC with I2C (SND_SOC_WM8731_I2C) [M/n/?] m
+Wolfson Microelectronics WM8731 CODEC with SPI (SND_SOC_WM8731_SPI) [M/n/?] m
+Wolfson Microelectronics WM8737 ADC (SND_SOC_WM8737) [M/n/?] m
+Wolfson Microelectronics WM8741 DAC (SND_SOC_WM8741) [M/n/?] m
+Wolfson Microelectronics WM8750 CODEC (SND_SOC_WM8750) [M/n/?] m
+Wolfson Microelectronics WM8753 CODEC (SND_SOC_WM8753) [M/n/?] m
+Wolfson Microelectronics WM8770 CODEC (SND_SOC_WM8770) [M/n/?] m
+Wolfson Microelectronics WM8776 CODEC (SND_SOC_WM8776) [M/n/?] m
+Wolfson Microelectronics WM8782 ADC (SND_SOC_WM8782) [M/n/?] m
+Wolfson Microelectronics WM8804 S/PDIF transceiver I2C (SND_SOC_WM8804_I2C) [M/?] m
+Wolfson Microelectronics WM8804 S/PDIF transceiver SPI (SND_SOC_WM8804_SPI) [M/n/?] m
+Wolfson Microelectronics WM8903 CODEC (SND_SOC_WM8903) [M/n/?] m
+Wolfson Microelectronics WM8904 CODEC (SND_SOC_WM8904) [M/n/?] m
+Wolfson Microelectronics WM8940 codec (SND_SOC_WM8940) [M/n/?] m
+Wolfson Microelectronics WM8960 CODEC (SND_SOC_WM8960) [M/n/?] m
+Wolfson Microelectronics WM8961 CODEC (SND_SOC_WM8961) [M/n/?] m
+Wolfson Microelectronics WM8962 CODEC (SND_SOC_WM8962) [M/n/?] m
+Wolfson Microelectronics WM8974 codec (SND_SOC_WM8974) [M/n/?] m
+Wolfson Microelectronics WM8978 codec (SND_SOC_WM8978) [M/n/?] m
+Wolfson Microelectronics WM8985 and WM8758 codec driver (SND_SOC_WM8985) [M/n/?] m
+WSA881X Codec (SND_SOC_WSA881X) [M/n/?] m
+WSA883X Codec (SND_SOC_WSA883X) [M/n/?] m
+WSA884X Codec (SND_SOC_WSA884X) [M/n/?] m
+Microsemi ZL38060 Connected Home Audio Processor (SND_SOC_ZL38060) [M/n/?] m
+Maxim MAX9759 speaker Amplifier (SND_SOC_MAX9759) [M/n/?] m
+MediaTek MT6351 Codec (SND_SOC_MT6351) [M/n/?] m
+MediaTek MT6358 Codec (SND_SOC_MT6358) [M/n/?] m
+Mediatek MT6660 Speaker Amplifier (SND_SOC_MT6660) [M/n/?] m
+Nuvoton Technology Corporation NAU8315 CODEC (SND_SOC_NAU8315) [M/?] m
+Nuvoton Technology Corporation NAU85L40 CODEC (SND_SOC_NAU8540) [M/n/?] m
+Nuvoton Technology Corporation NAU88C10 CODEC (SND_SOC_NAU8810) [M/n/?] m
+Nuvoton Technology Corporation NAU88L21 CODEC (SND_SOC_NAU8821) [M/?] m
+Nuvoton Technology Corporation NAU88C22 CODEC (SND_SOC_NAU8822) [M/n/?] m
+Nuvoton Technology Corporation NAU88L24 CODEC (SND_SOC_NAU8824) [M/?] m
+Texas Instruments TPA6130A2 headphone amplifier (SND_SOC_TPA6130A2) [M/n/?] m
+Qualcomm WSA Macro in LPASS(Low Power Audio SubSystem) (SND_SOC_LPASS_WSA_MACRO) [M/n/?] m
+Qualcomm VA Macro in LPASS(Low Power Audio SubSystem) (SND_SOC_LPASS_VA_MACRO) [M/n/?] m
+Qualcomm RX Macro in LPASS(Low Power Audio SubSystem) (SND_SOC_LPASS_RX_MACRO) [M/n/?] m
+Qualcomm TX Macro in LPASS(Low Power Audio SubSystem) (SND_SOC_LPASS_TX_MACRO) [M/n/?] m
+*
+* Sony MemoryStick card support
+*
+Sony MemoryStick card support (MEMSTICK) [M/n/y/?] m
+  MemoryStick debugging (MEMSTICK_DEBUG) [N/y/?] n
+  *
+  * MemoryStick drivers
+  *
+  Allow unsafe resume (DANGEROUS) (MEMSTICK_UNSAFE_RESUME) [N/y/?] n
+  MemoryStick Pro block device driver (MSPRO_BLOCK) [M/n/?] m
+  MemoryStick Standard device driver (MS_BLOCK) [M/n/?] m
+  *
+  * MemoryStick Host Controller Drivers
+  *
+  TI Flash Media MemoryStick Interface support  (MEMSTICK_TIFM_MS) [M/n/?] m
+  JMicron JMB38X MemoryStick interface support (MEMSTICK_JMICRON_38X) [M/n/?] m
+  Ricoh R5C592 MemoryStick interface support (MEMSTICK_R592) [M/n/?] m
+  Realtek PCI-E Memstick Card Interface Driver (MEMSTICK_REALTEK_PCI) [N/m/?] (NEW) 
+  Realtek USB Memstick Card Interface Driver (MEMSTICK_REALTEK_USB) [M/n/?] m
+*
+* LED Trigger support
+*
+LED Trigger support (LEDS_TRIGGERS) [Y/?] y
+  LED Timer Trigger (LEDS_TRIGGER_TIMER) [M/n/y/?] m
+  LED One-shot Trigger (LEDS_TRIGGER_ONESHOT) [M/n/y/?] m
+  LED Disk Trigger (LEDS_TRIGGER_DISK) [Y/n/?] y
+  LED MTD (NAND/NOR) Trigger (LEDS_TRIGGER_MTD) [Y/n/?] y
+  LED Heartbeat Trigger (LEDS_TRIGGER_HEARTBEAT) [M/n/y/?] m
+  LED backlight Trigger (LEDS_TRIGGER_BACKLIGHT) [M/n/y/?] m
+  LED CPU Trigger (LEDS_TRIGGER_CPU) [Y/n/?] y
+  LED activity Trigger (LEDS_TRIGGER_ACTIVITY) [M/n/y/?] m
+  LED GPIO Trigger (LEDS_TRIGGER_GPIO) [M/n/y/?] m
+  LED Default ON Trigger (LEDS_TRIGGER_DEFAULT_ON) [M/n/y/?] m
+  *
+  * iptables trigger is under Netfilter config (LED target)
+  *
+  LED Transient Trigger (LEDS_TRIGGER_TRANSIENT) [M/n/y/?] m
+  LED Camera Flash/Torch Trigger (LEDS_TRIGGER_CAMERA) [M/n/y/?] m
+  LED Panic Trigger (LEDS_TRIGGER_PANIC) [Y/n/?] y
+  LED Netdev Trigger (LEDS_TRIGGER_NETDEV) [M/n/y/?] m
+  LED Pattern Trigger (LEDS_TRIGGER_PATTERN) [M/n/y/?] m
+  Audio Mute LED Trigger (LEDS_TRIGGER_AUDIO) [M/y/?] (NEW) 
+  LED Trigger for TTY devices (LEDS_TRIGGER_TTY) [M/n/y/?] m
+*
+* Userspace I/O drivers
+*
+Userspace I/O drivers (UIO) [M/y/?] m
+  generic Hilscher CIF Card driver (UIO_CIF) [M/n/?] m
+  Userspace I/O platform driver with generic IRQ handling (UIO_PDRV_GENIRQ) [M/n/?] m
+  Userspace platform driver with generic irq and dynamic memory (UIO_DMEM_GENIRQ) [M/n/?] m
+  AEC video timestamp device (UIO_AEC) [M/n/?] m
+  Automata Sercos III PCI card driver (UIO_SERCOS3) [M/n/?] m
+  Generic driver for PCI 2.3 and PCI Express cards (UIO_PCI_GENERIC) [M/n/?] m
+  Hilscher NetX Card driver (UIO_NETX) [M/n/?] m
+  Texas Instruments PRUSS driver (UIO_PRUSS) [N/m/?] (NEW) 
+  Humusoft MF624 DAQ PCI card driver (UIO_MF624) [M/n/?] m
+  Generic driver for Hyper-V VMBus (UIO_HV_GENERIC) [M/n/?] m
+  Generic driver for DFL (Device Feature List) bus (UIO_DFL) [M/n/?] m
+*
+* Staging drivers
+*
+Staging drivers (STAGING) [Y/n/?] y
+  Prism2.5/3 USB driver (PRISM2_USB) [N/m/?] (NEW) 
+  Support for rtllib wireless devices (RTLLIB) [M/n/?] m
+    Support for rtllib CCMP crypto (RTLLIB_CRYPTO_CCMP) [M/n/?] m
+    Support for rtllib TKIP crypto (RTLLIB_CRYPTO_TKIP) [M/n/?] m
+    Support for rtllib WEP crypto (RTLLIB_CRYPTO_WEP) [M/n/?] m
+    RealTek RTL8192E Wireless LAN NIC driver (RTL8192E) [M/n/?] m
+  Realtek RTL8723BS SDIO Wireless LAN NIC driver (RTL8723BS) [M/n/?] m
+  RealTek RTL8712U (RTL8192SU) Wireless LAN NIC driver (R8712U) [M/n/?] m
+  Realtek PCI-E Card Reader RTS5208/5288 support (RTS5208) [M/n/y/?] m
+  VIA Technologies VT6655 support (VT6655) [M/n/?] m
+  VIA Technologies VT6656 support (VT6656) [M/n/?] m
+  Silicon Motion SM750 framebuffer support (FB_SM750) [M/n/y/?] m
+  *
+  * Media staging drivers
+  *
+  Media staging drivers (STAGING_MEDIA) [Y/n/?] y
+    AV7110 cards (DVB_AV7110) [M/n/?] m
+      AV7110 OSD support (DVB_AV7110_OSD) [Y/n/?] y
+      AV7110 cards with Budget Patch (DVB_BUDGET_PATCH) [N/m/?] (NEW) 
+      Spase sp8870 based (DVB_SP8870) [M/?] m
+    Intel ipu3-imgu driver (VIDEO_IPU3_IMGU) [M/n/?] m
+    *
+    * StarFive media platform drivers
+    *
+  GCT GDM724x LTE support (LTE_GDM724X) [M/n/?] m
+  KeyStream KS7010 SDIO support (KS7010) [M/n/y/?] m
+  Greybus Audio Class driver (GREYBUS_AUDIO) [M/n/?] m
+    Greybus APBridge Audio codec driver (GREYBUS_AUDIO_APB_CODEC) [M/n/?] m
+  Greybus Bootrom Class driver (GREYBUS_BOOTROM) [M/n/?] m
+  Greybus Firmware Download Class driver (GREYBUS_FIRMWARE) [M/n/?] m
+  Greybus HID Class driver (GREYBUS_HID) [M/n/?] m
+  Greybus LED Class driver (GREYBUS_LIGHT) [M/n/?] m
+  Greybus Debug Log Class driver (GREYBUS_LOG) [M/n/?] m
+  Greybus Loopback Class driver (GREYBUS_LOOPBACK) [M/n/?] m
+  Greybus Powersupply Class driver (GREYBUS_POWER) [M/n/?] m
+  Greybus Raw Class driver (GREYBUS_RAW) [M/n/?] m
+  Greybus Vibrator Motor Class driver (GREYBUS_VIBRATOR) [M/n/?] m
+  Pi433 - a 433MHz radio module for Raspberry Pi (PI433) [N/m/y/?] (NEW) 
+*
+* Android
+*
+Android Binder IPC Driver (ANDROID_BINDER_IPC) [N/y/?] (NEW) 
+*
+* Caches
+*
+Gather statistical information on local caching (NETFS_STATS) [Y/?] y
+General filesystem local caching manager (FSCACHE) [Y/?] y
+  Gather statistical information on local caching (FSCACHE_STATS) [Y/n/?] y
+  Debug FS-Cache (FSCACHE_DEBUG) [N/y/?] (NEW) 
+  Filesystem caching on files (CACHEFILES) [M/n/?] m
+    Debug CacheFiles (CACHEFILES_DEBUG) [N/y/?] n
+    Provide error injection for cachefiles (CACHEFILES_ERROR_INJECTION) [Y/n/?] y
+    Support for on-demand read (CACHEFILES_ONDEMAND) [N/y/?] n
+*
+* DOS/FAT/EXFAT/NT Filesystems
+*
+MSDOS fs support (MSDOS_FS) [M/n/y/?] m
+VFAT (Windows-95) fs support (VFAT_FS) [Y/n/m/?] y
+Default codepage for FAT (FAT_DEFAULT_CODEPAGE) [437] 437
+Default iocharset for FAT (FAT_DEFAULT_IOCHARSET) [iso8859-1] iso8859-1
+Enable FAT UTF-8 option by default (FAT_DEFAULT_UTF8) [N/y/?] n
+exFAT filesystem support (EXFAT_FS) [M/n/y/?] m
+  Default iocharset for exFAT (EXFAT_DEFAULT_IOCHARSET) [utf8] utf8
+NTFS file system support (NTFS_FS) [M/n/y/?] m
+  NTFS debugging support (NTFS_DEBUG) [N/y/?] (NEW) 
+  NTFS write support (NTFS_RW) [N/y/?] (NEW) 
+NTFS Read-Write file system support (NTFS3_FS) [M/n/y/?] m
+  64 bits per NTFS clusters (NTFS3_64BIT_CLUSTER) [N/y/?] n
+  activate support of external compressions lzx/xpress (NTFS3_LZX_XPRESS) [Y/n/?] y
+  NTFS POSIX Access Control Lists (NTFS3_FS_POSIX_ACL) [Y/n/?] y
+*
+* Public-key cryptography
+*
+RSA (Rivest-Shamir-Adleman) (CRYPTO_RSA) [Y/?] y
+DH (Diffie-Hellman) (CRYPTO_DH) [Y/?] y
+  RFC 7919 FFDHE groups (CRYPTO_DH_RFC7919_GROUPS) [Y/?] y
+ECDH (Elliptic Curve Diffie-Hellman) (CRYPTO_ECDH) [Y/m/?] y
+ECDSA (Elliptic Curve Digital Signature Algorithm) (CRYPTO_ECDSA) [M/n/y/?] m
+EC-RDSA (Elliptic Curve Russian Digital Signature Algorithm) (CRYPTO_ECRDSA) [M/n/y/?] m
+SM2 (ShangMi 2) (CRYPTO_SM2) [N/m/y/?] (NEW) 
+Curve25519 (CRYPTO_CURVE25519) [M/n/y/?] m
+*
+* Userspace interface
+*
+Hash algorithms (CRYPTO_USER_API_HASH) [M/n/y/?] m
+Symmetric key cipher algorithms (CRYPTO_USER_API_SKCIPHER) [M/n/y/?] m
+RNG (random number generator) algorithms (CRYPTO_USER_API_RNG) [M/n/y/?] m
+  Enable CAVP testing of DRBG (CRYPTO_USER_API_RNG_CAVP) [N/y/?] n
+AEAD cipher algorithms (CRYPTO_USER_API_AEAD) [M/n/y/?] m
+Obsolete cryptographic algorithms (CRYPTO_USER_API_ENABLE_OBSOLETE) [N/y/?] n
+Crypto usage statistics (CRYPTO_STATS) [N/y/?] (NEW) 
+*
+* Library routines
+*
+Automatically choose fastest RAID6 PQ functions (RAID6_PQ_BENCHMARK) [Y/n/?] y
+Generic bitfield packing and unpacking (PACKING) [Y/?] y
+CORDIC algorithm (CORDIC) [M/y/?] m
+Simple prime number generator for testing (PRIME_NUMBERS) [N/m/y/?] n
+CRC-CCITT functions (CRC_CCITT) [Y/?] y
+CRC16 functions (CRC16) [Y/?] y
+CRC calculation for the T10 Data Integrity Field (CRC_T10DIF) [Y/?] y
+CRC calculation for the Rocksoft model CRC64 (CRC64_ROCKSOFT) [Y/?] y
+CRC ITU-T V.41 functions (CRC_ITU_T) [M/y/?] m
+CRC32/CRC32c functions (CRC32) [Y/?] y
+  CRC32 perform self test on init (CRC32_SELFTEST) [N/m/y/?] n
+  CRC32 implementation
+  > 1. Slice by 8 bytes (CRC32_SLICEBY8)
+    2. Slice by 4 bytes (CRC32_SLICEBY4)
+    3. Sarwate's Algorithm (one byte at a time) (CRC32_SARWATE)
+    4. Classic Algorithm (one bit at a time) (CRC32_BIT)
+  choice[1-4?]: 1
+CRC64 functions (CRC64) [Y/?] y
+CRC4 functions (CRC4) [M/n/y/?] m
+CRC7 functions (CRC7) [M/y/?] m
+CRC32c (Castagnoli, et al) Cyclic Redundancy-Check (LIBCRC32C) [M/y/?] m
+CRC8 function (CRC8) [M/y/?] m
+PRNG perform self test on init (RANDOM32_SELFTEST) [N/y/?] n
+XZ decompression support (XZ_DEC) [Y/?] y
+  x86 BCJ filter decoder (XZ_DEC_X86) [Y/n/?] y
+  PowerPC BCJ filter decoder (XZ_DEC_POWERPC) [Y/n/?] y
+  ARM BCJ filter decoder (XZ_DEC_ARM) [Y/n/?] y
+  ARM-Thumb BCJ filter decoder (XZ_DEC_ARMTHUMB) [Y/n/?] y
+  SPARC BCJ filter decoder (XZ_DEC_SPARC) [Y/n/?] y
+  MicroLZMA decoder (XZ_DEC_MICROLZMA) [Y/?] y
+XZ decompressor tester (XZ_DEC_TEST) [M/n/y/?] m
+Dynamic allocation of DMA bounce buffers (SWIOTLB_DYNAMIC) [Y/n/?] y
+Enable debugging of DMA-API usage (DMA_API_DEBUG) [N/y/?] n
+Enable benchmarking of streaming DMA mapping (DMA_MAP_BENCHMARK) [N/y/?] n
+Set number of CPUs at compile time (FORCE_NR_CPUS) [N/y/?] (NEW) 
+glob self-test on init (GLOB_SELFTEST) [N/m/y/?] n
+IRQ polling library (IRQ_POLL) [Y/?] y
+Select compiled-in fonts (FONTS) [Y/n/?] y
+  VGA 8x8 font (FONT_8x8) [Y/n/?] y
+  VGA 8x16 font (FONT_8x16) [Y/?] y
+  Mac console 6x11 font (not supported by all drivers) (FONT_6x11) [N/y/?] n
+  console 7x14 font (not supported by all drivers) (FONT_7x14) [N/y/?] n
+  Pearl (old m68k) console 8x8 font (FONT_PEARL_8x8) [N/y/?] n
+  Acorn console 8x8 font (FONT_ACORN_8x8) [Y/n/?] y
+  Mini 4x6 font (FONT_MINI_4x6) [N/y/?] n
+  Medium-size 6x10 font (FONT_6x10) [Y/n/?] y
+  console 10x18 font (not supported by all drivers) (FONT_10x18) [N/y/?] n
+Sparc console 8x16 font (FONT_SUN8x16) [N/y/?] n
+Sparc console 12x22 font (not supported by all drivers) (FONT_SUN12x22) [N/y/?] n
+Terminus 16x32 font (not supported by all drivers) (FONT_TER16x32) [Y/n/?] y
+OLED 6x8 font (FONT_6x8) [N/y/?] n
+Maximum number of frames in trace saved in stack depot (STACKDEPOT_MAX_FRAMES) [64] 64
+Boot-time test for lwq queuing (LWQ_TEST) [N/y/?] n
+*
+* Undefined behaviour sanity checker
+*
+Undefined behaviour sanity checker (UBSAN) [Y/n/?] y
+  Abort on Sanitizer warnings (smaller kernel but less verbose) (UBSAN_TRAP) [N/y/?] n
+  Perform array index bounds checking (UBSAN_BOUNDS) [Y/n/?] y
+  Perform checking for bit-shift overflows (UBSAN_SHIFT) [Y/n/?] y
+  Perform checking for integer divide-by-zero (UBSAN_DIV_ZERO) [N/y/?] n
+  Perform checking for non-boolean values used as boolean (UBSAN_BOOL) [Y/n/?] y
+  Perform checking for out of bounds enum values (UBSAN_ENUM) [Y/n/?] y
+  Perform checking for misaligned pointer usage (UBSAN_ALIGNMENT) [N/y/?] n
+  Enable instrumentation for the entire kernel (UBSAN_SANITIZE_ALL) [Y/n/?] (NEW) 
+  Module for testing for undefined behavior detection (TEST_UBSAN) [N/m/?] n
+*
+* Kernel hacking
+*
+Kernel debugging (DEBUG_KERNEL) [Y/?] y
+  Miscellaneous debug code (DEBUG_MISC) [Y/n/?] y
+Debug shared IRQ handlers (DEBUG_SHIRQ) [N/y/?] n
+Enable extra timekeeping sanity checking (DEBUG_TIMEKEEPING) [N/y/?] (NEW) 
+Debug preemptible kernel (DEBUG_PREEMPT) [N/y/?] n
+Debugging for CPUs failing to respond to backtrace requests (NMI_CHECK_CPU) [Y/n/?] y
+Debug IRQ flag manipulation (DEBUG_IRQFLAGS) [N/y/?] n
+Stack backtrace support (STACKTRACE) [Y/?] y
+Warn for all uses of unseeded randomness (WARN_ALL_UNSEEDED_RANDOM) [N/y/?] n
+kobject debugging (DEBUG_KOBJECT) [N/y/?] n
+Force round-robin CPU selection for unbound work items (DEBUG_WQ_FORCE_RR_CPU) [N/y/?] n
+Enable CPU hotplug state control (CPU_HOTPLUG_STATE_CONTROL) [N/y/?] n
+Latency measuring infrastructure (LATENCYTOP) [Y/n/?] y
+Disable inlining of cgroup css reference count functions (DEBUG_CGROUP_REF) [N/y/?] n
+Remote debugging over FireWire early on boot (PROVIDE_OHCI1394_DMA_INIT) [N/y/?] n
+Filter access to /dev/mem (STRICT_DEVMEM) [Y/n/?] y
+  Filter I/O access to /dev/mem (IO_STRICT_DEVMEM) [N/y/?] n
+*
+* Runtime Testing
+*
+Runtime Testing (RUNTIME_TESTING_MENU) [Y/n/?] y
+  Dhrystone benchmark test (TEST_DHRY) [N/m/y/?] n
+  Linux Kernel Dump Test Tool Module (LKDTM) [N/m/y/?] n
+  Min heap test (TEST_MIN_HEAP) [N/m/y/?] n
+  64bit/32bit division and modulo test (TEST_DIV64) [N/m/y/?] n
+  Self test for the backtrace code (BACKTRACE_SELF_TEST) [N/m/y/?] n
+  Self test for reference tracker (TEST_REF_TRACKER) [N/m/y/?] n
+  Red-Black tree test (RBTREE_TEST) [N/m/y/?] n
+  Reed-Solomon library test (REED_SOLOMON_TEST) [N/m/y/?] n
+  Interval tree test (INTERVAL_TREE_TEST) [N/m/y/?] n
+  Per cpu operations test (PERCPU_TEST) [N/m/?] n
+  Perform an atomic64_t self-test (ATOMIC64_SELFTEST) [N/m/y/?] n
+  Self test for hardware accelerated raid6 recovery (ASYNC_RAID6_TEST) [N/m/?] n
+  Test functions located in the hexdump module at runtime (TEST_HEXDUMP) [N/m/y/?] n
+  Test string functions at runtime (STRING_SELFTEST) [N/m/y/?] (NEW) 
+  Test functions located in the string_helpers module at runtime (TEST_STRING_HELPERS) [N/m/y/?] (NEW) 
+  Test kstrto*() family of functions at runtime (TEST_KSTRTOX) [N/m/y/?] n
+  Test printf() family of functions at runtime (TEST_PRINTF) [N/m/y/?] n
+  Test scanf() family of functions at runtime (TEST_SCANF) [N/m/y/?] n
+  Test bitmap_*() family of functions at runtime (TEST_BITMAP) [N/m/y/?] n
+  Test functions located in the uuid module at runtime (TEST_UUID) [N/m/y/?] n
+  Test the XArray code at runtime (TEST_XARRAY) [N/m/y/?] n
+  Test the Maple Tree code at runtime or module load (TEST_MAPLE_TREE) [N/m/y/?] n
+  Perform selftest on resizable hash table (TEST_RHASHTABLE) [N/m/y/?] n
+  Perform selftest on IDA functions (TEST_IDA) [N/m/y/?] n
+  Perform selftest on priority array manager (TEST_PARMAN) [N/m/?] n
+  Test module loading with 'hello world' module (TEST_LKM) [N/m/?] n
+  Test module for compilation of bitops operations (TEST_BITOPS) [N/m/?] n
+  Test module for stress/performance analysis of vmalloc allocator (TEST_VMALLOC) [N/m/?] n
+  Test user/kernel boundary protections (TEST_USER_COPY) [N/m/?] (NEW) 
+  Test BPF filter functionality (TEST_BPF) [M/n/?] m
+  Test blackhole netdev functionality (TEST_BLACKHOLE_DEV) [M/n/?] m
+  Test find_bit functions (FIND_BIT_BENCHMARK) [N/m/y/?] n
+  Test firmware loading via userspace interface (TEST_FIRMWARE) [N/m/y/?] n
+  sysctl test driver (TEST_SYSCTL) [N/m/y/?] n
+  udelay test driver (TEST_UDELAY) [N/m/y/?] n
+  Test static keys (TEST_STATIC_KEYS) [N/m/?] n
+  Test DYNAMIC_DEBUG (TEST_DYNAMIC_DEBUG) [N/m/y/?] n
+  kmod stress tester (TEST_KMOD) [N/m/?] n
+  Test memcat_p() helper function (TEST_MEMCAT_P) [N/m/y/?] n
+  Test livepatching (TEST_LIVEPATCH) [N/m/?] (NEW) 
+  Perform selftest on object aggreration manager (TEST_OBJAGG) [N/m/?] n
+  Test heap/page initialization (TEST_MEMINIT) [N/m/y/?] n
+  Test HMM (Heterogeneous Memory Management) (TEST_HMM) [N/m/y/?] n
+  Test freeing pages (TEST_FREE_PAGES) [N/m/y/?] n
+  Test floating point operations in kernel space (TEST_FPU) [N/m/y/?] n
+  Test clocksource watchdog in kernel space (TEST_CLOCKSOURCE_WATCHDOG) [N/m/y/?] n
+  Test module for correctness and stress of objpool (TEST_OBJPOOL) [N/m/?] n
+mkdir -p /home/yatsched/linux-6.8/tools/objtool && make O=/home/yatsched/linux-6.8 subdir=tools/objtool --no-print-directory -C objtool 
+  INSTALL libsubcmd_headers
+  CALL    scripts/checksyscalls.sh
+make[3]: *** 没有规则可制作目标“debian/canonical-certs.pem”，由“certs/x509_certificate_list” 需求。 停止。
+make[2]: *** [scripts/Makefile.build:481：certs] 错误 2
+make[2]: *** 正在等待未完成的任务....
+make[1]: *** [/home/yatsched/linux-6.8/Makefile:1921：.] 错误 2
+make: *** [Makefile:240：__sub-make] 错误 2

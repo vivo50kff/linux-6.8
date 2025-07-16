@@ -19,6 +19,22 @@ mkdir -p bin sbin etc proc sys dev tmp usr/bin usr/sbin lib lib64
 
 echo "正在配置基础环境..."
 
+# 检查依赖并确保使用静态busybox
+if ! command -v busybox >/dev/null 2>&1; then
+    echo "安装 busybox-static..."
+    sudo apt update && sudo apt install -y busybox-static
+elif file $(which busybox) | grep -q "dynamically linked"; then
+    echo "当前busybox是动态链接的，需要静态版本..."
+    sudo apt update && sudo apt install -y busybox-static
+fi
+
+for dep in cpio gzip; do
+    if ! command -v $dep >/dev/null 2>&1; then
+        echo "✗ 缺少依赖: $dep，请先安装！"
+        exit 1
+    fi
+done
+
 # 复制busybox（确保存在）
 if [ -f "/bin/busybox" ]; then
     echo "✓ 复制 busybox 从 /bin/"
@@ -27,7 +43,7 @@ elif [ -f "/usr/bin/busybox" ]; then
     echo "✓ 复制 busybox 从 /usr/bin/"
     cp /usr/bin/busybox bin/
 else
-    echo "✗ 未找到 busybox，请先安装 busybox"
+    echo "✗ 未找到 busybox，请先安装 busybox (sudo apt install busybox)"
     exit 1
 fi
 
@@ -42,7 +58,7 @@ for prog in test_yat_casched_complete test_cache_aware_fixed verify_real_schedul
     else
         echo "⚠ 测试程序未找到: $SCRIPT_DIR/$prog"
     fi
-    done
+done
 
 # 创建功能完整的 init 脚本
 cat > init << 'EOF'
@@ -128,14 +144,17 @@ echo ""
 exec /bin/busybox sh
 EOF
 
+# 关键修复：确保init和busybox都在归档根目录且有执行权限
 chmod +x init
+chmod +x bin/busybox
 
-echo "正在创建 initramfs 归档..."
-find . -print0 | cpio --null -ov --format=newc | gzip -9 > initramfs_complete.cpio.gz
+# 推荐：用绝对路径打包，避免权限和路径问题
+cd $TEMP_DIR
+find . | cpio -o --format=newc | gzip -9 > "$SCRIPT_DIR/initramfs_complete.cpio.gz"
 
 if [ $? -eq 0 ]; then
-    echo "✓ 成功创建 initramfs_complete.cpio.gz"
-    ls -lh initramfs_complete.cpio.gz
+    echo "✓ 成功创建 $SCRIPT_DIR/initramfs_complete.cpio.gz"
+    ls -lh "$SCRIPT_DIR/initramfs_complete.cpio.gz"
 else
     echo "✗ 创建 initramfs 失败！"
     exit 1

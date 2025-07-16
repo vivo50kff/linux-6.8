@@ -4,8 +4,8 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-KERNEL_IMAGE="$PROJECT_ROOT/arch/x86/boot/bzImage"
-DISK_IMAGE="$SCRIPT_DIR/initramfs_complete.cpio.gz"
+KERNEL_IMAGE="$PROJECT_ROOT/vmlinux"
+DISK_IMAGE="$PROJECT_ROOT/test_static.cpio.gz"
 
 echo "=== Intel VT-x/EPT 优化的 Yat_Casched 内核启动脚本 ==="
 
@@ -17,8 +17,49 @@ fi
 
 if [ ! -f "$DISK_IMAGE" ]; then
     echo "✗ 错误: initramfs 未找到: $DISK_IMAGE"
-    echo "请先运行: $SCRIPT_DIR/create_initramfs_complete.sh"
-    exit 1
+    echo "正在创建静态 initramfs..."
+    
+    # 创建静态 initramfs
+    cd "$PROJECT_ROOT"
+    if [ ! -f "test_static.cpio.gz" ]; then
+        echo "运行简单启动脚本来创建 initramfs..."
+        "$PROJECT_ROOT/yat_test_scripts/start_qemu_simple.sh" --create-only 2>/dev/null || {
+            echo "自动创建 initramfs，请稍候..."
+            
+            # 创建目录结构
+            rm -rf test_static_initramfs
+            mkdir -p test_static_initramfs/{bin,sbin,etc,proc,sys,dev,tmp}
+            
+            # 检查并安装静态 busybox
+            if [ ! -f "/bin/busybox" ]; then
+                echo "安装 busybox-static..."
+                sudo apt update && sudo apt install -y busybox-static
+            fi
+            
+            cp /bin/busybox test_static_initramfs/bin/
+            chmod +x test_static_initramfs/bin/busybox
+            
+            # 创建 init 脚本
+            cat > test_static_initramfs/init << 'INITEOF'
+#!/bin/busybox sh
+echo "=== Yat_Casched 测试环境启动成功 ==="
+/bin/busybox mount -t proc proc /proc
+/bin/busybox mount -t sysfs sysfs /sys  
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+/bin/busybox --install -s
+echo "📋 进入交互式 shell，输入 'exit' 退出"
+exec /bin/busybox sh
+INITEOF
+            chmod +x test_static_initramfs/init
+            
+            # 创建 initramfs
+            cd test_static_initramfs
+            find . | cpio -o -H newc | gzip > ../test_static.cpio.gz
+            cd "$PROJECT_ROOT"
+            echo "✅ initramfs 创建完成"
+        }
+    fi
+    cd "$SCRIPT_DIR"
 fi
 
 echo "✓ 检查通过，准备启动..."
@@ -44,14 +85,14 @@ echo "=================================="
 
 if [ ! -c /dev/kvm ]; then
     echo "✓ KVM不可用，尝试使用TCG加速..."
-    sudo qemu-system-x86_64 \
+    qemu-system-x86_64 \
         -cpu qemu64 \
-        -smp 4 \
-        -m 2G \
+        -smp 2 \
+        -m 1G \
         -machine pc,accel=tcg \
         -kernel "$KERNEL_IMAGE" \
         -initrd "$DISK_IMAGE" \
-        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 initcall_blacklist=do_init_real_mode" \
+        -append "console=ttyS0,115200" \
         -nographic \
         -no-reboot
     exit $?
@@ -61,11 +102,11 @@ else
         -enable-kvm \
         -cpu host \
         -machine pc,accel=kvm \
-        -smp 8 \
-        -m 4G \
+        -smp 2 \
+        -m 1G \
         -kernel "$KERNEL_IMAGE" \
         -initrd "$DISK_IMAGE" \
-        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7" \
+        -append "console=ttyS0,115200" \
         -nographic \
         -no-reboot
 fi
