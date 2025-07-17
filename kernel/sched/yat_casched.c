@@ -1,505 +1,228 @@
 /*
- * Yat_Casched - Cache-Aware Scheduler (Decision Final Version)
+ * Yat_Casched - Cache-Aware Scheduler
  *
- * 这是一个基于全局缓存感知性的调度器实现。
+ * 这是一个基于缓存感知性的调度器实现。
  * 主要特性：
- * - 全局优先队列统一管理所有待调度任务
- * - 二维加速表支持(task,cpu)→benefit查找
- * - CPU历史表记录时间戳→任务映射关系
- * - 采用LCIF思想的ajlr调度算法
+ * - 维护CPU历史表，记录每个任务上次运行的CPU
+ * - 优先将任务调度到上次运行的CPU核心以提高缓存局部性
+ * - 在需要负载均衡时智能选择新的CPU核心
  */
 
 #include "sched.h"
 #include <linux/sched/yat_casched.h>
 #include <linux/hashtable.h>
 #include <linux/slab.h>
+#include <linux/cpumask.h>
+#include <linux/topology.h>
+
+/* --- 核心数据结构定义 (v2.2 - 最终版) --- */
+
+// 历史记录: 使用双向链表，按时间戳顺序记录历史
+struct history_record {
+    struct list_head list;
+    int task_id;
+    u64 timestamp;
+    u64 exec_time;
+};
+
+// 历史表: 每个CPU一个，包含一个链表头和锁
+struct cpu_history_table {
+    struct list_head time_list;
+    spinlock_t lock;
+};
+static struct cpu_history_table history_tables[NR_CPUS];
+
+// 就绪作业池: 存放所有待调度的Yat_Casched任务
+static LIST_HEAD(yat_ready_job_pool);
+static DEFINE_SPINLOCK(yat_pool_lock);
+
+// 加速表条目: 存放在哈希表中，缓存benefit值
+struct accelerator_entry {
+    struct hlist_node node;
+    struct task_struct *p;
+    int cpu;
+    u64 benefit;
+};
+
+// 加速表: 全局哈希表，用于加速查找最佳(任务,核心)对
+#define ACCELERATOR_BITS 10
+static DEFINE_HASHTABLE(accelerator_table, ACCELERATOR_BITS);
+static DEFINE_SPINLOCK(accelerator_lock);
+
+
+/* --- 历史表操作函数 --- */
+
+// 初始化历史表
+static void init_history_tables(void) {
+    int cpu;
+    for_each_possible_cpu(cpu) {
+        INIT_LIST_HEAD(&history_tables[cpu].time_list);
+        spin_lock_init(&history_tables[cpu].lock);
+    }
+}
+
+// 添加历史记录
+static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu];
+    
+    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
+    if (!rec) return;
+
+    rec->task_id = p->pid;
+    rec->timestamp = ktime_get();
+    rec->exec_time = exec_time;
+
+    // 更新任务的 per-cpu 最近执行时间戳
+    p->yat_casched.per_cpu_recency[cpu] = rec->timestamp;
+
+    spin_lock(&table->lock);
+    // 直接插入链表尾部（保证时间戳递增）
+    list_add_tail(&rec->list, &table->time_list);
+    spin_unlock(&table->lock);
+}
+
+// 计算时间区间内的执行时间总和 (从后向前遍历，更高效)
+static u64 sum_exec_time_since(int cpu, u64 start_ts, u64 end_ts) {
+    u64 sum = 0;
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu];
+    
+    spin_lock(&table->lock);
+    // 从链表尾部向前遍历
+    list_for_each_entry_reverse(rec, &table->time_list, list) {
+        if (rec->timestamp <= start_ts) {
+            break; // 已超出查询范围的起点，停止遍历
+        }
+        if (rec->timestamp <= end_ts) {
+            sum += rec->exec_time;
+        }
+    }
+    spin_unlock(&table->lock);
+    return sum;
+}
+
+// 计算多个CPU在时间区间内的总执行时间
+static u64 sum_exec_time_multi(const struct cpumask *cpus, u64 start_ts, u64 end_ts) {
+    u64 total_sum = 0;
+    int cpu;
+    for_each_cpu(cpu, cpus) {
+        total_sum += sum_exec_time_since(cpu, start_ts, end_ts);
+    }
+    return total_sum;
+}
+
+// 获取任务在指定CPU集合上的最晚执行时间
+static u64 get_max_last_exec_time(struct task_struct *p, const struct cpumask *cpus) {
+    u64 max_ts = 0;
+    int cpu;
+    for_each_cpu(cpu, cpus) {
+        if (p->yat_casched.per_cpu_recency[cpu] > max_ts) {
+            max_ts = p->yat_casched.per_cpu_recency[cpu];
+        }
+    }
+    return max_ts;
+}
+
+
+/* --- Recency 和 Impact 计算 (v2.1) --- */
+
+// 计算多层缓存 Recency
+static u64 calculate_recency(struct task_struct *p, int cpu_id) {
+    u64 now = ktime_get();
+    u64 l1_sum, l2_sum, l3_sum;
+
+    // L1 (私有)
+    u64 l1_last = p->yat_casched.per_cpu_recency[cpu_id];
+    l1_sum = sum_exec_time_since(cpu_id, l1_last, now);
+
+    // L2 (共享)
+    const struct cpumask *l2_cpus = cpu_l2_shared_mask(cpu_id);
+    u64 l2_last = get_max_last_exec_time(p, l2_cpus);
+    l2_sum = sum_exec_time_multi(l2_cpus, l2_last, now);
+
+    // L3 (全局)
+    const struct cpumask *l3_cpus = cpu_llc_shared_mask(cpu_id);
+    u64 l3_last = get_max_last_exec_time(p, l3_cpus);
+    l3_sum = sum_exec_time_multi(l3_cpus, l3_last, now);
+
+    return l1_sum + l2_sum + l3_sum;
+}
+
+// 计算将任务 p 放到 cpu_id 上对其他任务的 Impact
+static u64 calculate_impact(struct task_struct *p, int cpu_id) {
+    // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
+    u64 total_impact = 0;
+    struct task_struct *other_p;
+
+    spin_lock(&yat_pool_lock);
+    list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
+        if (other_p == p) continue;
+
+        // 原本 other_p 在 cpu_id 上的 benefit
+        u64 old_recency = calculate_recency(other_p, cpu_id);
+        u64 old_crp = get_crp_ratio(old_recency);
+        u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
+
+        // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
+        u64 new_recency = old_recency + p->yat_casched.wcet;
+        u64 new_crp = get_crp_ratio(new_recency);
+        u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
+        
+        if (old_benefit > new_benefit) {
+            total_impact += (old_benefit - new_benefit);
+        }
+    }
+    spin_unlock(&yat_pool_lock);
+
+    return total_impact;
+}
+
+
+/*
+ * 模拟CRP模型函数
+ * 输入: recency (ns) - 任务上次运行距今的时间
+ * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比
+ */
+static u64 get_crp_ratio(u64 recency)
+{
+    // 这是一个简化的分段函数，模拟CRP曲线
+    if (recency < 10000) // 10us以内，极热
+        return 600; // 实际执行时间是WCET的60%
+    if (recency < 100000) // 100us以内，温
+        return 800; // 实际执行时间是WCET的80%
+    
+    return 1000; // 否则视为完全冷，执行时间=WCET
+}
+
+/*
+ * 模拟获取任务WCET的函数
+ */
+static u64 get_wcet(struct task_struct *p)
+{
+    // 初步实现：给所有任务一个固定的WCET，例如10ms
+    return 10 * 1000 * 1000; // 10ms in ns
+}
 
 /* 缓存热度阈值（jiffies）*/
 #define YAT_CACHE_HOT_TIME	(HZ / 100)	/* 10ms */
 #define YAT_MIN_GRANULARITY	(NSEC_PER_SEC / HZ)
-
-/* 全局数据结构 */
-static struct yat_global_task_pool *global_task_pool = NULL;
-static struct yat_accel_table *global_accel_table = NULL;
-
-/*
- * 加速表操作函数
- */
-
-/* 生成(task_pid, cpu_id)的哈希值 */
-static u32 yat_accel_hash(pid_t task_pid, int cpu_id)
-{
-    return hash_32((u32)task_pid ^ (u32)cpu_id, YAT_ACCEL_HASH_BITS);
-}
-
-/* 初始化加速表 */
-int yat_accel_table_init(struct yat_accel_table *table)
-{
-    if (!table)
-        return -EINVAL;
-    
-    table->hash_buckets = kcalloc(1 << YAT_ACCEL_HASH_BITS, sizeof(struct hlist_head), GFP_KERNEL);
-    if (!table->hash_buckets)
-        return -ENOMEM;
-    
-    /* 初始化所有哈希桶 */
-    for (int i = 0; i < (1 << YAT_ACCEL_HASH_BITS); i++) {
-        INIT_HLIST_HEAD(&table->hash_buckets[i]);
-    }
-    
-    spin_lock_init(&table->lock);
-    table->last_cleanup_time = jiffies;
-    
-    return 0;
-}
-
-/* 销毁加速表 */
-void yat_accel_table_destroy(struct yat_accel_table *table)
-{
-    struct yat_accel_entry *entry;
-    struct hlist_node *tmp;
-    int i;
-    
-    if (!table || !table->hash_buckets)
-        return;
-    
-    spin_lock(&table->lock);
-    for (i = 0; i < (1 << YAT_ACCEL_HASH_BITS); i++) {
-        hlist_for_each_entry_safe(entry, tmp, &table->hash_buckets[i], hash_node) {
-            hlist_del(&entry->hash_node);
-            kfree(entry);
-        }
-    }
-    kfree(table->hash_buckets);
-    table->hash_buckets = NULL;
-    spin_unlock(&table->lock);
-}
-
-/* 查找加速表条目 */
-static struct yat_accel_entry *yat_accel_find_entry(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
-{
-    struct yat_accel_entry *entry;
-    u32 hash_val = yat_accel_hash(task_pid, cpu_id);
-    
-    if (!table || !table->hash_buckets)
-        return NULL;
-    
-    hlist_for_each_entry(entry, &table->hash_buckets[hash_val], hash_node) {
-        if (entry->task_pid == task_pid && entry->cpu_id == cpu_id)
-            return entry;
-    }
-    return NULL;
-}
-
-/* 插入加速表条目 */
-int yat_accel_table_insert(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
-{
-    struct yat_accel_entry *entry;
-    u32 hash_val;
-    
-    if (!table || !table->hash_buckets)
-        return -EINVAL;
-    
-    spin_lock(&table->lock);
-    
-    /* 检查是否已存在 */
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (entry) {
-        spin_unlock(&table->lock);
-        return -EEXIST;
-    }
-    
-    /* 创建新条目 */
-    entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-    if (!entry) {
-        spin_unlock(&table->lock);
-        return -ENOMEM;
-    }
-    
-    entry->task_pid = task_pid;
-    entry->cpu_id = cpu_id;
-    entry->benefit = benefit;
-    entry->wcet = wcet;
-    entry->crp_ratio = crp_ratio;
-    entry->last_update_time = jiffies;
-    
-    hash_val = yat_accel_hash(task_pid, cpu_id);
-    hlist_add_head(&entry->hash_node, &table->hash_buckets[hash_val]);
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 更新加速表条目 */
-int yat_accel_table_update(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
-{
-    struct yat_accel_entry *entry;
-    
-    if (!table || !table->hash_buckets)
-        return -EINVAL;
-    
-    spin_lock(&table->lock);
-    
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (!entry) {
-        spin_unlock(&table->lock);
-        return -ENOENT;
-    }
-    
-    entry->benefit = benefit;
-    entry->wcet = wcet;
-    entry->crp_ratio = crp_ratio;
-    entry->last_update_time = jiffies;
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 查找benefit值 */
-u64 yat_accel_table_lookup(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
-{
-    struct yat_accel_entry *entry;
-    u64 benefit = 0;
-    
-    if (!table || !table->hash_buckets)
-        return 0;
-    
-    spin_lock(&table->lock);
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (entry)
-        benefit = entry->benefit;
-    spin_unlock(&table->lock);
-    
-    return benefit;
-}
-
-/* 删除加速表条目 */
-int yat_accel_table_delete(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
-{
-    struct yat_accel_entry *entry;
-    
-    if (!table || !table->hash_buckets)
-        return -EINVAL;
-    
-    spin_lock(&table->lock);
-    
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (!entry) {
-        spin_unlock(&table->lock);
-        return -ENOENT;
-    }
-    
-    hlist_del(&entry->hash_node);
-    kfree(entry);
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 清理过期条目 */
-void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time)
-{
-    struct yat_accel_entry *entry;
-    struct hlist_node *tmp;
-    int i;
-    
-    if (!table || !table->hash_buckets)
-        return;
-    
-    spin_lock(&table->lock);
-    for (i = 0; i < (1 << YAT_ACCEL_HASH_BITS); i++) {
-        hlist_for_each_entry_safe(entry, tmp, &table->hash_buckets[i], hash_node) {
-            if (time_before(entry->last_update_time, before_time)) {
-                hlist_del(&entry->hash_node);
-                kfree(entry);
-            }
-        }
-    }
-    table->last_cleanup_time = jiffies;
-    spin_unlock(&table->lock);
-}
-
-/*
- * 历史表操作函数
- */
-
-/* 生成时间戳的哈希值 */
-static u32 yat_history_hash(u64 timestamp)
-{
-    return hash_64(timestamp, YAT_HISTORY_HASH_BITS);
-}
-
-/* 初始化CPU历史表 */
-void init_cpu_history_tables(struct yat_cpu_history_table *tables)
-{
-    int cpu, i;
-    
-    if (!tables)
-        return;
-    
-    for (cpu = 0; cpu < NR_CPUS; cpu++) {
-        tables[cpu].hash_buckets = kcalloc(1 << YAT_HISTORY_HASH_BITS, sizeof(struct hlist_head), GFP_KERNEL);
-        if (tables[cpu].hash_buckets) {
-            for (i = 0; i < (1 << YAT_HISTORY_HASH_BITS); i++) {
-                INIT_HLIST_HEAD(&tables[cpu].hash_buckets[i]);
-            }
-        }
-        spin_lock_init(&tables[cpu].lock);
-        tables[cpu].last_cleanup_time = jiffies;
-    }
-}
-
-/* 销毁CPU历史表 */
-void destroy_cpu_history_tables(struct yat_cpu_history_table *tables)
-{
-    struct yat_history_entry *entry;
-    struct hlist_node *tmp;
-    int cpu, i;
-    
-    if (!tables)
-        return;
-    
-    for (cpu = 0; cpu < NR_CPUS; cpu++) {
-        if (!tables[cpu].hash_buckets)
-            continue;
-        
-        spin_lock(&tables[cpu].lock);
-        for (i = 0; i < (1 << YAT_HISTORY_HASH_BITS); i++) {
-            hlist_for_each_entry_safe(entry, tmp, &tables[cpu].hash_buckets[i], hash_node) {
-                hlist_del(&entry->hash_node);
-                kfree(entry);
-            }
-        }
-        kfree(tables[cpu].hash_buckets);
-        tables[cpu].hash_buckets = NULL;
-        spin_unlock(&tables[cpu].lock);
-    }
-}
-
-/* 添加历史记录 */
-void add_history_record(struct yat_cpu_history_table *tables, int cpu, u64 timestamp, struct task_struct *task)
-{
-    struct yat_history_entry *entry;
-    u32 hash_val;
-    
-    if (!tables || cpu < 0 || cpu >= NR_CPUS || !tables[cpu].hash_buckets || !task)
-        return;
-    
-    entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-    if (!entry)
-        return;
-    
-    entry->timestamp = timestamp;
-    entry->task = task;
-    entry->insert_time = jiffies;
-    
-    hash_val = yat_history_hash(timestamp);
-    
-    spin_lock(&tables[cpu].lock);
-    hlist_add_head(&entry->hash_node, &tables[cpu].hash_buckets[hash_val]);
-    spin_unlock(&tables[cpu].lock);
-}
-
-/* 查询历史任务 */
-struct task_struct *get_history_task(struct yat_cpu_history_table *tables, int cpu, u64 timestamp)
-{
-    struct yat_history_entry *entry;
-    struct task_struct *task = NULL;
-    u32 hash_val;
-    
-    if (!tables || cpu < 0 || cpu >= NR_CPUS || !tables[cpu].hash_buckets)
-        return NULL;
-    
-    hash_val = yat_history_hash(timestamp);
-    
-    spin_lock(&tables[cpu].lock);
-    hlist_for_each_entry(entry, &tables[cpu].hash_buckets[hash_val], hash_node) {
-        if (entry->timestamp == timestamp) {
-            task = entry->task;
-            break;
-        }
-    }
-    spin_unlock(&tables[cpu].lock);
-    
-    return task;
-}
-
-/* 清理过期历史记录 */
-void prune_history_table(struct yat_cpu_history_table *tables, int cpu, u64 before_timestamp)
-{
-    struct yat_history_entry *entry;
-    struct hlist_node *tmp;
-    int i;
-    
-    if (!tables || cpu < 0 || cpu >= NR_CPUS || !tables[cpu].hash_buckets)
-        return;
-    
-    spin_lock(&tables[cpu].lock);
-    for (i = 0; i < (1 << YAT_HISTORY_HASH_BITS); i++) {
-        hlist_for_each_entry_safe(entry, tmp, &tables[cpu].hash_buckets[i], hash_node) {
-            if (entry->timestamp < before_timestamp) {
-                hlist_del(&entry->hash_node);
-                kfree(entry);
-            }
-        }
-    }
-    tables[cpu].last_cleanup_time = jiffies;
-    spin_unlock(&tables[cpu].lock);
-}
-
-/*
- * 全局优先队列操作函数
- */
-
-/* 初始化全局优先队列 */
-int yat_global_pool_init(struct yat_global_task_pool *pool)
-{
-    if (!pool)
-        return -EINVAL;
-    
-    INIT_LIST_HEAD(&pool->head);
-    spin_lock_init(&pool->lock);
-    pool->nr_tasks = 0;
-    
-    return 0;
-}
-
-/* 销毁全局优先队列 */
-void yat_global_pool_destroy(struct yat_global_task_pool *pool)
-{
-    struct yat_global_task_node *node, *tmp;
-    
-    if (!pool)
-        return;
-    
-    spin_lock(&pool->lock);
-    list_for_each_entry_safe(node, tmp, &pool->head, list) {
-        list_del(&node->list);
-        kfree(node);
-    }
-    pool->nr_tasks = 0;
-    spin_unlock(&pool->lock);
-}
-
-/* 入队（按优先级排序插入） */
-int yat_global_pool_enqueue(struct yat_global_task_pool *pool, struct task_struct *task, int priority, u64 wcet)
-{
-    struct yat_global_task_node *new_node, *node;
-    struct list_head *pos;
-    
-    if (!pool || !task)
-        return -EINVAL;
-    
-    new_node = kmalloc(sizeof(*new_node), GFP_ATOMIC);
-    if (!new_node)
-        return -ENOMEM;
-    
-    new_node->task = task;
-    new_node->priority = priority;
-    new_node->wcet = wcet;
-    new_node->enqueue_time = jiffies;
-    INIT_LIST_HEAD(&new_node->list);
-    
-    spin_lock(&pool->lock);
-    
-    /* 按优先级排序插入，优先级高的在前，优先级相同则WCET大的在前 */
-    list_for_each(pos, &pool->head) {
-        node = list_entry(pos, struct yat_global_task_node, list);
-        if (priority > node->priority || 
-            (priority == node->priority && wcet > node->wcet)) {
-            break;
-        }
-    }
-    
-    list_add_tail(&new_node->list, pos);
-    pool->nr_tasks++;
-    
-    spin_unlock(&pool->lock);
-    return 0;
-}
-
-/* 出队（取队头） */
-struct task_struct *yat_global_pool_dequeue(struct yat_global_task_pool *pool)
-{
-    struct yat_global_task_node *node;
-    struct task_struct *task = NULL;
-    
-    if (!pool)
-        return NULL;
-    
-    spin_lock(&pool->lock);
-    if (!list_empty(&pool->head)) {
-        node = list_first_entry(&pool->head, struct yat_global_task_node, list);
-        task = node->task;
-        list_del(&node->list);
-        kfree(node);
-        pool->nr_tasks--;
-    }
-    spin_unlock(&pool->lock);
-    
-    return task;
-}
-
-/* 查看队头（不移除） */
-struct task_struct *yat_global_pool_peek(struct yat_global_task_pool *pool)
-{
-    struct yat_global_task_node *node;
-    struct task_struct *task = NULL;
-    
-    if (!pool)
-        return NULL;
-    
-    spin_lock(&pool->lock);
-    if (!list_empty(&pool->head)) {
-        node = list_first_entry(&pool->head, struct yat_global_task_node, list);
-        task = node->task;
-    }
-    spin_unlock(&pool->lock);
-    
-    return task;
-}
-
-/* 检查队列是否为空 */
-bool yat_global_pool_empty(struct yat_global_task_pool *pool)
-{
-    bool empty;
-    
-    if (!pool)
-        return true;
-    
-    spin_lock(&pool->lock);
-    empty = list_empty(&pool->head);
-    spin_unlock(&pool->lock);
-    
-    return empty;
-}
-
-/* 移除指定任务 */
-void yat_global_pool_remove(struct yat_global_task_pool *pool, struct task_struct *task)
-{
-    struct yat_global_task_node *node, *tmp;
-    
-    if (!pool || !task)
-        return;
-    
-    spin_lock(&pool->lock);
-    list_for_each_entry_safe(node, tmp, &pool->head, list) {
-        if (node->task == task) {
-            list_del(&node->list);
-            kfree(node);
-            pool->nr_tasks--;
-            break;
-        }
-    }
-    spin_unlock(&pool->lock);
-}
 
 /*
  * 初始化Yat_Casched运行队列
  */
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
-    printk(KERN_INFO "======init yat_casched rq (Decision Final Version)======\n");
+    // 在第一次初始化时，初始化全局数据结构
+    static bool global_init_done = false;
+    if (!global_init_done) {
+        printk(KERN_INFO "======Yat_Casched: Global Init======\n");
+        init_history_tables();
+        hash_init(accelerator_table); // 初始化哈希表
+        global_init_done = true;
+    }
+
+    printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", rq->rq->cpu);
     
     INIT_LIST_HEAD(&rq->tasks);
     rq->nr_running = 0;
@@ -507,28 +230,10 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     rq->cache_decay_jiffies = jiffies;
     spin_lock_init(&rq->history_lock);
     
-    /* 初始化全局优先队列 */
-    if (!global_task_pool) {
-        global_task_pool = kmalloc(sizeof(struct yat_global_task_pool), GFP_KERNEL);
-        if (global_task_pool) {
-            yat_global_pool_init(global_task_pool);
-        }
-    }
-    rq->global_pool = global_task_pool;
-    
-    /* 初始化加速表 */
-    if (!global_accel_table) {
-        global_accel_table = kmalloc(sizeof(struct yat_accel_table), GFP_KERNEL);
-        if (global_accel_table) {
-            yat_accel_table_init(global_accel_table);
-        }
-    }
-    rq->accel_table = global_accel_table;
-    
     /* 初始化CPU历史表 */
-    init_cpu_history_tables(rq->history_tables);
-    
-    printk(KERN_INFO "yat_casched: Global structures initialized\n");
+    for (i = 0; i < NR_CPUS; i++) {
+        rq->cpu_history[i] = NULL;
+    }
 }
 
 /*
@@ -560,102 +265,69 @@ void update_curr_yat_casched(struct rq *rq)
 }
 
 /*
- * CPU选择算法（简化版本，后续可基于加速表优化）
+ * select_task_rq - 职责减弱
+ * 在我们的新模型中，决策由全局调度器做出。
+ * 这个函数只在特殊情况下被调用，或者可以简单返回一个默认值。
  */
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
-    struct yat_casched_rq *yat_rq;
-    int best_cpu;
-    int cpu;
-    unsigned long min_load = ULONG_MAX;
-    
-    /* 当前简化为负载均衡策略，后续可集成加速表查找 */
-    best_cpu = task_cpu;
-    for_each_cpu(cpu, &p->cpus_mask) {
-        if (!cpu_online(cpu))
-            continue;
-            
-        yat_rq = &cpu_rq(cpu)->yat_casched;
-        if (yat_rq->nr_running < min_load) {
-            min_load = yat_rq->nr_running;
-            best_cpu = cpu;
-        }
-    }
-    
-    return best_cpu;
+    // 决策已移至全局调度器，这里返回task_cpu以兼容框架
+    return task_cpu;
 }
 
 /*
- * 将任务加入运行队列
+ * 将任务加入全局任务池，并保持有序
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* 减少printk频率 - 只在第一次enqueue时打印 */
-    if (yat_rq->nr_running == 0) {
-        printk(KERN_INFO "yat_casched: enqueue first task\n");
+    struct list_head *pos;
+    struct task_struct *entry;
+
+    // 初始化新任务
+    if (p->yat_casched.wcet == 0) {
+        p->yat_casched.wcet = get_wcet(p);
+        // ... 其他初始化 ...
     }
+
+    spin_lock(&yat_pool_lock);
     
-    /* 初始化任务的Yat_Casched实体 */
-    if (list_empty(&p->yat_casched.run_list)) {
-        INIT_LIST_HEAD(&p->yat_casched.run_list);
-        p->yat_casched.vruntime = 0;
-        p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化 */
+    // 插入就绪池，按优先级排序
+    list_for_each(pos, &yat_ready_job_pool) {
+        entry = list_entry(pos, struct task_struct, yat_casched.run_list);
+        if (p->prio < entry->prio) { // 简单按prio排序
+            break;
+        }
     }
-    
-    /* 添加到运行队列 */
-    list_add_tail(&p->yat_casched.run_list, &yat_rq->tasks);
-    yat_rq->nr_running++;
+    list_add_tail(&p->yat_casched.run_list, pos);
+
+    spin_unlock(&yat_pool_lock);
 }
 
 /*
- * 将任务从运行队列移除
+ * 将任务从就绪池移除
  */
 void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
+    spin_lock(&yat_pool_lock);
     if (!list_empty(&p->yat_casched.run_list)) {
         list_del_init(&p->yat_casched.run_list);
-        yat_rq->nr_running--;
     }
+    spin_unlock(&yat_pool_lock);
 }
 
 /*
- * 选择下一个要运行的任务
- * 使用简单的FIFO策略，但考虑缓存亲和性
+ * pick_next_task - 从本地运行队列取任务
+ * 因为我们保证每个核心最多一个任务，所以逻辑很简单
  */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    struct task_struct *p = NULL;
     
-    if (!yat_rq || yat_rq->nr_running == 0)
+    if (yat_rq->nr_running == 0)
         return NULL;
     
-    /* 选择队列中的第一个任务 */
-    if (!list_empty(&yat_rq->tasks)) {
-        struct sched_yat_casched_entity *yat_se;
-        yat_se = list_first_entry(&yat_rq->tasks, 
-                                 struct sched_yat_casched_entity, 
-                                 run_list);
-        if (yat_se) {
-            p = container_of(yat_se, struct task_struct, yat_casched);
-        }
-    }
-    
-    if (p) {
-        /* 记录当前CPU为任务的最后运行CPU */
-        p->yat_casched.last_cpu = rq->cpu;
-        
-        /* TODO: 在这里添加新历史表记录和加速表更新 */
-        if (rq->cpu >= 0 && rq->cpu < NR_CPUS) {
-            add_history_record(yat_rq->history_tables, rq->cpu, rq_clock_task(rq), p);
-        }
-    }
-    
-    return p;
+    // 直接返回队列中的唯一任务
+    return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
 }
 
 /*
@@ -671,7 +343,13 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
  */
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
+    u64 delta_exec;
     update_curr_yat_casched(rq);
+    
+    delta_exec = rq_clock_task(rq) - p->se.exec_start;
+    
+    /* --- 新增逻辑：更新历史表 --- */
+    add_history_record(rq->cpu, p, delta_exec);
 }
 
 /*
@@ -697,12 +375,124 @@ void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     resched_curr(rq);
 }
 
+/* --- 全局调度逻辑 (v2.2) --- */
+
+// 步骤1: 更新加速表，计算并缓存所有可能的 benefit
+static void update_accelerator_table(void)
+{
+    struct task_struct *p;
+    int i;
+    struct hlist_node *tmp;
+    struct accelerator_entry *entry;
+    int bkt;
+
+    // 清空旧的加速表
+    spin_lock(&accelerator_lock);
+    hash_for_each_safe(accelerator_table, bkt, tmp, entry, node) {
+        hash_del(&entry->node);
+        kfree(entry);
+    }
+    spin_unlock(&accelerator_lock);
+
+    // 遍历就绪池中的任务和所有空闲核心，计算并填充新的benefit
+    spin_lock(&yat_pool_lock);
+    list_for_each_entry(p, &yat_ready_job_pool, yat_casched.run_list) {
+        for_each_online_cpu(i) {
+            // 只为当前空闲的核心计算benefit
+            if (cpu_rq(i)->yat_casched.nr_running > 0)
+                continue;
+
+            u64 recency = calculate_recency(p, i);
+            u64 crp_ratio = get_crp_ratio(recency);
+            u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
+
+            if (benefit > 0) {
+                entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+                if (!entry) continue;
+                entry->p = p;
+                entry->cpu = i;
+                entry->benefit = benefit;
+                
+                spin_lock(&accelerator_lock);
+                // 使用任务和CPU的地址组合作为唯一的key
+                hash_add(accelerator_table, &entry->node, (unsigned long)p + i);
+                spin_unlock(&accelerator_lock);
+            }
+        }
+    }
+    spin_unlock(&yat_pool_lock);
+}
+
+
+// 步骤2: 根据加速表进行调度决策
+static void schedule_yat_casched_tasks(void)
+{
+    struct accelerator_entry *entry, *best_entry = NULL;
+    struct task_struct *p_to_run = NULL;
+    int best_cpu = -1;
+    u64 max_benefit = 0;
+    u64 min_impact = ULLONG_MAX;
+    int bkt;
+    
+    // 1. 更新加速表，缓存所有当前可行的(任务,核心)对的benefit
+    update_accelerator_table();
+
+    // 2. 第一轮：遍历加速表，找到最大的 benefit 值
+    spin_lock(&accelerator_lock);
+    hash_for_each(accelerator_table, bkt, entry, node) {
+        if (entry->benefit > max_benefit) {
+            max_benefit = entry->benefit;
+        }
+    }
+
+    // 3. 第二轮：在 benefit 最大的条目中，通过计算 impact 来打破平局
+    hash_for_each(accelerator_table, bkt, entry, node) {
+        if (entry->benefit == max_benefit) {
+            // 只有在此时，才需要计算 Impact
+            u64 current_impact = calculate_impact(entry->p, entry->cpu);
+            if (current_impact < min_impact) {
+                min_impact = current_impact;
+                best_entry = entry; // 记录最佳条目
+            }
+        }
+    }
+    spin_unlock(&accelerator_lock);
+
+    // 4. 如果找到了最佳选择，则执行调度
+    if (best_entry) {
+        p_to_run = best_entry->p;
+        best_cpu = best_entry->cpu;
+
+        // 从就绪池移除
+        spin_lock(&yat_pool_lock);
+        list_del_init(&p_to_run->yat_casched.run_list);
+        spin_unlock(&yat_pool_lock);
+
+        // 加入目标CPU的本地运行队列
+        struct rq *target_rq = cpu_rq(best_cpu);
+        struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
+        
+        // 此处需要获取目标rq的锁来安全地修改其运行队列
+        raw_spin_lock(&target_rq->lock);
+        list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
+        target_yat_rq->nr_running++;
+        raw_spin_unlock(&target_rq->lock);
+        
+        // 唤醒目标CPU（如果它在休眠）并请求重新调度
+        resched_curr(target_rq);
+    }
+}
+
 /*
- * 负载均衡
+ * 负载均衡 - 现在是我们的主调度入口
  */
 int balance_yat_casched(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
 {
-    return 0;  /* 暂时不实现复杂的负载均衡 */
+    // 只在CPU 0上执行全局调度，避免多核竞争
+    if (rq->cpu == 0) {
+        schedule_yat_casched_tasks();
+    }
+    return 0;
 }
 
 /* 以下是其他必需的接口函数的简单实现 */
@@ -729,13 +519,7 @@ void rq_online_yat_casched(struct rq *rq)
 
 void rq_offline_yat_casched(struct rq *rq)
 {
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* CPU下线处理 - 清理新的历史表数据结构 */
-    destroy_cpu_history_tables(yat_rq->history_tables);
-    
-    /* 注意：全局结构不在这里释放，因为它们可能被其他CPU使用 */
-    printk(KERN_INFO "yat_casched: CPU offline cleanup completed\n");
+    /* CPU下线处理 */
 }
 
 struct task_struct *pick_task_yat_casched(struct rq *rq)
@@ -757,6 +541,7 @@ void prio_changed_yat_casched(struct rq *rq, struct task_struct *task, int oldpr
  * Yat_Casched调度类定义
  */
 DEFINE_SCHED_CLASS(yat_casched) = {
+    //.next_in_same_domain = NULL, // 根据内核版本决定是否需要
     .enqueue_task       = enqueue_task_yat_casched,
     .dequeue_task       = dequeue_task_yat_casched,
     .yield_task         = yield_task_yat_casched,
