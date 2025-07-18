@@ -7681,6 +7681,18 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 			goto req_priv;
 	}
 
+	/*
+	 * YAT_CASCHED policy: Allow priority changes without CAP_SYS_NICE
+	 * for same owner, similar to normal scheduling policies
+	 */
+	if (yat_casched_policy(policy)) {
+		/* Only check same owner for YAT_CASCHED */
+		if (!check_same_owner(p))
+			goto req_priv;
+		/* Skip other privilege checks for YAT_CASCHED */
+		goto skip_priv_checks;
+	}
+
 	/* Can't change other user's priorities: */
 	if (!check_same_owner(p))
 		goto req_priv;
@@ -7688,6 +7700,8 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 	/* Normal users shall not reset the sched_reset_on_fork flag: */
 	if (p->sched_reset_on_fork && !reset_on_fork)
 		goto req_priv;
+
+skip_priv_checks:
 
 	return 0;
 
@@ -7732,19 +7746,19 @@ recheck:
 	/*
 	 * Valid priorities for SCHED_FIFO and SCHED_RR are
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
-	 * SCHED_BATCH, SCHED_IDLE and SCHED_YAT_CASCHED is 0.
+	 * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
 	 */
 	if (attr->sched_priority > MAX_RT_PRIO-1)
 		return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
-	    (rt_policy(policy) != (attr->sched_priority != 0)))
+	    (rt_policy(policy) && attr->sched_priority == 0) ||
+	    (!rt_policy(policy) && !dl_policy(policy) && !yat_casched_policy(policy) && attr->sched_priority != 0))
 		return -EINVAL;
 
 	/*
-	 * YAT_CASCHED policy allows priority 0 for now
-	 * TODO: Support custom priority range later
+	 * YAT_CASCHED policy allows priority range 0-19
 	 */
-	if (yat_casched_policy(policy) && attr->sched_priority != 0)
+	if (yat_casched_policy(policy) && (attr->sched_priority < 0 || attr->sched_priority > 19))
 		return -EINVAL;
 
 	if (user) {

@@ -1310,10 +1310,11 @@ static struct yat_dag_task *yat_get_default_dag(void)
 }
 
 /* 任务入队时的AJLR处理 */
-void yat_ajlr_enqueue_task(struct rq *rq, struct task_struct *p, int flags)
+static void yat_ajlr_enqueue_task(struct rq *rq, struct task_struct *p, int flags)
 {
     struct yat_job *job;
     struct yat_dag_task *default_dag;
+    int user_priority;
     
     /* 检查任务是否已有关联的作业 */
     if (!p->yat_casched.job) {
@@ -1321,13 +1322,26 @@ void yat_ajlr_enqueue_task(struct rq *rq, struct task_struct *p, int flags)
         default_dag = yat_get_default_dag();
         if (!default_dag)
             return;
-            
-        /* 为新任务创建作业 */
-        job = yat_create_job(p->pid, p->prio, 1000000, default_dag);  /* 默认1ms WCET */
+        
+        /* 获取用户设置的优先级 - 关键修复点 */
+        user_priority = p->rt_priority;  /* 直接使用rt_priority字段 */
+        
+        /* 为新任务创建作业，使用用户设置的优先级 */
+        job = yat_create_job(p->pid, user_priority, 1000000, default_dag);  /* 默认1ms WCET */
         if (job) {
             p->yat_casched.job = job;
             job->task = p;
+            
+            printk(KERN_INFO "yat_casched: Task PID %d enqueued with priority %d (rt_priority=%d)\n", 
+                   p->pid, user_priority, p->rt_priority);
         }
+    } else {
+        /* 如果作业已存在，更新优先级 */
+        user_priority = p->rt_priority;
+        p->yat_casched.job->job_priority = user_priority;
+        
+        printk(KERN_INFO "yat_casched: Task PID %d priority updated to %d\n", 
+               p->pid, user_priority);
     }
 }
 

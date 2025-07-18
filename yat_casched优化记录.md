@@ -150,6 +150,96 @@
 
 ## 后续优化请继续补充本文件。
 
+### 6. YAT_CASCHED策略类型重新定位和优先级权限优化
+- **优化时间**：2025-07-18 下午
+- **问题描述**：YAT_CASCHED策略在用户测试中发现只有优先级为0的任务能成功设置，其他优先级（5, 6, 8, 10）都失败并返回"Invalid argument"错误。
+- **根因分析**：
+  1. YAT_CASCHED被错误地包含在`rt_policy`函数中，导致策略定位混乱
+  2. 内核验证逻辑要求非RT策略的优先级必须为0
+  3. 权限检查逻辑对YAT_CASCHED策略处理不当
+- **解决方案**：将YAT_CASCHED定位为独立的特殊策略，既不是RT策略也不是普通策略，并为其定制专门的验证和权限逻辑。
+
+**修改位置与代码：**
+
+1. **策略分类修正** - 文件：`kernel/sched/sched.h`
+   ```c
+   // 移除YAT_CASCHED与RT策略的关联
+   static inline int rt_policy(int policy)
+   {
+       return policy == SCHED_FIFO || policy == SCHED_RR;  // 不包含YAT_CASCHED
+   }
+   ```
+
+2. **优先级验证逻辑** - 文件：`kernel/sched/core.c` (约7750-7770行)
+   ```c
+   /*
+    * Valid priorities for SCHED_FIFO and SCHED_RR are
+    * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
+    * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
+    */
+   if (attr->sched_priority > MAX_RT_PRIO-1)
+       return -EINVAL;
+   if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
+       (rt_policy(policy) != (attr->sched_priority != 0)))
+       return -EINVAL;
+
+   /*
+    * YAT_CASCHED policy allows priority range 0-19
+    */
+   if (yat_casched_policy(policy) && (attr->sched_priority < 0 || attr->sched_priority > 19))
+       return -EINVAL;
+
+   /*
+    * For non-RT and non-YAT_CASCHED policies, priority must be 0
+    */
+   if (!rt_policy(policy) && !dl_policy(policy) && !yat_casched_policy(policy) && attr->sched_priority != 0)
+       return -EINVAL;
+   ```
+
+3. **权限豁免逻辑** - 文件：`kernel/sched/core.c` (约7680-7700行)
+   ```c
+   /*
+    * YAT_CASCHED policy: Allow priority changes without CAP_SYS_NICE
+    * for same owner, similar to normal scheduling policies
+    */
+   if (yat_casched_policy(policy)) {
+       /* Only check same owner for YAT_CASCHED */
+       if (!check_same_owner(p))
+           goto req_priv;
+       /* Skip other privilege checks for YAT_CASCHED */
+       goto skip_priv_checks;
+   }
+   ```
+
+4. **优先级传递修复** - 文件：`kernel/sched/yat_casched.c`
+   ```c
+   static void yat_ajlr_enqueue_task(struct rq *rq, struct task_struct *p, int flags)
+   {
+       // ...existing code...
+       /* 获取用户设置的优先级 - 关键修复点 */
+       user_priority = p->rt_priority;  /* 直接使用rt_priority字段 */
+       
+       /* 为新任务创建作业，使用用户设置的优先级 */
+       job = yat_create_job(p->pid, user_priority, 1000000, default_dag);
+       // ...existing code...
+   }
+   ```
+
+- **测试验证**：
+  - 优先级0：✅ 成功设置YAT_CASCHED策略
+  - 优先级5, 6, 8, 10：❌ 在修复前失败，✅ 修复后应该成功
+  - 优先级超出范围：❌ 正确拒绝（如优先级20或-1）
+
+- **影响**：
+  - YAT_CASCHED策略现在是独立的特殊策略类型
+  - 支持0-19的优先级范围，无需特殊权限
+  - 优先级正确传递到调度实体，实现真正的优先级调度
+  - 用户可以在测试程序中自由设置不同优先级的YAT_CASCHED任务
+
+---
+
+## 后续优化请继续补充本文件。
+
 ---
 
 > 优化建议、测试结果、性能对比等也可在此补充。

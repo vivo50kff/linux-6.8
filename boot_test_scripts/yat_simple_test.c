@@ -115,14 +115,14 @@ int main() {
             int priority = 0;  // 所有任务都使用相同的sched_priority
             int job_priority;  // 内部作业优先级
             switch (i) {
-                case 0: job_priority = -10; break;  // 高优先级
-                case 1: job_priority = -5;  break;  // 较高优先级 
+                case 0: job_priority = 6; break;  // 高优先级
+                case 1: job_priority = 8;  break;  // 较高优先级 
                 case 2: job_priority = 0;   break;  // 普通优先级
                 case 3: job_priority = 5;   break;  // 较低优先级
                 case 4: job_priority = 10;  break;  // 低优先级
                 default: job_priority = 0;  break;
             }
-            child_task(i + 1, priority, work_cycles);
+            child_task(i + 1, job_priority, work_cycles);
             exit(0);
         } else if (pid > 0) {
             // 父进程
@@ -151,10 +151,10 @@ int main() {
     printf("系统CPU数量: %d\n", num_cpus);
     printf("调度策略: YAT_CASCHED (所有任务sched_priority=0)\n");
     printf("内部作业优先级分配:\n");
-    printf("  任务1: job_priority -10 (最高优先级)\n");
-    printf("  任务2: job_priority -5  (较高优先级)\n");
-    printf("  任务3: job_priority 0   (普通优先级)\n");
-    printf("  任务4: job_priority 5   (较低优先级)\n");
+    printf("  任务1: job_priority 6 (普通优先级)\n");
+    printf("  任务2: job_priority 8  (较低优先级)\n");
+    printf("  任务3: job_priority 0   (最高优先级)\n");
+    printf("  任务4: job_priority 5   (较高优先级)\n");
     printf("  任务5: job_priority 10  (最低优先级)\n");
     printf("期望结果: 高job_priority任务应该获得更多CPU时间\n");
     
