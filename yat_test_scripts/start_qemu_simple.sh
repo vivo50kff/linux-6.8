@@ -93,5 +93,5 @@ qemu-system-x86_64 \
     -m 1024 \
     -kernel vmlinux \
     -initrd test_static.cpio.gz \
-    -append "console=ttyS0,115200 quiet" \
+    -append "console=ttyS0,115200 noapic acpi=off quiet" \
     -accel tcg

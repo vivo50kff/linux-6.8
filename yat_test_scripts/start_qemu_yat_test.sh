@@ -55,7 +55,7 @@ qemu-system-x86_64 \
     -m 2G \
     -kernel "$KERNEL_IMAGE" \
     -initrd "$INITRAMFS_IMAGE" \
-    -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=4" \
+    -append "console=ttyS0,115200 noapic acpi=off rdinit=/init panic=1 loglevel=7 maxcpus=4" \
     -nographic \
     -no-reboot
 

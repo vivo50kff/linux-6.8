@@ -2169,6 +2169,10 @@ static inline int __normal_prio(int policy, int rt_prio, int nice)
 		prio = MAX_DL_PRIO - 1;
 	else if (rt_policy(policy))
 		prio = MAX_RT_PRIO - 1 - rt_prio;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(policy))
+		prio = rt_prio;  /* 直接使用设置的优先级 */
+#endif
 	else
 		prio = NICE_TO_PRIO(nice);
 
@@ -7076,6 +7080,10 @@ static void __setscheduler_prio(struct task_struct *p, int prio)
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(prio))
 		p->sched_class = &rt_sched_class;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(p->policy))
+		p->sched_class = &yat_casched_sched_class;
+#endif
 	else
 		p->sched_class = &fair_sched_class;
 
@@ -7724,12 +7732,19 @@ recheck:
 	/*
 	 * Valid priorities for SCHED_FIFO and SCHED_RR are
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
-	 * SCHED_BATCH and SCHED_IDLE is 0.
+	 * SCHED_BATCH, SCHED_IDLE and SCHED_YAT_CASCHED is 0.
 	 */
 	if (attr->sched_priority > MAX_RT_PRIO-1)
 		return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
 	    (rt_policy(policy) != (attr->sched_priority != 0)))
+		return -EINVAL;
+
+	/*
+	 * YAT_CASCHED policy allows priority 0 for now
+	 * TODO: Support custom priority range later
+	 */
+	if (yat_casched_policy(policy) && attr->sched_priority != 0)
 		return -EINVAL;
 
 	if (user) {
@@ -9056,6 +9071,9 @@ SYSCALL_DEFINE1(sched_get_priority_max, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 		break;
 	}
@@ -9083,6 +9101,9 @@ SYSCALL_DEFINE1(sched_get_priority_min, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 	}
 	return ret;
