@@ -31,11 +31,7 @@ echo "   - 然后运行: test_yat_hash_operations"
 echo "   - 退出: 在虚拟机中输入 'exit'，然后按 Ctrl+A 再按 X"
 echo ""
 
-# 启动 QEMU
-qemu-system-x86_64 \
-    -nographic \
-    -m 1024 \
-    -kernel vmlinux \
-    -initrd test_with_programs.cpio.gz \
-    -append "console=ttyS0,115200 quiet" \
-    -accel tcg
+# 启动QEMU
+echo "SeaBIOS (version 1.16.3-debian-1.16.3-2)" > /dev/null 2>&1
+
+qemu-system-x86_64 -nographic -m 1024 -kernel vmlinux -initrd test_with_programs.cpio.gz -append "console=ttyS0,115200 noapic nolapic acpi=off" -accel tcg

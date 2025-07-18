@@ -35,6 +35,11 @@ if [ ! -f "boot_test_scripts/test_yat_hash_operations" ]; then
     gcc -O2 -static -o boot_test_scripts/test_yat_hash_operations boot_test_scripts/test_yat_hash_operations.c
 fi
 
+if [ ! -f "boot_test_scripts/test_yat_history_table" ]; then
+    echo "编译 test_yat_history_table..."
+    gcc -O2 -static -o boot_test_scripts/test_yat_history_table boot_test_scripts/test_yat_history_table.c
+fi
+
 # 创建包含测试程序的 initramfs
 echo "📦 创建包含测试程序的 initramfs..."
 
@@ -51,6 +56,7 @@ cp boot_test_scripts/test_cache_aware_fixed test_with_programs_initramfs/bin/
 cp boot_test_scripts/verify_real_scheduling test_with_programs_initramfs/bin/
 cp boot_test_scripts/test_yat_core_functions test_with_programs_initramfs/bin/
 cp boot_test_scripts/test_yat_hash_operations test_with_programs_initramfs/bin/
+cp boot_test_scripts/test_yat_history_table test_with_programs_initramfs/bin/
 chmod +x test_with_programs_initramfs/bin/test_*
 chmod +x test_with_programs_initramfs/bin/verify_*
 
@@ -80,11 +86,12 @@ echo "📋 可用的测试程序："
 echo "=== 核心功能测试 ==="
 echo "1. test_yat_core_functions     - 调度器核心功能测试"
 echo "2. test_yat_hash_operations    - 哈希表/历史表 CRUD 测试"
+echo "3. test_yat_history_table      - 专门历史表 CRUD 测试"
 echo ""
 echo "=== 性能和兼容性测试 ==="
-echo "3. test_yat_casched_complete   - 完整调度器测试"
-echo "4. test_cache_aware_fixed      - 缓存感知测试"  
-echo "5. verify_real_scheduling      - 实时调度验证"
+echo "4. test_yat_casched_complete   - 完整调度器测试"
+echo "5. test_cache_aware_fixed      - 缓存感知测试"  
+echo "6. verify_real_scheduling      - 实时调度验证"
 echo ""
 
 echo "📋 基本命令："
@@ -100,6 +107,7 @@ echo "🚀 快速测试："
 echo "# 核心功能测试"
 echo "test_yat_core_functions"
 echo "test_yat_hash_operations"
+echo "test_yat_history_table"
 echo ""
 echo "# 完整测试套件"
 echo "test_yat_casched_complete"
