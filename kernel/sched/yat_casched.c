@@ -1,13 +1,13 @@
 /*
- * Yat_Casched - Cache-Aware Scheduler
+ * Yat_Casched - AJLR Cache-Aware Scheduler
  *
- * 这是一个基于缓存感知性的调度器实现。
+ * 基于AJLR (Allocation of parallel Jobs based on Learned cache Recency)算法实现
  * 主要特性：
- * - 维护CPU历史表，记录每个任务上次运行的CPU
- * - 优先将任务调度到上次运行的CPU核心以提高缓存局部性
- * - 在需要负载均衡时智能选择新的CPU核心
+ * - 基于Cache Recency Profile (CRP)预测执行时间
+ * - 使用Maximum Speedup First (MSF)策略分配任务
+ * - 维护多层缓存历史表支持L1/L2/L3缓存感知
+ * - 实现就绪池管理和加速表优化
  */
-
 #include "sched.h"
 #include <linux/sched/yat_casched.h>
 #include <linux/hashtable.h>
@@ -49,6 +49,9 @@ struct accelerator_entry {
 static DEFINE_HASHTABLE(accelerator_table, ACCELERATOR_BITS);
 static DEFINE_SPINLOCK(accelerator_lock);
 
+
+/* --- 函数前向声明 --- */
+static u64 get_crp_ratio(u64 recency);
 
 /* --- 历史表操作函数 --- */
 
@@ -137,7 +140,7 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
     l1_sum = sum_exec_time_since(cpu_id, l1_last, now);
 
     // L2 (共享)
-    const struct cpumask *l2_cpus = cpu_l2_shared_mask(cpu_id);
+    const struct cpumask *l2_cpus = cpu_l2c_shared_mask(cpu_id);
     u64 l2_last = get_max_last_exec_time(p, l2_cpus);
     l2_sum = sum_exec_time_multi(l2_cpus, l2_last, now);
 
@@ -180,19 +183,25 @@ static u64 calculate_impact(struct task_struct *p, int cpu_id) {
 
 
 /*
- * 模拟CRP模型函数
- * 输入: recency (ns) - 任务上次运行距今的时间
- * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比
+ * AJLR的CRP (Cache Recency Profile) 模型函数
+ * 输入: recency (ns) - 缓存新鲜度，表示自上次执行后其他任务的执行时间总和
+ * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比，1000表示完全冷缓存
  */
 static u64 get_crp_ratio(u64 recency)
 {
-    // 这是一个简化的分段函数，模拟CRP曲线
-    if (recency < 10000) // 10us以内，极热
-        return 600; // 实际执行时间是WCET的60%
-    if (recency < 100000) // 100us以内，温
-        return 800; // 实际执行时间是WCET的80%
+    /* 基于RTNS'23论文的CRP分段函数 */
+    if (recency < 1000)          /* 1us内，极热缓存 */
+        return 400;              /* WCET的40% */
+    else if (recency < 10000)    /* 10us内，很热缓存 */
+        return 600;              /* WCET的60% */
+    else if (recency < 100000)   /* 100us内，热缓存 */
+        return 750;              /* WCET的75% */
+    else if (recency < 1000000)  /* 1ms内，温缓存 */
+        return 850;              /* WCET的85% */
+    else if (recency < 10000000) /* 10ms内，冷缓存 */
+        return 950;              /* WCET的95% */
     
-    return 1000; // 否则视为完全冷，执行时间=WCET
+    return 1000;                 /* 完全冷缓存，执行时间=WCET */
 }
 
 /*
@@ -213,6 +222,8 @@ static u64 get_wcet(struct task_struct *p)
  */
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
+    struct rq *main_rq = container_of(rq, struct rq, yat_casched);
+
     // 在第一次初始化时，初始化全局数据结构
     static bool global_init_done = false;
     if (!global_init_done) {
@@ -222,7 +233,7 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
         global_init_done = true;
     }
 
-    printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", rq->rq->cpu);
+    printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
     
     INIT_LIST_HEAD(&rq->tasks);
     rq->nr_running = 0;
@@ -230,10 +241,12 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     rq->cache_decay_jiffies = jiffies;
     spin_lock_init(&rq->history_lock);
     
-    /* 初始化CPU历史表 */
+    /* 此处逻辑是错误的，rq->cpu_history不存在，且不应在此处初始化所有CPU的历史表 */
+    /*
     for (i = 0; i < NR_CPUS; i++) {
         rq->cpu_history[i] = NULL;
     }
+    */
 }
 
 /*
@@ -471,12 +484,13 @@ static void schedule_yat_casched_tasks(void)
         // 加入目标CPU的本地运行队列
         struct rq *target_rq = cpu_rq(best_cpu);
         struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
+        struct rq_flags flags;
         
         // 此处需要获取目标rq的锁来安全地修改其运行队列
-        raw_spin_lock(&target_rq->lock);
+        rq_lock(target_rq, &flags); // 使用 rq_lock 获取锁
         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
         target_yat_rq->nr_running++;
-        raw_spin_unlock(&target_rq->lock);
+        rq_unlock(target_rq, &flags); // 使用 rq_unlock 释放锁
         
         // 唤醒目标CPU（如果它在休眠）并请求重新调度
         resched_curr(target_rq);
