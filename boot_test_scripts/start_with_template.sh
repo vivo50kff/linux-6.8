@@ -40,25 +40,25 @@ elif ! groups | grep -q kvm && [ "$EUID" -ne 0 ]; then
         -enable-kvm \
         -cpu host \
         -machine pc,accel=kvm \
-        -smp cores=4,threads=1,sockets=1 \
-        -m 2G \
+        -smp 8 \
+        -m 4G \
         -kernel "$KERNEL_IMAGE" \
         -initrd "$DISK_IMAGE" \
-        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=4" \
+        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=8" \
         -nographic \
         -no-reboot
     exit $?
 else
     echo "✓ KVM可用，正常启动..."
-    timeout 30s qemu-system-x86_64 \
+    qemu-system-x86_64 \
         -enable-kvm \
         -cpu host \
         -machine pc,accel=kvm \
-        -smp cores=4,threads=1,sockets=1 \
-        -m 2G \
+        -smp 8 \
+        -m 4G \
         -kernel "$KERNEL_IMAGE" \
         -initrd "$DISK_IMAGE" \
-        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=4" \
+        -append "console=ttyS0,115200 rdinit=/init panic=1 loglevel=7 maxcpus=8" \
         -nographic \
         -no-reboot
 fi

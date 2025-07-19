@@ -33,24 +33,45 @@ fi
 
 chmod +x bin/busybox
 
-# 复制基础测试程序
-for prog in test_yat_casched_complete test_cache_aware_fixed verify_real_scheduling; do
-    if [ -f "$SCRIPT_DIR/$prog" ]; then
-        echo "✓ 复制 $prog"
-        cp "$SCRIPT_DIR/$prog" bin/
-        chmod +x bin/$prog
+# 编译并复制新的完整测试程序
+
+echo "✓ 编译并复制新的完整测试程序 test_yat_casched_complete..."
+if [ -f "$SCRIPT_DIR/test_yat_casched_complete.c" ]; then
+    gcc -static "$SCRIPT_DIR/test_yat_casched_complete.c" -o bin/test_program
+    if [ $? -eq 0 ]; then
+        echo "  -> 编译成功"
+        chmod +x bin/test_program
     else
-        echo "⚠ 测试程序未找到: $SCRIPT_DIR/$prog"
+        echo "  -> ✗ 编译失败！"
+        exit 1
     fi
-    done
+else
+    echo "⚠ 测试程序源文件未找到: $SCRIPT_DIR/test_yat_casched_complete.c"
+    exit 1
+fi
+
+# 编译并复制 yat_v2_2_test
+echo "✓ 编译 yat_v2_2_test.c..."
+if [ -f "$SCRIPT_DIR/yat_v2_2_test.c" ]; then
+    gcc -static "$SCRIPT_DIR/yat_v2_2_test.c" -o bin/yat_v2_2_test
+    if [ $? -eq 0 ]; then
+        echo "  -> yat_v2_2_test 编译成功"
+        chmod +x bin/yat_v2_2_test
+    else
+        echo "  -> ✗ yat_v2_2_test 编译失败！"
+        exit 1
+    fi
+else
+    echo "⚠ yat_v2_2_test.c 未找到: $SCRIPT_DIR/yat_v2_2_test.c"
+    exit 1
+fi
 
 # 创建功能完整的 init 脚本
 cat > init << 'EOF'
 #!/bin/busybox sh
 
 echo "=================================================================="
-echo "   Yat_Casched 缓存感知调度器测试环境"
-echo "   Linux Kernel Scheduler Implementation Test Environment"
+echo "   Yat_Casched v2.2 调度器测试环境"
 echo "=================================================================="
 
 # 设置PATH
@@ -69,59 +90,25 @@ echo "正在初始化系统..."
 echo "✓ 系统初始化完成"
 echo ""
 
-# 显示系统信息
-echo "系统信息:"
-echo "  内核版本: $(uname -r)"
-echo "  CPU核心数: $(nproc)"
-echo "  当前时间: $(date)"
-echo "  运行在CPU: $(cat /proc/cpuinfo | grep processor | wc -l) 核心"
-echo ""
-
-# 显示可用测试程序
-echo "可用的测试程序:"
-echo "=================================================================="
-if [ -f "/bin/test_yat_casched_complete" ]; then
-    echo "  1. test_yat_casched_complete  - 完整功能测试套件"
-fi
-if [ -f "/bin/test_cache_aware_fixed" ]; then
-    echo "  2. test_cache_aware_fixed     - 缓存感知专项测试"
-fi
-if [ -f "/bin/verify_real_scheduling" ]; then
-    echo "  3. verify_real_scheduling     - 调度器真实性验证"
-fi
-if [ -f "/bin/performance_test" ]; then
-    echo "  4. performance_test           - 性能基准测试"
-fi
-echo "  5. cat /proc/cpuinfo          - 查看CPU信息"
-echo "  6. cat /proc/sched_debug      - 查看调度器调试信息"
-echo "  7. ps -eo pid,class,comm     - 查看进程调度类"
-echo "=================================================================="
-echo ""
-
-# 自动运行基础验证
-if [ -f "/bin/verify_real_scheduling" ]; then
-    echo "自动运行调度器真实性验证..."
+# 自动运行 v2.2 针对性测试
+if [ -f "/bin/yat_v2_2_test" ]; then
     echo "=================================================================="
-    /bin/verify_real_scheduling
+    echo "  自动运行 Yat_Casched v2.2 针对性测试..."
     echo "=================================================================="
+    /bin/yat_v2_2_test
+    echo "=================================================================="
+    echo "  v2.2 测试完成。"
+fi
+
+# 保留 test_program 供手动测试
+if [ -f "/bin/test_program" ]; then
     echo ""
+    echo "可手动运行 /bin/test_program 进行基础功能测试。"
 fi
 
-# 显示交互提示
-echo "交互式测试环境已就绪！"
 echo ""
-echo "快速测试命令:"
-echo "  test_yat_casched_complete  # 运行完整测试"
-echo "  test_cache_aware_fixed     # 运行缓存感知测试"
-echo "  verify_real_scheduling     # 重新验证调度器"
-echo "  performance_test           # 运行性能基准测试"
-echo ""
-echo "调试命令:"
-echo "  ps aux                     # 查看所有进程"
-echo "  top                        # 查看实时进程信息"
-echo "  cat /proc/loadavg          # 查看系统负载"
-echo ""
-echo "输入 'exit' 关闭系统"
+echo "测试已结束。可再次运行 /bin/yat_v2_2_test 或 /bin/test_program，或使用下面的 shell 进行调试。"
+echo "调试命令: dmesg, ps -eo pid,class,comm"
 echo ""
 
 # 启动交互式shell
@@ -130,12 +117,15 @@ EOF
 
 chmod +x init
 
-echo "正在创建 initramfs 归档..."
 find . -print0 | cpio --null -ov --format=newc | gzip -9 > initramfs_complete.cpio.gz
 
+
+# === 新增：复制归档到脚本目录 ===
 if [ $? -eq 0 ]; then
     echo "✓ 成功创建 initramfs_complete.cpio.gz"
     ls -lh initramfs_complete.cpio.gz
+    cp initramfs_complete.cpio.gz "$SCRIPT_DIR/"
+    echo "✓ 已复制到 $SCRIPT_DIR/initramfs_complete.cpio.gz"
 else
     echo "✗ 创建 initramfs 失败！"
     exit 1

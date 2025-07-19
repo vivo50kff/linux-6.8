@@ -32,18 +32,16 @@
 ### 1.3 历史表 (History Table)
 
 - **功能不变**：每个核心维护一个 `cpu_history_table[cpu]`，用于在 `benefit` 相同时，计算“利他”的 `Impact`，作为决胜局（Tie-Breaker）的依据。
-- **实现**：依然是哈希表，以时间戳或版本号为 key，作业指针为 value。
+- **实现**：每个核心仅维护一个按时间戳升序排列的双向链表，链表节点保存历史记录。
 
 ---
 
-## 1.x 历史表设计与高效检索方案
+## 2 历史表设计与高效检索方案
 
-### 1.1 历史表结构与原理
+### 2.1 历史表结构与原理
 
 - 每个核心维护一个 `cpu_history_table`，用于记录该核心上所有任务的历史执行信息。
-- **链表**：用于按时间戳顺序遍历，便于区间统计（如 sum_exec_time）。
-- **哈希表**：以时间戳为 key，支持快速定位某次执行记录或区间查找。
-- 可选：任务ID+时间戳作为复合键，支持更复杂检索。
+- **双向链表**：用于按时间戳升序遍历，便于区间统计（如 sum_exec_time），支持高效从尾部反向累加。
 
 #### 结构定义
 
@@ -52,60 +50,54 @@ struct history_record {
     int task_id;           // 任务编号
     u64 timestamp;         // 执行时间戳
     u64 exec_time;         // 本次执行时长
-    struct list_head list; // 链表节点（用于时间顺序遍历）
-    struct hlist_node hnode; // 哈希节点（用于时间戳索引）
+    struct list_head list; // 双向链表节点（用于时间顺序遍历）
 };
 
 struct cpu_history_table {
-    struct list_head time_list;         // 时间戳有序链表头
-    DECLARE_HASHTABLE(ts_hash, 8);     // 时间戳哈希表头
+    struct list_head time_list;         // 时间戳升序双向链表头
 };
 
 struct cpu_history_table history_tables[NR_CPUS];
 ```
 
-### 1.2 任务结构体成员说明
+---
 
-```c
-struct sched_yat_casched_entity {
-    int task_id;
-    u64 wcet;
-    u64 per_cpu_last_ts[NR_CPUS]; // 每个核心上最近一次执行时间戳，分配后及时更新
-    struct list_head history_node; // 用于辅助挂载到历史链表（不存储全部历史）
-    // ...其他字段...
-};
-```
-
-### 1.3 主要接口与操作流程
+#### 主要接口与操作流程
 
 - 插入历史记录：
-  - 新建 `history_record`，插入 `time_list`（按时间顺序），同时插入 `ts_hash`（以 timestamp 为 key）。
+  - 新建 `history_record`，插入 `time_list`（按时间戳升序）。
 - 查询某任务最近一次执行时间戳：
   - 直接用 `per_cpu_last_ts[cpu]`。
 - 区间统计：
-  - 用 `per_cpu_last_ts[cpu]` 作为起点，在 `ts_hash` 中查找所有大于该时间戳的记录，累加执行时间。
+  - 用 `per_cpu_last_ts[cpu]` 作为起点，从链表尾部向前累加，直到遇到小于该时间戳的节点为止。
 
 #### 典型接口伪代码
 
 ```c
 void add_history_record(int cpu, int task_id, u64 timestamp, u64 exec_time) {
-    struct history_record *rec = kmalloc(...);
+    struct history_record *rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
     rec->task_id = task_id;
     rec->timestamp = timestamp;
     rec->exec_time = exec_time;
     list_add_tail(&rec->list, &history_tables[cpu].time_list);
-    hash_add(history_tables[cpu].ts_hash, &rec->hnode, timestamp);
 }
 
 u64 get_last_exec_time(int task_id, int cpu) {
     return task->per_cpu_last_ts[cpu];
 }
 
+// 从链表尾部向前累加，直到遇到小于 start_ts 的节点为止
 u64 sum_exec_time_since(int cpu, u64 start_ts, u64 end_ts) {
     u64 sum = 0;
     struct history_record *rec;
-    hash_for_each_range(history_tables[cpu].ts_hash, rec, hnode, start_ts, end_ts) {
-        sum += rec->exec_time;
+    struct list_head *pos = history_tables[cpu].time_list.prev;
+    while (pos != &history_tables[cpu].time_list) {
+        rec = list_entry(pos, struct history_record, list);
+        if (rec->timestamp < start_ts)
+            break;
+        if (rec->timestamp <= end_ts)
+            sum += rec->exec_time;
+        pos = pos->prev;
     }
     return sum;
 }
@@ -113,69 +105,21 @@ u64 sum_exec_time_since(int cpu, u64 start_ts, u64 end_ts) {
 
 ---
 
-## 1.4 哈希表查询机制详解
+### 2.2 历史表区间与单点查询说明
 
-### 查询原理
-
-- 哈希表本质是将键（如时间戳、任务ID等）通过哈希函数映射到桶（bucket），每个桶存储一个链表（或hlist）用于解决哈希冲突。
-- 查询时，先通过哈希函数定位到对应桶，再在桶内链表中顺序查找目标记录。
-
-### 查询流程举例
-
-#### 1. 按时间戳查找某次执行记录
-
-```c
-// 查询指定时间戳的历史记录
-struct history_record *find_record_by_ts(int cpu, u64 timestamp) {
-    struct history_record *rec;
-    hash_for_each_possible(history_tables[cpu].ts_hash, rec, hnode, timestamp) {
-        if (rec->timestamp == timestamp)
-            return rec;
-    }
-    return NULL;
-}
-```
-
-- `hash_for_each_possible` 通过哈希函数定位到 timestamp 对应的桶，只遍历该桶内链表，效率远高于全表遍历。
-
-#### 2. 区间查找（如统计某时间段内所有记录）
-
-- 可用 `hash_for_each_range`（或自定义遍历），遍历所有桶，将 timestamp 在区间内的记录累加。
-- 也可结合链表按时间顺序遍历，适合区间统计。
-
-#### 3. 按任务ID查找最近一次执行
-
-```c
-// 查询某任务最近一次执行记录
-struct history_record *find_last_record_by_task(int cpu, int task_id) {
-    struct history_record *rec, *last = NULL;
-    hash_for_each(history_tables[cpu].task_hash, rec, hnode) {
-        if (rec->task_id == task_id) {
-            if (!last || rec->timestamp > last->timestamp)
-                last = rec;
-        }
-    }
-    return last;
-}
-```
-
-- 通过哈希表快速定位所有 task_id 匹配的记录，再取最大 timestamp。
-
-### 总结
-
-- 哈希表查询的高效性来自于“定位桶+桶内链表短遍历”，远优于全表线性查找。
-- 结合链表可实现高效区间统计，哈希表则适合单点/单任务快速定位。
-- 设计时可灵活选择 key（时间戳、任务ID、复合键），满足不同检索需求。
+- 所有区间统计、recency计算、单点查找均通过链表遍历实现。
+- 区间统计：从链表尾部向前遍历，遇到timestamp < 起点即停止。
+- 单点查找：可正向遍历链表，或维护per_cpu_last_ts数组直接获取。
 
 ---
 
-## 2.x Recency 多层缓存定义与计算方法
+## 3 Recency 多层缓存定义与计算方法
 
-### 2.1 Recency 的本质定义
+### 3.1 Recency 的定义
 
-对于任务 i 在核 J 上的 recency（记为 recency(i, J)），它是该任务两次命中某层缓存之间，所有其他任务在该缓存上的执行时间之和。如果任务 i 从未命中过该层缓存，则 recency=0。
+对于任务 i 在核 J 上的 recency（记为 recency(i, J)），它是该任务两次命中某层缓存之间，所有其他任务在该缓存上的执行时间之和。如果任务 i 从未命中过该层缓存，则 recency=理论最大时间，这里为了方便计算我们选择该任务两次命中某层缓存之间的时间差。
 
-### 2.2 多层缓存递归计算方法
+### 3.2 多层缓存递归计算方法
 
 - **L1 层（私有缓存）**：
   - 查找核 J 上任务 i 上一次执行的时间戳，到本次执行之间，核 J 上所有任务的执行时间之和。
@@ -210,7 +154,7 @@ u64 calculate_recency(int task_id, int cpu_id, u64 now) {
 
 ---
 
-## 3.x 主调度循环伪代码（整合所有结构）
+## 4 主调度循环伪代码（整合所有结构）
 
 ```c
 void yat_casched_schedule(void) {
@@ -236,7 +180,7 @@ void yat_casched_schedule(void) {
 
 ---
 
-## 2. 核心调度流程 (AJLR 主循环)
+## 5. 核心调度流程 (AJLR 主循环)
 
 这是一个**事件驱动**的、在每次调度时机（如 `schedule()`）被触发的循环。
 
@@ -312,6 +256,113 @@ core_t find_best_core_for_job(job_t* job) {
 
 ---
 
-## 3. 方案优势与总结
+## 6. 方案优势与总结
 
 本方案通过**层级化设计**和**引入“就绪池”**，完美对齐了 AJLR 论文的精髓，形成了一个逻辑严谨、理论坚实的决赛级调度器框架。它不再是一个简单的“任务池”调度，而是一个真正理解**程序内在依赖关系**的、面向 **DAG 作业流** 的智能调度系统。
+
+---
+
+## 附录：完整的历史表实现示例
+
+```c
+#include <linux/list.h>
+
+// 历史记录结构体
+struct history_record {
+    int task_id;
+    u64 timestamp;
+    u64 exec_time;
+    struct list_head list;        // 用于时间顺序遍历的链表节点
+};
+
+// 每个CPU的历史表
+struct cpu_history_table {
+    struct list_head time_list;         // 时间戳有序链表头
+    spinlock_t lock;                    // 保护并发访问
+};
+
+static struct cpu_history_table history_tables[NR_CPUS];
+
+// 初始化历史表
+void init_history_tables(void) {
+    int cpu;
+    for_each_possible_cpu(cpu) {
+        INIT_LIST_HEAD(&history_tables[cpu].time_list);
+        spin_lock_init(&history_tables[cpu].lock);
+    }
+}
+
+// 添加历史记录
+void add_history_record(int cpu, int task_id, u64 timestamp, u64 exec_time) {
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu];
+    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
+    if (!rec) return;
+    rec->task_id = task_id;
+    rec->timestamp = timestamp;
+    rec->exec_time = exec_time;
+    spin_lock(&table->lock);
+    // 直接插入链表尾部（时间戳递增）
+    list_add_tail(&rec->list, &table->time_list);
+    spin_unlock(&table->lock);
+}
+
+// 查询某任务最近一次执行时间戳
+u64 get_task_last_timestamp(int cpu, int task_id) {
+    u64 last_ts = 0;
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu];
+  
+    spin_lock(&table->lock);
+    list_for_each_entry(rec, &table->time_list, list) {
+        if (rec->task_id == task_id && rec->timestamp > last_ts) {
+            last_ts = rec->timestamp;
+        }
+    }
+    spin_unlock(&table->lock);
+    return last_ts;
+}
+
+// 计算时间区间内的执行时间总和（使用链表，效率更高）
+u64 sum_exec_time_since(int cpu, u64 start_ts, u64 end_ts) {
+    u64 sum = 0;
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu];
+  
+    spin_lock(&table->lock);
+    list_for_each_entry(rec, &table->time_list, list) {
+        if (rec->timestamp < start_ts) continue;
+        if (rec->timestamp > end_ts) break;
+        sum += rec->exec_time;
+    }
+    spin_unlock(&table->lock);
+    return sum;
+}
+
+// 清理过期的历史记录（可选，用于内存管理）
+void cleanup_old_records(int cpu, u64 cutoff_time) {
+    struct history_record *rec, *tmp;
+    struct cpu_history_table *table = &history_tables[cpu];
+  
+    spin_lock(&table->lock);
+    list_for_each_entry_safe(rec, tmp, &table->time_list, list) {
+        if (rec->timestamp >= cutoff_time) break;
+      
+        list_del(&rec->list);
+        kfree(rec);
+    }
+    spin_unlock(&table->lock);
+}
+```
+
+### 关键要点
+
+1. **数据结构极简**：
+   - 每核仅维护一个时间戳升序的双向链表，无需哈希表。
+   - 结合per_cpu_last_ts数组可实现O(1)获取每核每任务最近一次执行时间。
+2. **并发安全**：
+   - 使用自旋锁保护链表操作
+   - 在原子上下文中使用GFP_ATOMIC分配内存
+3. **内存管理**：
+   - 提供清理机制防止内存泄漏
+   - 考虑历史记录的生命周期管理
