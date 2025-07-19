@@ -1,113 +1,7 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 
-static struct dentry *yat_debugfs_dir;
-static struct dentry *yat_ready_pool_file;
-static struct dentry *yat_accelerator_file;
-static struct dentry *yat_history_file;
-// debugfs 显示加速表内容
-static int yat_accelerator_show(struct seq_file *m, void *v)
-{
-    struct accelerator_entry *entry;
-    int bkt, count = 0;
-    seq_printf(m, "Yat_Casched Accelerator Table:\nIdx | PID | CPU | Benefit\n");
-    spin_lock(&accelerator_lock);
-    hash_for_each(accelerator_table, bkt, entry, node) {
-        if (entry && entry->p) {
-            seq_printf(m, "%3d | %5d | %3d | %8llu\n", count, entry->p->pid, entry->cpu, entry->benefit);
-            count++;
-        }
-    }
-    spin_unlock(&accelerator_lock);
-    seq_printf(m, "Total: %d\n", count);
-    return 0;
-}
 
-static int yat_accelerator_open(struct inode *inode, struct file *file)
-{
-    return single_open(file, yat_accelerator_show, NULL);
-}
-
-static const struct file_operations yat_accelerator_fops = {
-    .owner = THIS_MODULE,
-    .open = yat_accelerator_open,
-    .read = seq_read,
-    .llseek = seq_lseek,
-    .release = single_release,
-};
-
-// debugfs 显示历史表内容（每个CPU）
-static int yat_history_show(struct seq_file *m, void *v)
-{
-    int cpu, count = 0;
-    struct history_record *rec;
-    seq_printf(m, "Yat_Casched History Table (per CPU):\nCPU | PID | Timestamp | ExecTime\n");
-    for_each_possible_cpu(cpu) {
-        spin_lock(&history_tables[cpu].lock);
-        list_for_each_entry(rec, &history_tables[cpu].time_list, list) {
-            seq_printf(m, "%3d | %5d | %10llu | %8llu\n", cpu, rec->task_id, rec->timestamp, rec->exec_time);
-            count++;
-        }
-        spin_unlock(&history_tables[cpu].lock);
-    }
-    seq_printf(m, "Total: %d\n", count);
-    return 0;
-}
-
-static int yat_history_open(struct inode *inode, struct file *file)
-{
-    return single_open(file, yat_history_show, NULL);
-}
-
-static const struct file_operations yat_history_fops = {
-    .owner = THIS_MODULE,
-    .open = yat_history_open,
-    .read = seq_read,
-    .llseek = seq_lseek,
-    .release = single_release,
-};
-
-// debugfs 显示当前任务池内容
-static int yat_ready_pool_show(struct seq_file *m, void *v)
-{
-    struct task_struct *p;
-    int count = 0;
-    seq_printf(m, "Yat_Casched Ready Pool:\nIdx | PID | Prio | WCET\n");
-    spin_lock(&yat_pool_lock);
-    list_for_each_entry(p, &yat_ready_job_pool, yat_casched.run_list) {
-        seq_printf(m, "%3d | %5d | %4d | %6llu\n", count, p->pid, p->prio, p->yat_casched.wcet);
-        count++;
-    }
-    spin_unlock(&yat_pool_lock);
-    seq_printf(m, "Total: %d\n", count);
-    return 0;
-}
-
-static int yat_ready_pool_open(struct inode *inode, struct file *file)
-{
-    return single_open(file, yat_ready_pool_show, NULL);
-}
-
-static const struct file_operations yat_ready_pool_fops = {
-    .owner = THIS_MODULE,
-    .open = yat_ready_pool_open,
-    .read = seq_read,
-    .llseek = seq_lseek,
-    .release = single_release,
-};
-
-static void yat_debugfs_init(void)
-{
-    yat_debugfs_dir = debugfs_create_dir("yat_casched", NULL);
-    yat_ready_pool_file = debugfs_create_file("ready_pool", 0444, yat_debugfs_dir, NULL, &yat_ready_pool_fops);
-    yat_accelerator_file = debugfs_create_file("accelerator_table", 0444, yat_debugfs_dir, NULL, &yat_accelerator_fops);
-    yat_history_file = debugfs_create_file("history_table", 0444, yat_debugfs_dir, NULL, &yat_history_fops);
-}
-
-static void yat_debugfs_cleanup(void)
-{
-    debugfs_remove_recursive(yat_debugfs_dir);
-}
 /*
  * Yat_Casched - Cache-Aware Scheduler
  *
@@ -124,6 +18,10 @@ static void yat_debugfs_cleanup(void)
 #include <linux/slab.h>
 #include <linux/cpumask.h>
 #include <linux/topology.h>
+
+/* debugfs 导出接口声明，避免隐式声明和 static 冲突 */
+static void yat_debugfs_init(void);
+static void yat_debugfs_cleanup(void);
 
 /* --- 核心数据结构定义 (v2.2 - 最终版) --- */
 
@@ -348,27 +246,21 @@ static u64 get_wcet(struct task_struct *p)
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
     struct rq *main_rq = container_of(rq, struct rq, yat_casched);
+    static atomic_t global_init_done = ATOMIC_INIT(0);
 
-    // 在第一次初始化时，初始化全局数据结构
-    static bool global_init_done = false;
-    if (!global_init_done) {
+    // 只允许第一个调用者执行全局初始化
+    if (atomic_cmpxchg(&global_init_done, 0, 1) == 0) {
         printk(KERN_INFO "======Yat_Casched: Global Init======\n");
         init_history_tables();
         hash_init(accelerator_table); // 初始化哈希表
-        yat_debugfs_init(); // 初始化 debugfs
-        global_init_done = true;
     }
-// 内核模块卸载时清理 debugfs（如有需要，可在合适位置调用）
-// yat_debugfs_cleanup();
-
     printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
-    
+
     INIT_LIST_HEAD(&rq->tasks);
     rq->nr_running = 0;
     rq->agent = NULL;
     rq->cache_decay_jiffies = jiffies;
     spin_lock_init(&rq->history_lock);
-    
     /* 此处逻辑是错误的，rq->cpu_history不存在，且不应在此处初始化所有CPU的历史表 */
     /*
     for (i = 0; i < NR_CPUS; i++) {
@@ -427,7 +319,6 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     // 初始化新任务
     if (p->yat_casched.wcet == 0) {
         p->yat_casched.wcet = get_wcet(p);
-        // ... 其他初始化 ...
     }
 
     spin_lock(&yat_pool_lock);
@@ -442,6 +333,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     list_add_tail(&p->yat_casched.run_list, pos);
 
     spin_unlock(&yat_pool_lock);
+    printk(KERN_INFO "[yat] enqueue_task: PID=%d\n", p->pid);
 }
 
 /*
@@ -452,6 +344,7 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     spin_lock(&yat_pool_lock);
     if (!list_empty(&p->yat_casched.run_list)) {
         list_del_init(&p->yat_casched.run_list);
+        printk(KERN_INFO "[yat] dequeue_task: PID=%d\n", p->pid);
     }
     spin_unlock(&yat_pool_lock);
 }
@@ -615,12 +508,11 @@ static void schedule_yat_casched_tasks(void)
         struct rq_flags flags;
         
         // 此处需要获取目标rq的锁来安全地修改其运行队列
-        rq_lock(target_rq, &flags); // 使用 rq_lock 获取锁
+        rq_lock(target_rq, &flags);
         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
         target_yat_rq->nr_running++;
-        rq_unlock(target_rq, &flags); // 使用 rq_unlock 释放锁
-        
-        // 唤醒目标CPU（如果它在休眠）并请求重新调度
+        rq_unlock(target_rq, &flags);
+        printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
         resched_curr(target_rq);
     }
 }
@@ -678,6 +570,165 @@ void prio_changed_yat_casched(struct rq *rq, struct task_struct *task, int oldpr
 {
     /* 优先级变化处理 */
 }
+/*
+
+插入debugfs
+
+*/
+static struct dentry *yat_debugfs_dir;
+static struct dentry *yat_ready_pool_file;
+static struct dentry *yat_accelerator_file;
+static struct dentry *yat_history_file;
+// debugfs 显示加速表内容
+static int yat_accelerator_show(struct seq_file *m, void *v)
+{
+    struct accelerator_entry *entry;
+    int bkt, count = 0;
+    seq_printf(m, "Yat_Casched Accelerator Table:\nIdx | PID | CPU | Benefit\n");
+    spin_lock(&accelerator_lock);
+    hash_for_each(accelerator_table, bkt, entry, node) {
+        if (entry && entry->p) {
+            seq_printf(m, "%3d | %5d | %3d | %8llu\n", count, entry->p->pid, entry->cpu, entry->benefit);
+            count++;
+        }
+    }
+    spin_unlock(&accelerator_lock);
+    seq_printf(m, "Total: %d\n", count);
+    return 0;
+}
+
+static int yat_accelerator_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, yat_accelerator_show, NULL);
+}
+
+static const struct file_operations yat_accelerator_fops = {
+    .owner = THIS_MODULE,
+    .open = yat_accelerator_open,
+    .read = seq_read,
+    .llseek = seq_lseek,
+    .release = single_release,
+};
+
+// debugfs 显示历史表内容（每个CPU）
+static int yat_history_show(struct seq_file *m, void *v)
+{
+    int cpu, count = 0;
+    struct history_record *rec;
+    seq_printf(m, "Yat_Casched History Table (per CPU):\nCPU | PID | Timestamp | ExecTime\n");
+    for_each_possible_cpu(cpu) {
+        spin_lock(&history_tables[cpu].lock);
+        list_for_each_entry(rec, &history_tables[cpu].time_list, list) {
+            seq_printf(m, "%3d | %5d | %10llu | %8llu\n", cpu, rec->task_id, rec->timestamp, rec->exec_time);
+            count++;
+        }
+        spin_unlock(&history_tables[cpu].lock);
+    }
+    seq_printf(m, "Total: %d\n", count);
+    return 0;
+}
+
+static int yat_history_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, yat_history_show, NULL);
+}
+
+static const struct file_operations yat_history_fops = {
+    .owner = THIS_MODULE,
+    .open = yat_history_open,
+    .read = seq_read,
+    .llseek = seq_lseek,
+    .release = single_release,
+};
+
+// debugfs 显示当前任务池内容
+static int yat_ready_pool_show(struct seq_file *m, void *v)
+{
+    struct task_struct *p;
+    int count = 0;
+    seq_printf(m, "Yat_Casched Ready Pool:\nIdx | PID | Prio | WCET\n");
+    spin_lock(&yat_pool_lock);
+    list_for_each_entry(p, &yat_ready_job_pool, yat_casched.run_list) {
+        seq_printf(m, "%3d | %5d | %4d | %6llu\n", count, p->pid, p->prio, p->yat_casched.wcet);
+        count++;
+    }
+    spin_unlock(&yat_pool_lock);
+    seq_printf(m, "Total: %d\n", count);
+    return 0;
+}
+
+static int yat_ready_pool_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, yat_ready_pool_show, NULL);
+}
+
+static const struct file_operations yat_ready_pool_fops = {
+    .owner = THIS_MODULE,
+    .open = yat_ready_pool_open,
+    .read = seq_read,
+    .llseek = seq_lseek,
+    .release = single_release,
+};
+
+static void yat_debugfs_init(void)
+{
+    printk(KERN_INFO "[yat] debugfs init called\n");
+    yat_debugfs_dir = debugfs_create_dir("yat_casched", NULL);
+    if (IS_ERR_OR_NULL(yat_debugfs_dir)) {
+        printk(KERN_ERR "[yat] debugfs_create_dir failed: %ld\n", PTR_ERR(yat_debugfs_dir));
+        yat_debugfs_dir = NULL;
+        return;
+    } else {
+        printk(KERN_INFO "[yat] debugfs dir created successfully: %p\n", yat_debugfs_dir);
+    }
+
+    yat_ready_pool_file = debugfs_create_file("ready_pool", 0444, yat_debugfs_dir, NULL, &yat_ready_pool_fops);
+    if (IS_ERR_OR_NULL(yat_ready_pool_file)) {
+        printk(KERN_ERR "[yat] debugfs create ready_pool file failed: %ld\n", PTR_ERR(yat_ready_pool_file));
+        yat_ready_pool_file = NULL;
+    } else {
+        printk(KERN_INFO "[yat] debugfs ready_pool file created: %p\n", yat_ready_pool_file);
+    }
+
+    yat_accelerator_file = debugfs_create_file("accelerator_table", 0444, yat_debugfs_dir, NULL, &yat_accelerator_fops);
+    if (IS_ERR_OR_NULL(yat_accelerator_file)) {
+        printk(KERN_ERR "[yat] debugfs create accelerator_table file failed: %ld\n", PTR_ERR(yat_accelerator_file));
+        yat_accelerator_file = NULL;
+    } else {
+        printk(KERN_INFO "[yat] debugfs accelerator_table file created: %p\n", yat_accelerator_file);
+    }
+
+    yat_history_file = debugfs_create_file("history_table", 0444, yat_debugfs_dir, NULL, &yat_history_fops);
+    if (IS_ERR_OR_NULL(yat_history_file)) {
+        printk(KERN_ERR "[yat] debugfs create history_table file failed: %ld\n", PTR_ERR(yat_history_file));
+        yat_history_file = NULL;
+    } else {
+        printk(KERN_INFO "[yat] debugfs history_table file created: %p\n", yat_history_file);
+    }
+}
+
+static void yat_debugfs_cleanup(void)
+{
+    if (!IS_ERR_OR_NULL(yat_debugfs_dir)) {
+        debugfs_remove_recursive(yat_debugfs_dir);
+        yat_debugfs_dir = NULL;
+    }
+    yat_ready_pool_file = NULL;
+    yat_accelerator_file = NULL;
+    yat_history_file = NULL;
+}
+
+/*
+ * 延迟初始化 debugfs，确保在 debugfs 挂载后再创建文件
+ */
+static int __init yat_debugfs_late_init(void)
+{
+    printk(KERN_INFO "[yat] late debugfs init called\n");
+    yat_debugfs_init();
+    return 0;
+}
+late_initcall(yat_debugfs_late_init);
+
 
 /*
  * Yat_Casched调度类定义

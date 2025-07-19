@@ -83,6 +83,9 @@ echo "正在初始化系统..."
 /bin/busybox mount -t sysfs sysfs /sys
 /bin/busybox mount -t devtmpfs devtmpfs /dev
 
+# 挂载 debugfs 以支持调度器状态读取
+/bin/busybox mount -t debugfs none /sys/kernel/debug
+
 # 创建busybox符号链接
 /bin/busybox --install -s /bin
 /bin/busybox --install -s /sbin
