@@ -66,78 +66,45 @@ struct yat_history_record {
     u64 exec_time;                 /* 执行时间 */
 };
 
-/* 就绪作业池 */
-struct yat_ready_job_pool {
-    struct list_head head;         /* 就绪作业链表头 */
-    spinlock_t lock;               /* 就绪池锁 */
-    unsigned int nr_jobs;          /* 就绪作业数量 */
-};
+/* 简化版本：移除复杂的DAG和Job结构体
+ * 所有调度信息都集成到 sched_yat_casched_entity 中
+ */
 
-/* DAG任务结构 */
-struct yat_dag_task {
-    struct list_head dag_list;     /* DAG链表节点 */
-    struct list_head jobs;         /* 作业链表头 */
-    int dag_id;                    /* DAG ID */
-    int priority;                  /* DAG优先级 */
-    int total_jobs;                /* 总作业数 */
-    int completed_jobs;            /* 已完成作业数 */
-    spinlock_t lock;               /* DAG锁 */
-};
-
-/* 作业结构 */
-struct yat_job {
-    struct list_head ready_list;   /* 就绪队列链表节点 */
-    struct list_head job_list;     /* DAG作业链表节点 */
-    struct list_head predecessors; /* 前驱作业列表 */
-    struct list_head successors;   /* 后继作业列表 */
-    int job_id;                    /* 作业ID */
-    int job_priority;              /* 作业优先级 */
-    enum yat_job_state state;      /* 作业状态 */
-    int pending_predecessors;      /* 待完成的前驱作业数 */
-    u64 wcet;                      /* 最坏情况执行时间 */
-    u64 per_cpu_last_ts[NR_CPUS];  /* 每个CPU的最后时间戳 */
-    struct yat_dag_task *dag;      /* 所属DAG */
-    struct task_struct *task;      /* 关联的任务 */
-};
-
-/* 全局优先队列节点 */
-struct yat_global_task_node {
-    struct list_head list;         /* 链表节点 */
-    struct task_struct *task;      /* 任务指针 */
-    int priority;                  /* 优先级 */
-    u64 wcet;                      /* WCET */
-    u64 enqueue_time;              /* 入队时间 */
-};
-
-/* 全局优先队列 */
-struct yat_global_task_pool {
-    struct list_head head;         /* 队列头 */
-    spinlock_t lock;               /* 队列锁 */
-    unsigned int nr_tasks;         /* 队列中任务数 */
-};
+/*
+// 以下结构体在简化版本中被移除：
+// struct yat_dag_task - DAG任务结构
+// struct yat_job - 作业结构  
+// struct yat_ready_job_pool - 就绪作业池
+// struct yat_global_task_pool - 全局优先队列
+// struct yat_global_task_node - 全局优先队列节点
+*/
 
 struct sched_yat_casched_entity {
-    struct list_head run_list;      /* 运行队列链表节点 */
+    struct list_head run_list;      /* CPU本地队列 */
+    struct list_head ready_list;    /* 全局就绪队列 */
+    
     u64 vruntime;                   /* 虚拟运行时间 */
-    u64 slice;                      /* 时间片，与CFS保持一致 */
+    u64 wcet;                       /* 最坏情况执行时间 */
+    int priority;                   /* 统一的优先级 */
+    int job_id;                     /* 作业ID */
+    enum yat_job_state state;       /* 作业状态 */
+    u64 per_cpu_last_ts[NR_CPUS];   /* 每个CPU的最后时间戳 */
     int last_cpu;                   /* 上次运行的CPU */
+    
+    /* 保留CFS兼容性 */
+    u64 slice;                      /* 时间片，与CFS保持一致 */
     u64 per_cpu_recency[NR_CPUS];   /* 每个CPU的recency值 */
-    u64 wcet;                       /* 任务的WCET */
-    int priority;                   /* 任务优先级 */
-    struct yat_job *job;            /* 关联的作业 */
 };
 
 struct yat_casched_rq {
     struct list_head tasks;         /* 任务队列 */
-    struct list_head active_dags;   /* 活跃DAG列表 */
+    struct list_head ready_tasks;   /* 全局就绪任务列表 */
     unsigned int nr_running;        /* 运行任务数量 */
     struct task_struct *agent;     /* 代理任务 */
     u64 cache_decay_jiffies;       /* 缓存衰减时间 */
     spinlock_t history_lock;       /* 历史表锁 */
     
-    /* 全局调度结构 */
-    struct yat_ready_job_pool *ready_pool;            /* 就绪作业池 */
-    struct yat_global_task_pool *global_pool;         /* 全局优先队列 (兼容性) */
+    /* 简化的调度结构 */
     struct yat_accel_table *accel_table;              /* 加速表 */
     struct yat_cpu_history_table history_tables[NR_CPUS]; /* CPU历史表 */
 };
@@ -160,33 +127,23 @@ u64 yat_accel_table_lookup(struct yat_accel_table *table, pid_t task_pid, int cp
 int yat_accel_table_delete(struct yat_accel_table *table, pid_t task_pid, int cpu_id);
 void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time);
 
-/* DAG和作业管理接口 */
-struct yat_dag_task *yat_create_dag(int dag_id, int priority);
-void yat_destroy_dag(struct yat_dag_task *dag);
-struct yat_job *yat_create_job(int job_id, int job_priority, u64 wcet, struct yat_dag_task *dag);
-void yat_destroy_job(struct yat_job *job);
-void yat_job_add_dependency(struct yat_job *job, struct yat_job *predecessor);
-void yat_job_complete(struct yat_job *job);
+/* 简化版本接口：移除复杂的DAG和Job管理 */
 
-/* AJLR算法接口 */
+/* 简化的AJLR算法接口 */
 u64 yat_calculate_recency(int job_id, int cpu_id, u64 now);
-u64 yat_calculate_impact(struct yat_job *job, int core);
-int yat_find_best_core_for_job(struct yat_job *job);
+u64 yat_calculate_impact(struct task_struct *task, int core);
+int yat_find_best_core_for_task(struct task_struct *task);
 void yat_schedule_ajlr(struct yat_casched_rq *rq);
-void yat_update_ready_pool(struct yat_casched_rq *rq);
+void yat_update_ready_tasks(struct yat_casched_rq *rq);
 u64 yat_get_crp_ratio(u64 recency);
 u64 yat_get_max_last_exec_time(int job_id, int *cpu_list, int cpu_count);
 u64 yat_sum_exec_time_multi(int *cpu_list, int cpu_count, u64 start_ts, u64 end_ts);
 void yat_cleanup_old_records(int cpu, u64 cutoff_time);
 
-/* 全局优先队列接口 */
-int yat_global_pool_init(struct yat_global_task_pool *pool);
-void yat_global_pool_destroy(struct yat_global_task_pool *pool);
-int yat_global_pool_enqueue(struct yat_global_task_pool *pool, struct task_struct *task, int priority, u64 wcet);
-struct task_struct *yat_global_pool_dequeue(struct yat_global_task_pool *pool);
-struct task_struct *yat_global_pool_peek(struct yat_global_task_pool *pool);
-bool yat_global_pool_empty(struct yat_global_task_pool *pool);
-void yat_global_pool_remove(struct yat_global_task_pool *pool, struct task_struct *task);
+/* 简化的调度器接口 */
+void yat_schedule_global_tasks(void);
+bool yat_cpu_is_idle(int cpu);
+int yat_assign_task_to_cpu(struct task_struct *task, int target_cpu);
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags);
 void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags);
 struct task_struct *pick_next_task_yat_casched(struct rq *rq);
