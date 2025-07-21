@@ -2169,6 +2169,10 @@ static inline int __normal_prio(int policy, int rt_prio, int nice)
 		prio = MAX_DL_PRIO - 1;
 	else if (rt_policy(policy))
 		prio = MAX_RT_PRIO - 1 - rt_prio;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(policy))
+		prio = rt_prio;  /* 直接使用设置的优先级 */
+#endif
 	else
 		prio = NICE_TO_PRIO(nice);
 
@@ -7076,6 +7080,10 @@ static void __setscheduler_prio(struct task_struct *p, int prio)
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(prio))
 		p->sched_class = &rt_sched_class;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(p->policy))
+		p->sched_class = &yat_casched_sched_class;
+#endif
 	else
 		p->sched_class = &fair_sched_class;
 
@@ -7673,6 +7681,18 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 			goto req_priv;
 	}
 
+	/*
+	 * YAT_CASCHED policy: Allow priority changes without CAP_SYS_NICE
+	 * for same owner, similar to normal scheduling policies
+	 */
+	if (yat_casched_policy(policy)) {
+		/* Only check same owner for YAT_CASCHED */
+		if (!check_same_owner(p))
+			goto req_priv;
+		/* Skip other privilege checks for YAT_CASCHED */
+		goto skip_priv_checks;
+	}
+
 	/* Can't change other user's priorities: */
 	if (!check_same_owner(p))
 		goto req_priv;
@@ -7680,6 +7700,8 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 	/* Normal users shall not reset the sched_reset_on_fork flag: */
 	if (p->sched_reset_on_fork && !reset_on_fork)
 		goto req_priv;
+
+skip_priv_checks:
 
 	return 0;
 
@@ -7724,7 +7746,7 @@ recheck:
 	/*
 	 * Valid priorities for SCHED_FIFO and SCHED_RR are
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
-	 * SCHED_BATCH and SCHED_IDLE is 0.
+	 * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
 	 */
 	if (attr->sched_priority > MAX_RT_PRIO-1)
 		return -EINVAL;
@@ -9057,6 +9079,9 @@ SYSCALL_DEFINE1(sched_get_priority_max, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 		break;
 	}
@@ -9084,6 +9109,9 @@ SYSCALL_DEFINE1(sched_get_priority_min, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 	}
 	return ret;
