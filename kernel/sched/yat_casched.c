@@ -20,12 +20,8 @@
 #include <linux/sched/yat_casched.h>
 #include <linux/hashtable.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include <linux/cpumask.h>
 #include <linux/topology.h>
-
-=======
 #include <linux/cpumask.h>
 #include <linux/topology.h>
 
@@ -85,23 +81,47 @@ static void init_history_tables(void) {
     }
 }
 
-// 添加历史记录
+// 添加历史记录 - 修改为只维护同一任务的最新记录
 static void add_history_record(int cpu, int dag_id, int task_id, u64 expected_exec_time, u64 actual_exec_time) {
-    struct history_record *rec;
+    struct history_record *rec, *existing_rec = NULL;
     struct cpu_history_table *table = &history_tables[cpu];
     
-    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
-    if (!rec) return;
-
-    rec->dag_id = dag_id;
-    rec->task_id = task_id;
-    rec->timestamp = ktime_get();
-    rec->exec_time = expected_exec_time;     // 预期执行时间
-    rec->actual_exec_time = actual_exec_time; // 实际执行时间
-
     spin_lock(&table->lock);
-    // 直接插入链表尾部（保证时间戳递增）
-    list_add_tail(&rec->list, &table->time_list);
+    
+    // 先查找是否已存在同一任务的记录
+    list_for_each_entry(rec, &table->time_list, list) {
+        if (rec->dag_id == dag_id && rec->task_id == task_id) {
+            existing_rec = rec;
+            break;
+        }
+    }
+    
+    if (existing_rec) {
+        // 如果存在，直接更新现有记录
+        existing_rec->timestamp = ktime_get();
+        existing_rec->exec_time = expected_exec_time;
+        existing_rec->actual_exec_time = actual_exec_time;
+        
+        // 将更新的记录移到链表尾部以维护时间顺序
+        list_move_tail(&existing_rec->list, &table->time_list);
+    } else {
+        // 如果不存在，创建新记录
+        rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
+        if (!rec) {
+            spin_unlock(&table->lock);
+            return;
+        }
+        
+        rec->dag_id = dag_id;
+        rec->task_id = task_id;
+        rec->timestamp = ktime_get();
+        rec->exec_time = expected_exec_time;
+        rec->actual_exec_time = actual_exec_time;
+        
+        // 直接插入链表尾部
+        list_add_tail(&rec->list, &table->time_list);
+    }
+    
     spin_unlock(&table->lock);
 }
 
@@ -159,32 +179,46 @@ static u64 get_max_last_exec_time(struct task_struct *p, const struct cpumask *c
 // L1 Recency计算 - 重写实现基于任务ID匹配的算法
 static s64 calculate_l1_recency(int dag_id, int task_id, int cpu_id, u64 now) {
     s64 dist = 0;
-    struct history_record *rec;
+    struct history_record *rec, *target_rec = NULL;
     struct cpu_history_table *table = &history_tables[cpu_id];
     
     spin_lock(&table->lock);
-    // 从最新记录开始倒推扫描
-    list_for_each_entry_reverse(rec, &table->time_list, list) {
-        // 找到同一个任务的历史记录
+    
+    // 先找到目标任务的记录
+    list_for_each_entry(rec, &table->time_list, list) {
         if (rec->dag_id == dag_id && rec->task_id == task_id) {
-            spin_unlock(&table->lock);
-            return dist; // 返回累积距离
+            target_rec = rec;
+            break;
         }
+    }
+    
+    if (!target_rec) {
+        spin_unlock(&table->lock);
+        return -1; // L1未命中 - 没有找到任务记录
+    }
+    
+    // 从目标任务记录之后的记录开始累计执行时间
+    struct list_head *pos = target_rec->list.next;
+    while (pos != &table->time_list) {
+        rec = list_entry(pos, struct history_record, list);
         
-        // 累加"别人"的预期执行时间
+        // 累加其他任务的执行时间
         dist += rec->exec_time;
         
         // 超出L1窗口则停止
         if (dist > YAT_V2_THRESHOLD) {
+            dist = -1; // L1未命中
             break;
         }
+        
+        pos = pos->next;
     }
-    spin_unlock(&table->lock);
     
-    return -1; // L1未命中
+    spin_unlock(&table->lock);
+    return dist;
 }
 
-// L2 Recency计算 - 重写实现簇共享历史
+// L2 Recency计算 - 修改为基于唯一记录的簇共享历史
 static s64 calculate_l2_recency(int dag_id, int task_id, int cpu_id, u64 now) {
     s64 dist = 0;
     int cluster_id = cpu_id / YAT_L2_CORES_PER_CLUSTER;
@@ -192,73 +226,100 @@ static s64 calculate_l2_recency(int dag_id, int task_id, int cpu_id, u64 now) {
     int cluster_end = cluster_start + YAT_L2_CORES_PER_CLUSTER;
     int cpu;
     
-    // 收集簇内所有CPU的历史记录到临时列表
+    // 收集簇内所有CPU的唯一任务记录到临时列表（按时间戳排序）
     struct list_head cluster_history;
     struct history_record *rec, *cluster_rec, *tmp_rec;
+    struct history_record *target_rec = NULL;
     
     INIT_LIST_HEAD(&cluster_history);
     
-    // 遍历簇内所有CPU的历史
+    // 遍历簇内所有CPU，收集每个任务的最新记录
     for (cpu = cluster_start; cpu < cluster_end && cpu < NR_CPUS; cpu++) {
         struct cpu_history_table *table = &history_tables[cpu];
         
         spin_lock(&table->lock);
         list_for_each_entry(rec, &table->time_list, list) {
-            // 创建临时记录副本
-            cluster_rec = kmalloc(sizeof(*cluster_rec), GFP_ATOMIC);
-            if (!cluster_rec) {
-                spin_unlock(&table->lock);
-                continue;
-            }
-            
-            cluster_rec->dag_id = rec->dag_id;
-            cluster_rec->task_id = rec->task_id;
-            cluster_rec->timestamp = rec->timestamp;
-            cluster_rec->exec_time = rec->exec_time;
-            cluster_rec->actual_exec_time = rec->actual_exec_time;
-            
-            // 按时间戳有序插入
-            struct list_head *pos;
-            struct history_record *existing;
-            bool inserted = false;
-            
-            list_for_each(pos, &cluster_history) {
-                existing = list_entry(pos, struct history_record, list);
-                if (cluster_rec->timestamp < existing->timestamp) {
-                    list_add_tail(&cluster_rec->list, pos);
-                    inserted = true;
+            // 检查是否已经有同一任务的记录
+            struct history_record *existing = NULL;
+            list_for_each_entry(existing, &cluster_history, list) {
+                if (existing->dag_id == rec->dag_id && existing->task_id == rec->task_id) {
+                    // 如果找到更新的记录，替换它
+                    if (rec->timestamp > existing->timestamp) {
+                        existing->timestamp = rec->timestamp;
+                        existing->exec_time = rec->exec_time;
+                        existing->actual_exec_time = rec->actual_exec_time;
+                    }
+                    existing = NULL; // 标记已处理
                     break;
                 }
             }
-            if (!inserted) {
-                list_add_tail(&cluster_rec->list, &cluster_history);
+            
+            // 如果没有找到相同任务，创建新记录
+            if (existing != NULL) {
+                cluster_rec = kmalloc(sizeof(*cluster_rec), GFP_ATOMIC);
+                if (!cluster_rec) {
+                    spin_unlock(&table->lock);
+                    continue;
+                }
+                
+                cluster_rec->dag_id = rec->dag_id;
+                cluster_rec->task_id = rec->task_id;
+                cluster_rec->timestamp = rec->timestamp;
+                cluster_rec->exec_time = rec->exec_time;
+                cluster_rec->actual_exec_time = rec->actual_exec_time;
+                
+                // 按时间戳顺序插入
+                struct list_head *pos;
+                struct history_record *existing_by_time;
+                bool inserted = false;
+                
+                list_for_each(pos, &cluster_history) {
+                    existing_by_time = list_entry(pos, struct history_record, list);
+                    if (cluster_rec->timestamp < existing_by_time->timestamp) {
+                        list_add_tail(&cluster_rec->list, pos);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    list_add_tail(&cluster_rec->list, &cluster_history);
+                }
             }
         }
         spin_unlock(&table->lock);
     }
     
-    // 倒推扫描簇历史
-    list_for_each_entry_reverse(cluster_rec, &cluster_history, list) {
+    // 找到目标任务记录
+    list_for_each_entry(cluster_rec, &cluster_history, list) {
         if (cluster_rec->dag_id == dag_id && cluster_rec->task_id == task_id) {
-            // 找到目标任务
-            goto cleanup_l2_found;
-        }
-        
-        dist += cluster_rec->exec_time;
-        
-        if (dist > YAT_V3_THRESHOLD) {
-            dist = -1; // L2未命中
+            target_rec = cluster_rec;
             break;
         }
     }
     
-    // 如果循环正常结束但没找到任务，也是未命中
-    if (dist >= 0 && dist <= YAT_V3_THRESHOLD) {
-        // 这种情况是遍历完整个窗口都没找到，应该是未命中
-        dist = -1;
+    if (!target_rec) {
+        dist = -1; // L2未命中 - 没找到目标任务
+        goto cleanup_l2;
     }
     
-cleanup_l2_found:
+    // 从目标任务之后的记录开始累计
+    bool found_target = false;
+    list_for_each_entry(cluster_rec, &cluster_history, list) {
+        if (cluster_rec == target_rec) {
+            found_target = true;
+            continue;
+        }
+        
+        if (found_target) {
+            dist += cluster_rec->exec_time;
+            
+            if (dist > YAT_V3_THRESHOLD) {
+                dist = -1; // L2未命中
+                break;
+            }
+        }
+    }
+    
 cleanup_l2:
     // 清理临时列表
     list_for_each_entry_safe(cluster_rec, tmp_rec, &cluster_history, list) {
@@ -269,73 +330,103 @@ cleanup_l2:
     return dist;
 }
 
-// L3 Recency计算 - 重写实现全局历史
+// L3 Recency计算 - 修改为基于唯一记录的全局历史
 static s64 calculate_l3_recency(int dag_id, int task_id, u64 now) {
     s64 dist = 0;
     int cpu;
     struct history_record *rec, *global_rec, *tmp_rec;
     struct list_head global_history;
+    struct history_record *target_rec = NULL;
     
     INIT_LIST_HEAD(&global_history);
     
-    // 收集全局历史记录
+    // 收集全局唯一任务记录
     for_each_possible_cpu(cpu) {
         struct cpu_history_table *table = &history_tables[cpu];
         
         spin_lock(&table->lock);
         list_for_each_entry(rec, &table->time_list, list) {
-            global_rec = kmalloc(sizeof(*global_rec), GFP_ATOMIC);
-            if (!global_rec) {
-                spin_unlock(&table->lock);
-                continue;
-            }
-            
-            global_rec->dag_id = rec->dag_id;
-            global_rec->task_id = rec->task_id;
-            global_rec->timestamp = rec->timestamp;
-            global_rec->exec_time = rec->exec_time;
-            global_rec->actual_exec_time = rec->actual_exec_time;
-            
-            // 按时间戳有序插入
-            struct list_head *pos;
-            struct history_record *existing;
-            bool inserted = false;
-            
-            list_for_each(pos, &global_history) {
-                existing = list_entry(pos, struct history_record, list);
-                if (global_rec->timestamp < existing->timestamp) {
-                    list_add_tail(&global_rec->list, pos);
-                    inserted = true;
+            // 检查是否已有同一任务的记录
+            struct history_record *existing = NULL;
+            list_for_each_entry(existing, &global_history, list) {
+                if (existing->dag_id == rec->dag_id && existing->task_id == rec->task_id) {
+                    // 保留最新的记录
+                    if (rec->timestamp > existing->timestamp) {
+                        existing->timestamp = rec->timestamp;
+                        existing->exec_time = rec->exec_time;
+                        existing->actual_exec_time = rec->actual_exec_time;
+                    }
+                    existing = NULL; // 标记已处理
                     break;
                 }
             }
-            if (!inserted) {
-                list_add_tail(&global_rec->list, &global_history);
+            
+            // 如果没找到相同任务，创建新记录
+            if (existing != NULL) {
+                global_rec = kmalloc(sizeof(*global_rec), GFP_ATOMIC);
+                if (!global_rec) {
+                    spin_unlock(&table->lock);
+                    continue;
+                }
+                
+                global_rec->dag_id = rec->dag_id;
+                global_rec->task_id = rec->task_id;
+                global_rec->timestamp = rec->timestamp;
+                global_rec->exec_time = rec->exec_time;
+                global_rec->actual_exec_time = rec->actual_exec_time;
+                
+                // 按时间戳排序插入
+                struct list_head *pos;
+                struct history_record *existing_by_time;
+                bool inserted = false;
+                
+                list_for_each(pos, &global_history) {
+                    existing_by_time = list_entry(pos, struct history_record, list);
+                    if (global_rec->timestamp < existing_by_time->timestamp) {
+                        list_add_tail(&global_rec->list, pos);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    list_add_tail(&global_rec->list, &global_history);
+                }
             }
         }
         spin_unlock(&table->lock);
     }
     
-    // 倒推扫描全局历史
-    list_for_each_entry_reverse(global_rec, &global_history, list) {
+    // 找到目标任务记录
+    list_for_each_entry(global_rec, &global_history, list) {
         if (global_rec->dag_id == dag_id && global_rec->task_id == task_id) {
-            goto cleanup_l3_found;
-        }
-        
-        dist += global_rec->exec_time;
-        
-        if (dist > YAT_V4_THRESHOLD) {
-            dist = -1;
+            target_rec = global_rec;
             break;
         }
     }
     
-    // 如果循环正常结束但没找到任务，也是未命中
-    if (dist >= 0 && dist <= YAT_V4_THRESHOLD) {
+    if (!target_rec) {
         dist = -1; // L3未命中
+        goto cleanup_l3;
     }
     
-cleanup_l3_found:
+    // 从目标任务之后的记录开始累计
+    bool found_target = false;
+    list_for_each_entry(global_rec, &global_history, list) {
+        if (global_rec == target_rec) {
+            found_target = true;
+            continue;
+        }
+        
+        if (found_target) {
+            dist += global_rec->exec_time;
+            
+            if (dist > YAT_V4_THRESHOLD) {
+                dist = -1; // L3未命中
+                break;
+            }
+        }
+    }
+    
 cleanup_l3:
     // 清理临时列表
     list_for_each_entry_safe(global_rec, tmp_rec, &global_history, list) {
@@ -1093,194 +1184,194 @@ void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time)
 }
 
 /*
- * 初始化Yat_Casched运行队列
+ * 兼容性：保留原有的加速表操作函数（针对task_pid）
  */
-void init_yat_casched_rq(struct yat_casched_rq *rq)
+
+/* 生成(task_pid, cpu_id)的哈希值 */
+static u32 yat_accel_hash(pid_t task_pid, int cpu_id)
 {
-    struct rq *main_rq = container_of(rq, struct rq, yat_casched);
-
-    // 在第一次初始化时，初始化全局数据结构
-    static atomic_t global_init_done = ATOMIC_INIT(0);
-
-    // 只允许第一个调用者执行全局初始化
-    if (atomic_cmpxchg(&global_init_done, 0, 1) == 0) {
-        printk(KERN_INFO "======Yat_Casched: Global Init======\n");
-        init_history_tables();
-        hash_init(accelerator_table); // 初始化哈希表
-    }
-    printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
-
-    INIT_LIST_HEAD(&rq->tasks);
-    rq->nr_running = 0;
-    rq->agent = NULL;
-    rq->cache_decay_jiffies = jiffies;
-    spin_lock_init(&rq->history_lock);
-    
-    /* 初始化AJLR核心结构 */
-    
-    /* 1. 初始化就绪作业池 */
-    if (!global_ready_pool) {
-        global_ready_pool = kmalloc(sizeof(struct yat_ready_job_pool), GFP_KERNEL);
-        if (global_ready_pool) {
-            yat_ready_pool_init(global_ready_pool);
-            printk(KERN_INFO "yat_casched: global_ready_pool allocated successfully\n");
-        } else {
-            printk(KERN_ERR "yat_casched: Failed to allocate global_ready_pool\n");
-        }
-    }
-    rq->ready_pool = global_ready_pool;
-    
-    /* 确保 ready_pool 不为 NULL，如果分配失败则创建临时的 */
-    if (!rq->ready_pool) {
-        printk(KERN_WARNING "yat_casched: Creating fallback ready_pool\n");
-        rq->ready_pool = kmalloc(sizeof(struct yat_ready_job_pool), GFP_KERNEL);
-        if (rq->ready_pool) {
-            yat_ready_pool_init(rq->ready_pool);
-        } else {
-            printk(KERN_ERR "yat_casched: Critical error - cannot allocate ready_pool\n");
-            return;
-        }
-    }
-    
-    /* 2. 初始化DAG列表 */
-    INIT_LIST_HEAD(&rq->active_dags);
-    /* global_dag_list 和 global_dag_lock 已经在声明时静态初始化 */
-    
-    /* 3. 初始化加速表 */
-    if (!global_accel_table) {
-        global_accel_table = kmalloc(sizeof(struct yat_accel_table), GFP_KERNEL);
-        if (global_accel_table) {
-            yat_accel_table_init(global_accel_table);
-            printk(KERN_INFO "yat_casched: global_accel_table allocated successfully\n");
-        } else {
-            printk(KERN_ERR "yat_casched: Failed to allocate global_accel_table\n");
-        }
-    }
-    rq->accel_table = global_accel_table;
-    
-    /* 确保 accel_table 不为 NULL */
-    if (!rq->accel_table) {
-        printk(KERN_WARNING "yat_casched: Creating fallback accel_table\n");
-        rq->accel_table = kmalloc(sizeof(struct yat_accel_table), GFP_KERNEL);
-        if (rq->accel_table) {
-            yat_accel_table_init(rq->accel_table);
-        } else {
-            printk(KERN_ERR "yat_casched: Critical error - cannot allocate accel_table\n");
-        }
-    }
-    
-    /* 4. 初始化历史表（使用旧的哈希表实现保持兼容性） */
-    yat_init_history_tables(rq->history_tables);
-    
-    /* 新的历史表（AJLR双向链表实现） */
-    yat_init_history_tables(global_history_tables);
-    
-    printk(KERN_INFO "yat_casched: AJLR structures initialized\n");
->>>>>>> yat/yat_casched-dev
+    return hash_32((u32)task_pid ^ (u32)cpu_id, YAT_ACCEL_HASH_BITS);
 }
 
-/*
- * 检查任务是否属于Yat_Casched调度类
- */
-bool yat_casched_prio(struct task_struct *p)
+/* 查找加速表条目 */
+static struct yat_accel_entry *yat_accel_find_entry(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
 {
-    return (p->policy == SCHED_YAT_CASCHED);
-}
-
-/*
- * 更新任务的虚拟运行时间
- */
-void update_curr_yat_casched(struct rq *rq)
-{
-    struct task_struct *curr = rq->curr;
-    u64 now = rq_clock_task(rq);
-    u64 delta_exec;
-
-    if (curr->sched_class != &yat_casched_sched_class)
-        return;
-
-    delta_exec = now - curr->se.exec_start;
-    if (unlikely((s64)delta_exec < 0))
-        delta_exec = 0;
-
-    curr->se.exec_start = now;
-    curr->yat_casched.vruntime += delta_exec;
-}
-
-/*
- * select_task_rq - 职责减弱
- * 在我们的新模型中，决策由全局调度器做出。
- * 这个函数只在特殊情况下被调用，或者可以简单返回一个默认值。
- */
-int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
-{
-    // 决策已移至全局调度器，这里返回task_cpu以兼容框架
-    return task_cpu;
-}
-
-/*
- * 将任务加入全局任务池，并保持有序
- */
-void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    struct list_head *pos;
-    struct task_struct *entry;
-
-    // 初始化新任务
-    if (p->yat_casched.wcet == 0) {
-        p->yat_casched.wcet = get_wcet(p);
-        // ... 其他初始化 ...
-    }
-
-    spin_lock(&yat_pool_lock);
+    struct yat_accel_entry *entry;
+    u32 hash_val = yat_accel_hash(task_pid, cpu_id);
     
-    /* 初始化任务的Yat_Casched实体 */
-    if (list_empty(&p->yat_casched.run_list)) {
-        INIT_LIST_HEAD(&p->yat_casched.run_list);
-        p->yat_casched.vruntime = 0;
-        p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化 */
-        p->yat_casched.job = NULL;     /* 初始化作业指针 */
-    }
-    
-    /* 添加到运行队列 */
-    list_add_tail(&p->yat_casched.run_list, &rq->yat_casched.tasks);
-    rq->yat_casched.nr_running++;
-    
-    /* AJLR处理：创建或更新作业信息 */
-    yat_ajlr_enqueue_task(rq, p, flags);
-}
-
-/*
- * 将任务从就绪池移除
- */
-void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    spin_lock(&yat_pool_lock);
-    if (!list_empty(&p->yat_casched.run_list)) {
-        list_del_init(&p->yat_casched.run_list);
-        rq->yat_casched.nr_running--;
-    }
-    spin_unlock(&yat_pool_lock);
-}
-
-/*
- * pick_next_task - 从本地运行队列取任务
- * 因为我们保证每个核心最多一个任务，所以逻辑很简单
- */
-struct task_struct *pick_next_task_yat_casched(struct rq *rq)
-{
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    struct task_struct *p = NULL;
-    struct sched_yat_casched_entity *yat_se;
-    int best_priority = INT_MAX;
-    
-    if (yat_rq->nr_running == 0)
+    if (!table || !table->hash_buckets)
         return NULL;
     
-    /* 快速路径：简化的优先级调度，不运行完整AJLR */
-    if (!list_empty(&yat_rq->tasks)) {
-        struct list_head *pos;
-        int count = 0;
+    hlist_for_each_entry(entry, &table->hash_buckets[hash_val], hash_node) {
+        if (entry->job_id == task_pid && entry->cpu_id == cpu_id)  /* 使用job_id字段 */
+            return entry;
+    }
+    return NULL;
+}
+
+/* 插入加速表条目 */
+int yat_accel_table_insert(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
+{
+    struct yat_accel_entry *entry;
+    u32 hash_val;
+    
+    if (!table || !table->hash_buckets)
+        return -EINVAL;
+    
+    spin_lock(&table->lock);
+    
+    /* 检查是否已存在 */
+    entry = yat_accel_find_entry(table, task_pid, cpu_id);
+    if (entry) {
+        spin_unlock(&table->lock);
+        return -EEXIST;
+    }
+    
+    /* 创建新条目 */
+    entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+    if (!entry) {
+        spin_unlock(&table->lock);
+        return -ENOMEM;
+    }
+    
+    entry->job_id = task_pid;  /* 兼容性：将task_pid存储在job_id字段中 */
+    entry->cpu_id = cpu_id;
+    entry->benefit = benefit;
+    entry->wcet = wcet;
+    entry->crp_ratio = crp_ratio;
+    entry->last_update_time = jiffies;
+    
+    hash_val = yat_accel_hash(task_pid, cpu_id);
+    hlist_add_head(&entry->hash_node, &table->hash_buckets[hash_val]);
+    
+    spin_unlock(&table->lock);
+    return 0;
+}
+
+/* 更新加速表条目 */
+int yat_accel_table_update(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
+{
+    struct yat_accel_entry *entry;
+    
+    if (!table || !table->hash_buckets)
+        return -EINVAL;
+    
+    spin_lock(&table->lock);
+    
+    entry = yat_accel_find_entry(table, task_pid, cpu_id);
+    if (!entry) {
+        spin_unlock(&table->lock);
+        return -ENOENT;
+    }
+    
+    entry->benefit = benefit;
+    entry->wcet = wcet;
+    entry->crp_ratio = crp_ratio;
+    entry->last_update_time = jiffies;
+    
+    spin_unlock(&table->lock);
+    return 0;
+}
+
+/* 查找benefit值 */
+u64 yat_accel_table_lookup(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
+{
+    struct yat_accel_entry *entry;
+    u64 benefit = 0;
+    
+    if (!table || !table->hash_buckets)
+        return 0;
+    
+    spin_lock(&table->lock);
+    entry = yat_accel_find_entry(table, task_pid, cpu_id);
+    if (entry)
+        benefit = entry->benefit;
+    spin_unlock(&table->lock);
+    
+    return benefit;
+}
+
+/* 删除加速表条目 */
+int yat_accel_table_delete(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
+{
+    struct yat_accel_entry *entry;
+    
+    if (!table || !table->hash_buckets)
+        return -EINVAL;
+    
+    spin_lock(&table->lock);
+    
+    entry = yat_accel_find_entry(table, task_pid, cpu_id);
+    if (!entry) {
+        spin_unlock(&table->lock);
+        return -ENOENT;
+    }
+    
+    hlist_del(&entry->hash_node);
+    kfree(entry);
+    
+    spin_unlock(&table->lock);
+    return 0;
+}
+
+/* 清理过期条目 */
+void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time)
+{
+    struct yat_accel_entry *entry;
+    struct hlist_node *tmp;
+    int i;
+    
+    if (!table || !table->hash_buckets)
+        return;
+    
+    spin_lock(&table->lock);
+    for (i = 0; i < (1 << YAT_ACCEL_HASH_BITS); i++) {
+        hlist_for_each_entry_safe(entry, tmp, &table->hash_buckets[i], hash_node) {
+            if (time_before((unsigned long)entry->last_update_time, (unsigned long)before_time)) {
+                hlist_del(&entry->hash_node);
+                kfree(entry);
+            }
+        }
+    }
+    table->last_cleanup_time = jiffies;
+    spin_unlock(&table->lock);
+}
+
+/*
+ * 全局调度函数 - 实现全局任务调度
+ * 从全局任务池中选择任务并分配到最佳CPU
+ */
+static void schedule_yat_casched_tasks(void)
+{
+    struct yat_pool_entry *entry;
+    struct yat_pool_entry *best_entry = NULL;
+    u64 highest_priority = 0;
+    struct task_struct *p_to_run = NULL;
+    int best_cpu = -1;
+    u64 best_recency = 0;
+    
+    spin_lock(&yat_pool_lock);
+    
+    // 遍历全局任务池，寻找最优任务
+    list_for_each_entry(entry, &yat_task_pool, list) {
+        struct task_struct *p = entry->p;
+        int cpu = entry->cpu;
+        u64 recency = 0;
+        
+        // 检查任务是否仍然有效且可调度
+        if (!p || p->__state != TASK_RUNNING)
+            continue;
+        
+        // 计算该任务在对应CPU上的recency
+        // 对于同一个任务，只考虑最新的一次运行记录
+        if (p->yat_casched.last_cpu != -1 && p->yat_casched.last_cpu < NR_CPUS) {
+            recency = p->yat_casched.per_cpu_recency[cpu];
+        }
+        
+        // 基于vruntime和recency计算优先级
+        u64 priority = (NICE_0_LOAD * 1000000) / (p->yat_casched.vruntime + 1) + recency;
+        
+        if
         
         /* 在前3个任务中选择最高优先级 */
         list_for_each(pos, &yat_rq->tasks) {
@@ -1349,53 +1440,232 @@ void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
     if (p->yat_casched.job) {
         task_id = p->yat_casched.job->job_id;
         expected_exec = p->yat_casched.job->wcet;
-        if (p->yat_casched.job->dag) {
-            dag_id = p->yat_casched.job->dag->dag_id;
+    }
+    
+    // 更新缓存历史记录
+    update_cache_history(rq, p);
+    
+    // 记录任务执行信息到trace
+    trace_sched_put_prev_task(rq, p);
+}
+
+/* 获取CPU所属的缓存ID */
+static int get_cache_id_for_cpu(int cpu)
+{
+    /* 这里需要根据具体的硬件架构来确定缓存拓扑
+     * 简化实现：假设每个CPU cluster共享一个L2缓存
+     * 实际实现中应该通过sysfs或硬件信息来获取
+     */
+    return cpu / 4; // 假设每4个CPU共享一个缓存
+}
+
+/* 获取系统中缓存的总数 */
+static int get_nr_caches(void)
+{
+    /* 简化实现：假设系统有8个CPU，每4个CPU共享一个缓存 */
+    return (num_possible_cpus() + 3) / 4;
+}
+
+/* 更新缓存历史记录 */
+static void update_cache_history(struct rq *rq, struct task_struct *p)
+{
+    struct yat_casched_rq *yat_rq = &rq->yat_casched;
+    int cpu = cpu_of(rq);
+    int cache_id = get_cache_id_for_cpu(cpu);
+    
+    if (cache_id >= yat_rq->nr_caches)
+        return;
+    
+    spin_lock(&yat_rq->history_lock);
+    yat_rq->cache_histories[cache_id].last_task = p;
+    yat_rq->cache_histories[cache_id].last_time = rq_clock(rq);
+    spin_unlock(&yat_rq->history_lock);
+}
+
+/* 检查任务是否在指定缓存中有历史记录 */
+static bool task_has_cache_history(struct yat_casched_rq *yat_rq, 
+                                  struct task_struct *p, int cache_id)
+{
+    bool has_history = false;
+    
+    if (cache_id >= yat_rq->nr_caches)
+        return false;
+    
+    spin_lock(&yat_rq->history_lock);
+    has_history = (yat_rq->cache_histories[cache_id].last_task == p);
+    spin_unlock(&yat_rq->history_lock);
+    
+    return has_history;
+}
+
+/* 计算基于缓存感知的调度权重 */
+static u64 calculate_cache_aware_weight(struct task_struct *p, int target_cpu)
+{
+    struct yat_casched_rq *yat_rq = &cpu_rq(target_cpu)->yat_casched;
+    int cache_id = get_cache_id_for_cpu(target_cpu);
+    u64 weight = 1000; /* 基础权重 */
+    
+    /* 如果任务在目标缓存中有历史记录，增加权重 */
+    if (task_has_cache_history(yat_rq, p, cache_id)) {
+        weight += 500; /* 缓存亲和性奖励 */
+    }
+    
+    /* 根据缓存衰减时间调整权重 */
+    if (yat_rq->cache_histories[cache_id].last_task == p) {
+        u64 time_diff = rq_clock(cpu_rq(target_cpu)) - 
+                       yat_rq->cache_histories[cache_id].last_time;
+        if (time_diff < yat_rq->cache_decay_jiffies) {
+            weight += (yat_rq->cache_decay_jiffies - time_diff) / 1000;
         }
-    } else {
-        expected_exec = get_wcet(p);
     }
     
-    /* 更新历史表 - 使用新的接口 */
-    add_history_record(rq->cpu, dag_id, task_id, expected_exec, delta_exec);
+    return weight;
 }
 
-/*
- * 任务时钟节拍处理 - 优化版本
- */
-void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
+void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
-    struct sched_yat_casched_entity *yat_se = &p->yat_casched;
-    u64 runtime, time_slice;
+    INIT_LIST_HEAD(&rq->tasks);
+    rq->nr_running = 0;
+    rq->agent = NULL;
+    rq->cache_decay_jiffies = msecs_to_jiffies(100); /* 100ms缓存衰减时间 */
+    spin_lock_init(&rq->history_lock);
     
-    update_curr_yat_casched(rq);
+    /* 初始化缓存历史表 */
+    rq->nr_caches = get_nr_caches();
+    rq->cache_histories = kzalloc(rq->nr_caches * sizeof(struct cache_history), GFP_KERNEL);
     
-    /* 计算当前任务的运行时间 */
-    runtime = p->se.sum_exec_runtime - p->se.prev_sum_exec_runtime;
-    
-    /* 基于优先级调整时间片：高优先级 = 更长时间片 */
-    if (yat_se->job && yat_se->job->job_priority < 0) {
-        time_slice = YAT_TIME_SLICE * 2;  /* 高优先级任务 */
-    } else if (yat_se->job && yat_se->job->job_priority > 0) {
-        time_slice = YAT_TIME_SLICE / 2;  /* 低优先级任务 */
-    } else {
-        time_slice = YAT_TIME_SLICE;      /* 普通优先级任务 */
-    }
-    
-    /* 检查是否超过时间片 */
-    if (runtime >= time_slice) {
-        p->se.prev_sum_exec_runtime = p->se.sum_exec_runtime;
-        resched_curr(rq);
+    if (rq->cache_histories) {
+        int i;
+        for (i = 0; i < rq->nr_caches; i++) {
+            rq->cache_histories[i].last_task = NULL;
+            rq->cache_histories[i].last_time = 0;
+        }
     }
 }
 
-/*
- * 抢占检查
- */
-void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
+/* CPU选择函数 - 基于缓存感知调度 */
+int select_task_rq_yat_casched(struct task_struct *p, int cpu, int flags)
 {
-    /* 简单实现：总是抢占 */
-    resched_curr(rq);
+    int best_cpu = cpu;
+    u64 best_weight = 0;
+    int i;
+    
+    /* 遍历所有可用的CPU，选择最佳的缓存感知CPU */
+    for_each_cpu(i, &p->cpus_mask) {
+        if (!cpu_online(i))
+            continue;
+            
+        u64 weight = calculate_cache_aware_weight(p, i);
+        
+        /* 选择权重最高的CPU */
+        if (weight > best_weight) {
+            best_weight = weight;
+            best_cpu = i;
+        }
+    }
+    
+    return best_cpu;
+}
+
+/* 负载均衡函数 - 考虑缓存亲和性 */
+int balance_yat_casched(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+{
+    struct yat_casched_rq *yat_rq = &rq->yat_casched;
+    
+    /* 如果队列为空，尝试从其他CPU拉取任务 */
+    if (yat_rq->nr_running == 0) {
+        return pull_yat_casched_task(rq);
+    }
+    
+    return 0;
+}
+
+/* 从其他CPU拉取任务 - 考虑缓存亲和性 */
+static int pull_yat_casched_task(struct rq *this_rq)
+{
+    int this_cpu = cpu_of(this_rq);
+    int src_cpu;
+    struct rq *src_rq;
+    struct task_struct *p;
+    
+    /* 遍历其他CPU，寻找可以迁移的任务 */
+    for_each_online_cpu(src_cpu) {
+        if (src_cpu == this_cpu)
+            continue;
+            
+        src_rq = cpu_rq(src_cpu);
+        
+        /* 检查是否有可迁移的YAT_CASCHED任务 */
+        list_for_each_entry(p, &src_rq->yat_casched.tasks, yat_casched.run_list) {
+            if (can_migrate_task(p, this_cpu)) {
+                /* 迁移任务 */
+                if (migrate_yat_casched_task(p, this_rq, src_rq)) {
+                    return 1;
+                }
+            }
+        }
+    }
+    
+    return 0;
+}
+
+/* 检查任务是否可以迁移到目标CPU */
+static bool can_migrate_task(struct task_struct *p, int dest_cpu)
+{
+    if (!cpumask_test_cpu(dest_cpu, &p->cpus_mask))
+        return false;
+        
+    if (task_running(task_rq(p), p))
+        return false;
+        
+    return true;
+}
+
+/* 迁移YAT_CASCHED任务 */
+static int migrate_yat_casched_task(struct task_struct *p, struct rq *dest_rq, struct rq *src_rq)
+{
+    struct rq_flags rf;
+    
+    /* 双重锁定避免死锁 */
+    if (dest_rq < src_rq) {
+        rq_lock(dest_rq, &rf);
+        rq_lock_nested(src_rq, SINGLE_DEPTH_NESTING);
+    } else {
+        rq_lock(src_rq, &rf);
+        rq_lock_nested(dest_rq, SINGLE_DEPTH_NESTING);
+    }
+    
+    /* 检查任务是否仍然可迁移 */
+    if (!can_migrate_task(p, cpu_of(dest_rq))) {
+        if (dest_rq < src_rq) {
+            rq_unlock_nested(src_rq, SINGLE_DEPTH_NESTING);
+            rq_unlock(dest_rq, &rf);
+        } else {
+            rq_unlock_nested(dest_rq, SINGLE_DEPTH_NESTING);
+            rq_unlock(src_rq, &rf);
+        }
+        return 0;
+    }
+    
+    /* 从源队列移除 */
+    dequeue_task_yat_casched(src_rq, p, 0);
+    
+    /* 设置新的CPU */
+    set_task_cpu(p, cpu_of(dest_rq));
+    
+    /* 加入目标队列 */
+    enqueue_task_yat_casched(dest_rq, p, 0);
+    
+    /* 解锁 */
+    if (dest_rq < src_rq) {
+        rq_unlock_nested(src_rq, SINGLE_DEPTH_NESTING);
+        rq_unlock(dest_rq, &rf);
+    } else {
+        rq_unlock_nested(dest_rq, SINGLE_DEPTH_NESTING);
+        rq_unlock(src_rq, &rf);
+    }
+    
+    return 1;
 }
 
 /* --- 全局调度逻辑 (v2.2) --- */
@@ -2016,58 +2286,6 @@ void yat_create_test_dag(void)
     job1 = yat_create_job(1, 50, 1000000, dag); /* 1ms WCET */
     job2 = yat_create_job(2, 40, 2000000, dag); /* 2ms WCET */
     job3 = yat_create_job(3, 30, 1500000, dag); /* 1.5ms WCET */
-    
-    if (job1 && job2 && job3) {
-        /* 设置依赖关系：job1 -> job2 -> job3 */
-        yat_job_add_dependency(job2, job1);
-        yat_job_add_dependency(job3, job2);
-        
-        printk(KERN_INFO "yat_casched: Created test DAG with 3 jobs\n");
-    } else {
-        printk(KERN_ERR "yat_casched: Failed to create test jobs\n");
-    }
-}
-    /* 更新作业的最后执行时间戳 */
-    if (p->yat_casched.job) {
-        p->yat_casched.job->per_cpu_last_ts[rq->cpu] = ktime_get_ns();
-        
-        /* 添加历史记录 */
-        if (p->se.sum_exec_runtime > p->se.prev_sum_exec_runtime) {
-            u64 exec_time = p->se.sum_exec_runtime - p->se.prev_sum_exec_runtime;
-            yat_add_history_record(rq->cpu, p->yat_casched.job->job_id,
-                                 ktime_get_ns(), exec_time);
-        }
-    }
-}
-
-/* 创建测试用的DAG和作业 */
-void yat_create_test_dag(void)
-{
-    struct yat_dag_task *dag;
-    struct yat_job *job1, *job2, *job3;
-    
-    /* 创建一个测试DAG */
-    dag = yat_create_dag(1, 100); /* 高优先级DAG */
-    if (!dag) {
-        printk(KERN_ERR "yat_casched: Failed to create test DAG\n");
-        return;
-    }
-    
-    /* 创建三个作业 */
-    job1 = yat_create_job(1, 50, 1000000, dag); /* 1ms WCET */
-    job2 = yat_create_job(2, 40, 2000000, dag); /* 2ms WCET */
-    job3 = yat_create_job(3, 30, 1500000, dag); /* 1.5ms WCET */
-    
-    if (job1 && job2 && job3) {
-        /* 设置依赖关系：job1 -> job2 -> job3 */
-        yat_job_add_dependency(job2, job1);
-        yat_job_add_dependency(job3, job2);
-        
-        printk(KERN_INFO "yat_casched: Created test DAG with 3 jobs\n");
-    } else {
-        printk(KERN_ERR "yat_casched: Failed to create test jobs\n");
-    }
-}
     
     if (job1 && job2 && job3) {
         /* 设置依赖关系：job1 -> job2 -> job3 */

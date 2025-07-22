@@ -12,13 +12,20 @@ struct sched_yat_casched_entity {
     int last_cpu;                   /* 上次运行的CPU */
 };
 
+/* 缓存历史记录结构 */
+struct cache_history {
+    struct task_struct *last_task;  /* 该缓存上最后执行的任务 */
+    u64 last_time;                  /* 最后执行时间 */
+};
+
 struct yat_casched_rq {
     struct list_head tasks;         /* 任务队列 */
     unsigned int nr_running;        /* 运行任务数量 */
     struct task_struct *agent;     /* 代理任务 */
     u64 cache_decay_jiffies;       /* 缓存衰减时间 */
     spinlock_t history_lock;       /* 历史表锁 */
-    struct task_struct *cpu_history[NR_CPUS]; /* CPU历史表 */
+    struct cache_history *cache_histories; /* 缓存历史表数组 */
+    int nr_caches;                 /* 缓存数量 */
 };
 
 struct rq;
