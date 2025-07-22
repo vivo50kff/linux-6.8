@@ -531,12 +531,7 @@ static u64 get_wcet(struct task_struct *p)
  */
 static u64 calculate_impact(struct task_struct *p, int cpu)
 {
-    // 简化实现：基于CPU负载和任务优先级计算影响度
-    struct rq *target_rq = cpu_rq(cpu);
-    u64 load = target_rq->nr_running;
-    u64 priority_factor = (100 - p->prio) * 10; // 优先级越高，影响度越小
-    
-    return load * 1000 + priority_factor;
+    return calculate_lcif_impact(p, cpu);
 }
 
 /*
@@ -610,7 +605,99 @@ static void update_accelerator_table(void)
     spin_unlock(&yat_pool_lock);
 }
 
-// 步骤2: 根据加速表进行调度决策
+// LCIF策略：计算预分配对加速表的影响
+static u64 calculate_lcif_impact(struct task_struct *candidate_task, int candidate_cpu)
+{
+    u64 total_impact = 0;
+    struct task_struct *p;
+    int cpu;
+    struct accelerator_entry *entry;
+    int bkt;
+    
+    /* 临时保存当前加速表状态 */
+    struct list_head old_benefits;
+    struct benefit_backup {
+        struct list_head list;
+        struct task_struct *task;
+        int cpu;
+        u64 old_benefit;
+        u64 new_benefit;
+    };
+    
+    INIT_LIST_HEAD(&old_benefits);
+    
+    /* Step 1: 备份当前加速表中所有相关的benefit值 */
+    spin_lock(&accelerator_lock);
+    hash_for_each(accelerator_table, bkt, entry, node) {
+        if (entry->p && entry->p != candidate_task) {
+            struct benefit_backup *backup = kmalloc(sizeof(*backup), GFP_ATOMIC);
+            if (backup) {
+                backup->task = entry->p;
+                backup->cpu = entry->cpu;
+                backup->old_benefit = entry->benefit;
+                backup->new_benefit = 0; // 待计算
+                list_add(&backup->list, &old_benefits);
+            }
+        }
+    }
+    spin_unlock(&accelerator_lock);
+    
+    /* Step 2: 模拟candidate_task分配到candidate_cpu后的历史状态 */
+    /* 临时更新历史记录 */
+    u64 now = ktime_get();
+    int dag_id = 0, task_id = candidate_task->pid;
+    
+    if (candidate_task->yat_casched.job) {
+        dag_id = candidate_task->yat_casched.job->dag ? candidate_task->yat_casched.job->dag->dag_id : 0;
+        task_id = candidate_task->yat_casched.job->job_id;
+    }
+    
+    /* 临时添加历史记录（模拟执行） */
+    add_history_record(candidate_cpu, dag_id, task_id, 
+                      candidate_task->yat_casched.wcet, 
+                      candidate_task->yat_casched.wcet);
+    
+    /* Step 3: 重新计算所有相关任务的benefit值 */
+    struct benefit_backup *backup, *tmp_backup;
+    list_for_each_entry_safe(backup, tmp_backup, &old_benefits, list) {
+        u64 recency = calculate_recency(backup->task, backup->cpu);
+        u64 crp_ratio = get_crp_ratio(recency);
+        backup->new_benefit = ((1000 - crp_ratio) * backup->task->yat_casched.wcet) / 1000;
+        
+        /* 计算影响值（绝对差值） */
+        if (backup->new_benefit > backup->old_benefit) {
+            total_impact += backup->new_benefit - backup->old_benefit;
+        } else {
+            total_impact += backup->old_benefit - backup->new_benefit;
+        }
+    }
+    
+    /* Step 4: 回滚历史记录的临时修改 */
+    /* 找到并删除刚才临时添加的记录 */
+    struct cpu_history_table *table = &history_tables[candidate_cpu];
+    struct history_record *rec, *tmp_rec;
+    
+    spin_lock(&table->lock);
+    list_for_each_entry_safe(rec, tmp_rec, &table->time_list, list) {
+        if (rec->dag_id == dag_id && rec->task_id == task_id && 
+            abs((s64)(rec->timestamp - now)) < 1000000) { /* 1ms内的记录 */
+            list_del(&rec->list);
+            kfree(rec);
+            break; /* 只删除最新添加的一个 */
+        }
+    }
+    spin_unlock(&table->lock);
+    
+    /* Step 5: 清理备份数据 */
+    list_for_each_entry_safe(backup, tmp_backup, &old_benefits, list) {
+        list_del(&backup->list);
+        kfree(backup);
+    }
+    
+    return total_impact;
+}
+
+/* 修改调度决策函数，实现完整的LCIF策略 */
 static void schedule_yat_casched_tasks(void)
 {
     struct accelerator_entry *entry, *best_entry = NULL;
@@ -619,6 +706,16 @@ static void schedule_yat_casched_tasks(void)
     u64 max_benefit = 0;
     u64 min_impact = ULLONG_MAX;
     int bkt;
+    
+    /* 候选任务列表 - 用于存储benefit相同的候选项 */
+    struct list_head candidates;
+    struct candidate_entry {
+        struct list_head list;
+        struct accelerator_entry *entry;
+        u64 lcif_impact;
+    };
+    
+    INIT_LIST_HEAD(&candidates);
     
     // 1. 更新加速表，缓存所有当前可行的(任务,核心)对的benefit
     update_accelerator_table();
@@ -631,23 +728,41 @@ static void schedule_yat_casched_tasks(void)
         }
     }
 
-    // 3. 第二轮：在 benefit 最大的条目中，通过计算 impact 来打破平局
+    // 3. 收集所有benefit最大的候选项
     hash_for_each(accelerator_table, bkt, entry, node) {
         if (entry->benefit == max_benefit) {
-            // 只有在此时，才需要计算 Impact
-            u64 current_impact = calculate_impact(entry->p, entry->cpu);
-            if (current_impact < min_impact) {
-                min_impact = current_impact;
-                best_entry = entry; // 记录最佳条目
+            struct candidate_entry *candidate = kmalloc(sizeof(*candidate), GFP_ATOMIC);
+            if (candidate) {
+                candidate->entry = entry;
+                candidate->lcif_impact = 0; // 待计算
+                list_add(&candidate->list, &candidates);
             }
         }
     }
     spin_unlock(&accelerator_lock);
 
-    // 4. 如果找到了最佳选择，则执行调度
+    // 4. LCIF策略：对所有候选项计算Impact
+    struct candidate_entry *candidate, *tmp_candidate;
+    list_for_each_entry(candidate, &candidates, list) {
+        candidate->lcif_impact = calculate_lcif_impact(
+            candidate->entry->p, candidate->entry->cpu);
+    }
+
+    // 5. 选择Impact最小的候选项
+    list_for_each_entry_safe(candidate, tmp_candidate, &candidates, list) {
+        if (candidate->lcif_impact < min_impact) {
+            min_impact = candidate->lcif_impact;
+            best_entry = candidate->entry;
+        }
+    }
+
+    // 6. 执行调度决策
     if (best_entry) {
         p_to_run = best_entry->p;
         best_cpu = best_entry->cpu;
+
+        printk(KERN_INFO "LCIF: Selected task PID=%d for CPU=%d, benefit=%llu, impact=%llu\n",
+               p_to_run->pid, best_cpu, max_benefit, min_impact);
 
         // 从就绪池移除
         spin_lock(&yat_pool_lock);
@@ -659,40 +774,45 @@ static void schedule_yat_casched_tasks(void)
         struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
         struct rq_flags flags;
         
-        // 此处需要获取目标rq的锁来安全地修改其运行队列
         rq_lock(target_rq, &flags);
         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
         target_yat_rq->nr_running++;
         
-        // 更新任务的recency信息 - 只维护最新的一次记录
+        // 更新任务的recency信息和历史记录
         if (p_to_run->yat_casched.last_cpu != best_cpu) {
-            // 清除之前CPU上的recency记录（如果存在）
             if (p_to_run->yat_casched.last_cpu != -1) {
                 p_to_run->yat_casched.per_cpu_recency[p_to_run->yat_casched.last_cpu] = 0;
             }
-            // 更新新的CPU记录
             p_to_run->yat_casched.per_cpu_recency[best_cpu] = ktime_get();
             p_to_run->yat_casched.last_cpu = best_cpu;
+            
+            /* 正式添加历史记录 */
+            int dag_id = 0, task_id = p_to_run->pid;
+            if (p_to_run->yat_casched.job) {
+                dag_id = p_to_run->yat_casched.job->dag ? p_to_run->yat_casched.job->dag->dag_id : 0;
+                task_id = p_to_run->yat_casched.job->job_id;
+            }
+            add_history_record(best_cpu, dag_id, task_id, 
+                             p_to_run->yat_casched.wcet, 0);
         }
         
         rq_unlock(target_rq, &flags);
         
-        // 唤醒目标CPU（如果它在休眠）并请求重新调度
+        // 唤醒目标CPU并请求重新调度
         resched_curr(target_rq);
+        
+        /* 最后更新加速表 - 反映实际调度的影响 */
+        update_accelerator_table();
+    }
+    
+    // 7. 清理候选项列表
+    list_for_each_entry_safe(candidate, tmp_candidate, &candidates, list) {
+        list_del(&candidate->list);
+        kfree(candidate);
     }
 }
 
-/*
- * 负载均衡 - 现在是我们的主调度入口，支持全局调度
- */
-int balance_yat_casched(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
-{
-    // 执行全局调度，不再限制在CPU 0上
-    schedule_yat_casched_tasks();
-    return 0;
-}
-
-/* 以下是其他必需的接口函数的简单实现 */
+/* --- 函数实现 --- */
 
 /* debugfs 相关函数 */
 static struct dentry *yat_debugfs_dir;
@@ -705,16 +825,22 @@ static int yat_accelerator_show(struct seq_file *m, void *v)
 {
     struct accelerator_entry *entry;
     int bkt, count = 0;
-    seq_printf(m, "Yat_Casched Accelerator Table:\nIdx | PID | CPU | Benefit\n");
+    seq_printf(m, "Yat_Casched Accelerator Table (LCIF-enabled):\n");
+    seq_printf(m, "Idx | PID   | CPU | Benefit  | Last_Impact\n");
+    seq_printf(m, "----|-------|-----|----------|------------\n");
+    
     spin_lock(&accelerator_lock);
     hash_for_each(accelerator_table, bkt, entry, node) {
         if (entry && entry->p) {
-            seq_printf(m, "%3d | %5d | %3d | %8llu\n", count, entry->p->pid, entry->cpu, entry->benefit);
+            /* 计算当前的LCIF impact作为参考 */
+            u64 current_impact = calculate_lcif_impact(entry->p, entry->cpu);
+            seq_printf(m, "%3d | %5d | %3d | %8llu | %8llu\n", 
+                       count, entry->p->pid, entry->cpu, entry->benefit, current_impact);
             count++;
         }
     }
     spin_unlock(&accelerator_lock);
-    seq_printf(m, "Total: %d\n", count);
+    seq_printf(m, "\nTotal entries: %d\nStrategy: LCIF (Least Cache Impact First)\n", count);
     return 0;
 }
 
@@ -1151,132 +1277,6 @@ void yat_create_test_dag(void)
         printk(KERN_ERR "yat_casched: Failed to create test jobs\n");
     }
 }
-    }
-    
-    hlist_del(&entry->hash_node);
-    kfree(entry);
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 清理过期条目 */
-void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time)
-{
-    struct yat_accel_entry *entry;
-    struct hlist_node *tmp;
-    int i;
-    
-    if (!table || !table->hash_buckets)
-        return;
-    
-    spin_lock(&table->lock);
-    for (i = 0; i < (1 << YAT_ACCEL_HASH_BITS); i++) {
-        hlist_for_each_entry_safe(entry, tmp, &table->hash_buckets[i], hash_node) {
-            if (time_before((unsigned long)entry->last_update_time, (unsigned long)before_time)) {
-                hlist_del(&entry->hash_node);
-                kfree(entry);
-            }
-        }
-    }
-    table->last_cleanup_time = jiffies;
-    spin_unlock(&table->lock);
-}
-
-/*
- * 兼容性：保留原有的加速表操作函数（针对task_pid）
- */
-
-/* 生成(task_pid, cpu_id)的哈希值 */
-static u32 yat_accel_hash(pid_t task_pid, int cpu_id)
-{
-    return hash_32((u32)task_pid ^ (u32)cpu_id, YAT_ACCEL_HASH_BITS);
-}
-
-/* 查找加速表条目 */
-static struct yat_accel_entry *yat_accel_find_entry(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
-{
-    struct yat_accel_entry *entry;
-    u32 hash_val = yat_accel_hash(task_pid, cpu_id);
-    
-    if (!table || !table->hash_buckets)
-        return NULL;
-    
-    hlist_for_each_entry(entry, &table->hash_buckets[hash_val], hash_node) {
-        if (entry->job_id == task_pid && entry->cpu_id == cpu_id)  /* 使用job_id字段 */
-            return entry;
-    }
-    return NULL;
-}
-
-/* 插入加速表条目 */
-int yat_accel_table_insert(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
-{
-    struct yat_accel_entry *entry;
-    u32 hash_val;
-    
-    if (!table || !table->hash_buckets)
-        return -EINVAL;
-    
-    spin_lock(&table->lock);
-    
-    /* 检查是否已存在 */
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (entry) {
-        spin_unlock(&table->lock);
-        return -EEXIST;
-    }
-    
-    /* 创建新条目 */
-    entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-    if (!entry) {
-        spin_unlock(&table->lock);
-        return -ENOMEM;
-    }
-    
-    entry->job_id = task_pid;  /* 兼容性：将task_pid存储在job_id字段中 */
-    entry->cpu_id = cpu_id;
-    entry->benefit = benefit;
-    entry->wcet = wcet;
-    entry->crp_ratio = crp_ratio;
-    entry->last_update_time = jiffies;
-    
-    hash_val = yat_accel_hash(task_pid, cpu_id);
-    hlist_add_head(&entry->hash_node, &table->hash_buckets[hash_val]);
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 更新加速表条目 */
-int yat_accel_table_update(struct yat_accel_table *table, pid_t task_pid, int cpu_id, u64 benefit, u64 wcet, u64 crp_ratio)
-{
-    struct yat_accel_entry *entry;
-    
-    if (!table || !table->hash_buckets)
-        return -EINVAL;
-    
-    spin_lock(&table->lock);
-    
-    entry = yat_accel_find_entry(table, task_pid, cpu_id);
-    if (!entry) {
-        spin_unlock(&table->lock);
-        return -ENOENT;
-    }
-    
-    entry->benefit = benefit;
-    entry->wcet = wcet;
-    entry->crp_ratio = crp_ratio;
-    entry->last_update_time = jiffies;
-    
-    spin_unlock(&table->lock);
-    return 0;
-}
-
-/* 查找benefit值 */
-u64 yat_accel_table_lookup(struct yat_accel_table *table, pid_t task_pid, int cpu_id)
-{
-    struct yat_accel_entry *entry;
     u64 benefit = 0;
     
     if (!table || !table->hash_buckets)
