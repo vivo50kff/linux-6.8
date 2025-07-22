@@ -39,9 +39,11 @@ static void yat_debugfs_cleanup(void);
 // 历史记录: 使用双向链表，按时间戳顺序记录历史
 struct history_record {
     struct list_head list;
-    int task_id;
+    int dag_id;          // 新增：DAG ID
+    int task_id;         // 保持原有：任务 ID
     u64 timestamp;
-    u64 exec_time;
+    u64 exec_time;       // 改名：原expected_exec_time，表示预期执行时间
+    u64 actual_exec_time; // 新增：实际执行时间
 };
 
 // 历史表: 每个CPU一个，包含一个链表头和锁
@@ -84,19 +86,18 @@ static void init_history_tables(void) {
 }
 
 // 添加历史记录
-static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
+static void add_history_record(int cpu, int dag_id, int task_id, u64 expected_exec_time, u64 actual_exec_time) {
     struct history_record *rec;
     struct cpu_history_table *table = &history_tables[cpu];
     
     rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
     if (!rec) return;
 
-    rec->task_id = p->pid;
+    rec->dag_id = dag_id;
+    rec->task_id = task_id;
     rec->timestamp = ktime_get();
-    rec->exec_time = exec_time;
-
-    // 更新任务的 per-cpu 最近执行时间戳
-    p->yat_casched.per_cpu_recency[cpu] = rec->timestamp;
+    rec->exec_time = expected_exec_time;     // 预期执行时间
+    rec->actual_exec_time = actual_exec_time; // 实际执行时间
 
     spin_lock(&table->lock);
     // 直接插入链表尾部（保证时间戳递增）
@@ -147,92 +148,278 @@ static u64 get_max_last_exec_time(struct task_struct *p, const struct cpumask *c
 }
 
 
-/* --- Recency 和 Impact 计算 (v2.1) --- */
+/* --- Recency 和 Impact 计算 (v3.0 - 三层缓存距离算法) --- */
 
-// 计算多层缓存 Recency
-static u64 calculate_recency(struct task_struct *p, int cpu_id) {
-    u64 now = ktime_get();
-    u64 l1_sum, l2_sum, l3_sum;
+// 系统参数定义
+#define YAT_L2_CORES_PER_CLUSTER 4      // L2缓存簇大小
+#define YAT_V2_THRESHOLD 10000          // L1窗口大小 (cycles)
+#define YAT_V3_THRESHOLD 100000         // L2窗口大小 (cycles)  
+#define YAT_V4_THRESHOLD 500000         // L3窗口大小 (cycles)
 
-<<<<<<< HEAD
-    // L1 (私有)
-    u64 l1_last = p->yat_casched.per_cpu_recency[cpu_id];
-    l1_sum = sum_exec_time_since(cpu_id, l1_last, now);
-
-    // L2 (共享)
-    const struct cpumask *l2_cpus = cpu_l2c_shared_mask(cpu_id);
-    u64 l2_last = get_max_last_exec_time(p, l2_cpus);
-    l2_sum = sum_exec_time_multi(l2_cpus, l2_last, now);
-
-    // L3 (全局)
-    const struct cpumask *l3_cpus = cpu_llc_shared_mask(cpu_id);
-    u64 l3_last = get_max_last_exec_time(p, l3_cpus);
-=======
-    // L1 (私有)：统计任务i两次命中核心J之间，核心J上所有任务的执行时间总和
-    u64 l1_last = p->yat_casched.per_cpu_recency[cpu_id];
-    if (l1_last == 0) {
-        // 首次未命中，用任务创建时间戳
-        l1_last = p->start_time;
-    }
-    l1_sum = sum_exec_time_since(cpu_id, l1_last, now);
-
-    // L2 (共享)：统计任务i两次命中L2缓存之间，J及与J共享L2的所有核心上的任务执行时间总和
-    const struct cpumask *l2_cpus = cpu_l2c_shared_mask(cpu_id);
-    u64 l2_last = get_max_last_exec_time(p, l2_cpus);
-    if (l2_last == 0) {
-        l2_last = p->start_time;
-    }
-    l2_sum = sum_exec_time_multi(l2_cpus, l2_last, now);
-
-    // L3 (全局)：统计任务i两次命中L3缓存之间，J及与J共享L3的所有核心上的任务执行时间总和
-    const struct cpumask *l3_cpus = cpu_llc_shared_mask(cpu_id);
-    u64 l3_last = get_max_last_exec_time(p, l3_cpus);
-    if (l3_last == 0) {
-        l3_last = p->start_time;
-    }
->>>>>>> yat/ft
-    l3_sum = sum_exec_time_multi(l3_cpus, l3_last, now);
-
-    return l1_sum + l2_sum + l3_sum;
-}
-
-// 计算将任务 p 放到 cpu_id 上对其他任务的 Impact
-static u64 calculate_impact(struct task_struct *p, int cpu_id) {
-    // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
-    u64 total_impact = 0;
-    struct task_struct *other_p;
-
-    spin_lock(&yat_pool_lock);
-    list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
-        if (other_p == p) continue;
-
-        // 原本 other_p 在 cpu_id 上的 benefit
-        u64 old_recency = calculate_recency(other_p, cpu_id);
-        u64 old_crp = get_crp_ratio(old_recency);
-        u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
-
-        // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
-        u64 new_recency = old_recency + p->yat_casched.wcet;
-        u64 new_crp = get_crp_ratio(new_recency);
-        u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
+// L1 Recency计算 - 重写实现基于任务ID匹配的算法
+static s64 calculate_l1_recency(int dag_id, int task_id, int cpu_id, u64 now) {
+    s64 dist = 0;
+    struct history_record *rec;
+    struct cpu_history_table *table = &history_tables[cpu_id];
+    
+    spin_lock(&table->lock);
+    // 从最新记录开始倒推扫描
+    list_for_each_entry_reverse(rec, &table->time_list, list) {
+        // 找到同一个任务的历史记录
+        if (rec->dag_id == dag_id && rec->task_id == task_id) {
+            spin_unlock(&table->lock);
+            return dist; // 返回累积距离
+        }
         
-        if (old_benefit > new_benefit) {
-            total_impact += (old_benefit - new_benefit);
+        // 累加"别人"的预期执行时间
+        dist += rec->exec_time;
+        
+        // 超出L1窗口则停止
+        if (dist > YAT_V2_THRESHOLD) {
+            break;
         }
     }
-    spin_unlock(&yat_pool_lock);
-
-    return total_impact;
+    spin_unlock(&table->lock);
+    
+    return -1; // L1未命中
 }
 
+// L2 Recency计算 - 重写实现簇共享历史
+static s64 calculate_l2_recency(int dag_id, int task_id, int cpu_id, u64 now) {
+    s64 dist = 0;
+    int cluster_id = cpu_id / YAT_L2_CORES_PER_CLUSTER;
+    int cluster_start = cluster_id * YAT_L2_CORES_PER_CLUSTER;
+    int cluster_end = cluster_start + YAT_L2_CORES_PER_CLUSTER;
+    int cpu;
+    
+    // 收集簇内所有CPU的历史记录到临时列表
+    struct list_head cluster_history;
+    struct history_record *rec, *cluster_rec, *tmp_rec;
+    
+    INIT_LIST_HEAD(&cluster_history);
+    
+    // 遍历簇内所有CPU的历史
+    for (cpu = cluster_start; cpu < cluster_end && cpu < NR_CPUS; cpu++) {
+        struct cpu_history_table *table = &history_tables[cpu];
+        
+        spin_lock(&table->lock);
+        list_for_each_entry(rec, &table->time_list, list) {
+            // 创建临时记录副本
+            cluster_rec = kmalloc(sizeof(*cluster_rec), GFP_ATOMIC);
+            if (!cluster_rec) {
+                spin_unlock(&table->lock);
+                continue;
+            }
+            
+            cluster_rec->dag_id = rec->dag_id;
+            cluster_rec->task_id = rec->task_id;
+            cluster_rec->timestamp = rec->timestamp;
+            cluster_rec->exec_time = rec->exec_time;
+            cluster_rec->actual_exec_time = rec->actual_exec_time;
+            
+            // 按时间戳有序插入
+            struct list_head *pos;
+            struct history_record *existing;
+            bool inserted = false;
+            
+            list_for_each(pos, &cluster_history) {
+                existing = list_entry(pos, struct history_record, list);
+                if (cluster_rec->timestamp < existing->timestamp) {
+                    list_add_tail(&cluster_rec->list, pos);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                list_add_tail(&cluster_rec->list, &cluster_history);
+            }
+        }
+        spin_unlock(&table->lock);
+    }
+    
+    // 倒推扫描簇历史
+    list_for_each_entry_reverse(cluster_rec, &cluster_history, list) {
+        if (cluster_rec->dag_id == dag_id && cluster_rec->task_id == task_id) {
+            // 找到目标任务
+            goto cleanup_l2_found;
+        }
+        
+        dist += cluster_rec->exec_time;
+        
+        if (dist > YAT_V3_THRESHOLD) {
+            dist = -1; // L2未命中
+            break;
+        }
+    }
+    
+    // 如果循环正常结束但没找到任务，也是未命中
+    if (dist >= 0 && dist <= YAT_V3_THRESHOLD) {
+        // 这种情况是遍历完整个窗口都没找到，应该是未命中
+        dist = -1;
+    }
+    
+cleanup_l2_found:
+cleanup_l2:
+    // 清理临时列表
+    list_for_each_entry_safe(cluster_rec, tmp_rec, &cluster_history, list) {
+        list_del(&cluster_rec->list);
+        kfree(cluster_rec);
+    }
+    
+    return dist;
+}
+
+// L3 Recency计算 - 重写实现全局历史
+static s64 calculate_l3_recency(int dag_id, int task_id, u64 now) {
+    s64 dist = 0;
+    int cpu;
+    struct history_record *rec, *global_rec, *tmp_rec;
+    struct list_head global_history;
+    
+    INIT_LIST_HEAD(&global_history);
+    
+    // 收集全局历史记录
+    for_each_possible_cpu(cpu) {
+        struct cpu_history_table *table = &history_tables[cpu];
+        
+        spin_lock(&table->lock);
+        list_for_each_entry(rec, &table->time_list, list) {
+            global_rec = kmalloc(sizeof(*global_rec), GFP_ATOMIC);
+            if (!global_rec) {
+                spin_unlock(&table->lock);
+                continue;
+            }
+            
+            global_rec->dag_id = rec->dag_id;
+            global_rec->task_id = rec->task_id;
+            global_rec->timestamp = rec->timestamp;
+            global_rec->exec_time = rec->exec_time;
+            global_rec->actual_exec_time = rec->actual_exec_time;
+            
+            // 按时间戳有序插入
+            struct list_head *pos;
+            struct history_record *existing;
+            bool inserted = false;
+            
+            list_for_each(pos, &global_history) {
+                existing = list_entry(pos, struct history_record, list);
+                if (global_rec->timestamp < existing->timestamp) {
+                    list_add_tail(&global_rec->list, pos);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                list_add_tail(&global_rec->list, &global_history);
+            }
+        }
+        spin_unlock(&table->lock);
+    }
+    
+    // 倒推扫描全局历史
+    list_for_each_entry_reverse(global_rec, &global_history, list) {
+        if (global_rec->dag_id == dag_id && global_rec->task_id == task_id) {
+            goto cleanup_l3_found;
+        }
+        
+        dist += global_rec->exec_time;
+        
+        if (dist > YAT_V4_THRESHOLD) {
+            dist = -1;
+            break;
+        }
+    }
+    
+    // 如果循环正常结束但没找到任务，也是未命中
+    if (dist >= 0 && dist <= YAT_V4_THRESHOLD) {
+        dist = -1; // L3未命中
+    }
+    
+cleanup_l3_found:
+cleanup_l3:
+    // 清理临时列表
+    list_for_each_entry_safe(global_rec, tmp_rec, &global_history, list) {
+        list_del(&global_rec->list);
+        kfree(global_rec);
+    }
+    
+    return dist;
+}
+
+// 新的三层Recency计算主函数 - 重写实现
+static u64 calculate_recency(struct task_struct *p, int cpu_id) {
+    u64 now = ktime_get();
+    s64 l1_dist, l2_dist, l3_dist;
+    int dag_id = 0;  // 默认DAG ID，可从任务结构体获取
+    int task_id = p->pid;
+    
+    // 如果任务有关联的作业，使用作业的DAG ID
+    if (p->yat_casched.job && p->yat_casched.job->dag) {
+        dag_id = p->yat_casched.job->dag->dag_id;
+        task_id = p->yat_casched.job->job_id;
+    }
+    
+    // L1层：单核私有
+    l1_dist = calculate_l1_recency(dag_id, task_id, cpu_id, now);
+    if (l1_dist >= 0 && l1_dist <= YAT_V2_THRESHOLD) {
+        return (u64)l1_dist; // L1命中
+    }
+    
+    // L2层：簇共享
+    l2_dist = calculate_l2_recency(dag_id, task_id, cpu_id, now);
+    if (l2_dist >= 0 && l2_dist <= YAT_V3_THRESHOLD) {
+        return (u64)l2_dist; // L2命中
+    }
+    
+    // L3层：全局共享
+    l3_dist = calculate_l3_recency(dag_id, task_id, now);
+    if (l3_dist >= 0 && l3_dist <= YAT_V4_THRESHOLD) {
+        return (u64)l3_dist; // L3命中
+    }
+    
+    // 完全未命中，返回最大值表示冷缓存
+    return YAT_V4_THRESHOLD + 1;
+}
 
 /*
-<<<<<<< HEAD
+ * 新的CRP模型函数 - 支持三层缓存区间
+ * 输入: recency - 三层缓存距离算法的结果
+ * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比
+ */
+static u64 get_crp_ratio(u64 recency)
+{
+    // L1区间 [0, v2]
+    if (recency <= YAT_V2_THRESHOLD) {
+        // L1命中：delta1 = 0.3，线性插值
+        return 300 + (recency * 200) / YAT_V2_THRESHOLD; // 300~500
+    }
+    
+    // L2区间 (v2, v3]
+    if (recency <= YAT_V3_THRESHOLD) {
+        // L2命中：delta2 = 0.5，线性插值
+        u64 l2_offset = recency - YAT_V2_THRESHOLD;
+        u64 l2_range = YAT_V3_THRESHOLD - YAT_V2_THRESHOLD;
+        return 500 + (l2_offset * 300) / l2_range; // 500~800
+    }
+    
+    // L3区间 (v3, v4]
+    if (recency <= YAT_V4_THRESHOLD) {
+        // L3命中：delta3 = 0.8，线性插值
+        u64 l3_offset = recency - YAT_V3_THRESHOLD;
+        u64 l3_range = YAT_V4_THRESHOLD - YAT_V3_THRESHOLD;
+        return 800 + (l3_offset * 200) / l3_range; // 800~1000
+    }
+    
+    // 完全未命中：使用WCET
+    return 1000;
+}
+
+/*
  * AJLR的CRP (Cache Recency Profile) 模型函数
  * 输入: recency (ns) - 缓存新鲜度，表示自上次执行后其他任务的执行时间总和
  * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比，1000表示完全冷缓存
  */
-static u64 get_crp_ratio(u64 recency)
+static u64 get_crp_ratio_old(u64 recency)
 {
     /* 基于RTNS'23论文的CRP分段函数 */
     if (recency < 1000)          /* 1us内，极热缓存 */
@@ -247,32 +434,6 @@ static u64 get_crp_ratio(u64 recency)
         return 950;              /* WCET的95% */
     
     return 1000;                 /* 完全冷缓存，执行时间=WCET */
-=======
- * 模拟CRP模型函数
- * 输入: recency (ns) - 任务上次运行距今的时间
- * 输出: crp_ratio (0-1000) - 执行时间占WCET的千分比
- */
-static u64 get_crp_ratio(u64 recency)
-{
-    // v2.4: 分段线性折线函数，模拟论文CRP曲线
-    // 单位：ns
-    if (recency < 1000000) { // 0~1ms (L1)
-        // 600~800线性递增
-        // y = 600 + (recency / 1000000) * (800-600)
-        return 600 + (recency * 200) / 1000000;
-    }
-    if (recency < 10000000) { // 1ms~10ms (L2)
-        // 800~950线性递增
-        // y = 800 + ((recency-1000000) / 9000000) * (950-800)
-        return 800 + ((recency - 1000000) * 150) / 9000000;
-    }
-    if (recency < 50000000) { // 10ms~50ms (L3)
-        // 950~1000线性递增
-        // y = 950 + ((recency-10000000) / 40000000) * (1000-950)
-        return 950 + ((recency - 10000000) * 50) / 40000000;
-    }
-    return 1000; // 超过50ms，完全冷
->>>>>>> yat/ft
 }
 
 /*
@@ -311,7 +472,6 @@ static u64 get_wcet(struct task_struct *p)
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
     struct rq *main_rq = container_of(rq, struct rq, yat_casched);
-<<<<<<< HEAD
 
     // 在第一次初始化时，初始化全局数据结构
     static bool global_init_done = false;
@@ -668,24 +828,8 @@ static void yat_destroy_history_tables(struct yat_cpu_history_table *tables)
 /* 添加历史记录 */
 static int yat_add_history_record(int cpu, int job_id, u64 timestamp, u64 exec_time)
 {
-    struct yat_history_record *rec;
-    
-    if (cpu < 0 || cpu >= NR_CPUS)
-        return -EINVAL;
-    
-    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
-    if (!rec)
-        return -ENOMEM;
-    
-    rec->job_id = job_id;
-    rec->timestamp = timestamp;
-    rec->exec_time = exec_time;
-    
-    spin_lock(&global_history_tables[cpu].lock);
-    /* 直接插入链表尾部（时间戳递增） */
-    list_add_tail(&rec->list, &global_history_tables[cpu].time_list);
-    spin_unlock(&global_history_tables[cpu].lock);
-    
+    // 对于AJLR接口，使用默认DAG ID 0
+    add_history_record(cpu, 0, job_id, exec_time, exec_time);
     return 0;
 }
 
@@ -949,19 +1093,13 @@ void yat_accel_table_cleanup(struct yat_accel_table *table, u64 before_time)
 }
 
 /*
- * 历史表操作函数
- */
-
-/* 生成时间戳的哈希值 */
-/*
- * 初始化Yat_Casched运行队列 - AJLR版本
+ * 初始化Yat_Casched运行队列
  */
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
-    printk(KERN_INFO "======init yat_casched rq (AJLR Final Version)======\n");
->>>>>>> yat/yat_casched-dev
-    
-=======
+    struct rq *main_rq = container_of(rq, struct rq, yat_casched);
+
+    // 在第一次初始化时，初始化全局数据结构
     static atomic_t global_init_done = ATOMIC_INIT(0);
 
     // 只允许第一个调用者执行全局初始化
@@ -972,25 +1110,12 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     }
     printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
 
->>>>>>> yat/ft
     INIT_LIST_HEAD(&rq->tasks);
     rq->nr_running = 0;
     rq->agent = NULL;
     rq->cache_decay_jiffies = jiffies;
     spin_lock_init(&rq->history_lock);
-<<<<<<< HEAD
     
-<<<<<<< HEAD
-=======
->>>>>>> yat/ft
-    /* 此处逻辑是错误的，rq->cpu_history不存在，且不应在此处初始化所有CPU的历史表 */
-    /*
-    for (i = 0; i < NR_CPUS; i++) {
-        rq->cpu_history[i] = NULL;
-    }
-    */
-<<<<<<< HEAD
-=======
     /* 初始化AJLR核心结构 */
     
     /* 1. 初始化就绪作业池 */
@@ -1052,8 +1177,6 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
     
     printk(KERN_INFO "yat_casched: AJLR structures initialized\n");
 >>>>>>> yat/yat_casched-dev
-=======
->>>>>>> yat/ft
 }
 
 /*
@@ -1096,8 +1219,6 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 }
 
 /*
-<<<<<<< HEAD
-<<<<<<< HEAD
  * 将任务加入全局任务池，并保持有序
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
@@ -1109,50 +1230,10 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     if (p->yat_casched.wcet == 0) {
         p->yat_casched.wcet = get_wcet(p);
         // ... 其他初始化 ...
-=======
- * 将任务加入运行队列 - AJLR版本
- */
-void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    /* 减少printk频率 - 只在第一次enqueue时打印 */
-    if (yat_rq->nr_running == 0) {
-        printk(KERN_INFO "yat_casched: enqueue first task (AJLR)\n");
->>>>>>> yat/yat_casched-dev
-=======
- * 将任务加入全局任务池，并保持有序
- */
-void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
-{
-    struct list_head *pos;
-    struct task_struct *entry;
-
-    // 初始化新任务
-    if (p->yat_casched.wcet == 0) {
-        p->yat_casched.wcet = get_wcet(p);
->>>>>>> yat/ft
     }
 
     spin_lock(&yat_pool_lock);
     
-<<<<<<< HEAD
-<<<<<<< HEAD
-    // 插入就绪池，按优先级排序
-    list_for_each(pos, &yat_ready_job_pool) {
-        entry = list_entry(pos, struct task_struct, yat_casched.run_list);
-        if (p->prio < entry->prio) { // 简单按prio排序
-            break;
-        }
-    }
-    list_add_tail(&p->yat_casched.run_list, pos);
-
-    spin_unlock(&yat_pool_lock);
-}
-
-/*
- * 将任务从就绪池移除
-=======
     /* 初始化任务的Yat_Casched实体 */
     if (list_empty(&p->yat_casched.run_list)) {
         INIT_LIST_HEAD(&p->yat_casched.run_list);
@@ -1162,87 +1243,40 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     }
     
     /* 添加到运行队列 */
-    list_add_tail(&p->yat_casched.run_list, &yat_rq->tasks);
-    yat_rq->nr_running++;
+    list_add_tail(&p->yat_casched.run_list, &rq->yat_casched.tasks);
+    rq->yat_casched.nr_running++;
     
     /* AJLR处理：创建或更新作业信息 */
     yat_ajlr_enqueue_task(rq, p, flags);
 }
 
 /*
- * 将任务从运行队列移除 - AJLR版本
->>>>>>> yat/yat_casched-dev
-=======
-    // 插入就绪池，按优先级排序 (值越小，优先级越高)
-    list_for_each(pos, &yat_ready_job_pool) {
-        entry = list_entry(pos, struct task_struct, yat_casched.run_list);
-        if (p->prio < entry->prio) {
-            break;
-        }
-    }
-    list_add_tail(&p->yat_casched.run_list, pos);
-
-    spin_unlock(&yat_pool_lock);
-    printk(KERN_INFO "[yat] enqueue_task: PID=%d\n", p->pid);
-}
-
-/*
  * 将任务从就绪池移除
->>>>>>> yat/ft
  */
 void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
     spin_lock(&yat_pool_lock);
     if (!list_empty(&p->yat_casched.run_list)) {
         list_del_init(&p->yat_casched.run_list);
-<<<<<<< HEAD
+        rq->yat_casched.nr_running--;
     }
-<<<<<<< HEAD
-=======
-        printk(KERN_INFO "[yat] dequeue_task: PID=%d\n", p->pid);
-    }
->>>>>>> yat/ft
     spin_unlock(&yat_pool_lock);
 }
 
 /*
  * pick_next_task - 从本地运行队列取任务
  * 因为我们保证每个核心最多一个任务，所以逻辑很简单
-<<<<<<< HEAD
-=======
-    
-    /* AJLR处理：更新作业状态 */
-    yat_ajlr_dequeue_task(rq, p, flags);
-}
-
-/*
- * 选择下一个要运行的任务 - 优化版本
- * 减少AJLR复杂度，提高调度效率
->>>>>>> yat/yat_casched-dev
-=======
->>>>>>> yat/ft
  */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     struct task_struct *p = NULL;
     struct sched_yat_casched_entity *yat_se;
     int best_priority = INT_MAX;
->>>>>>> yat/yat_casched-dev
-=======
->>>>>>> yat/ft
     
     if (yat_rq->nr_running == 0)
         return NULL;
     
-<<<<<<< HEAD
-<<<<<<< HEAD
-    // 直接返回队列中的唯一任务
-    return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
-=======
     /* 快速路径：简化的优先级调度，不运行完整AJLR */
     if (!list_empty(&yat_rq->tasks)) {
         struct list_head *pos;
@@ -1288,11 +1322,6 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
     }
     
     return p;
->>>>>>> yat/yat_casched-dev
-=======
-    // 直接返回队列中的唯一任务
-    return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
->>>>>>> yat/ft
 }
 
 /*
@@ -1309,12 +1338,26 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
     u64 delta_exec;
+    int dag_id = 0, task_id = p->pid;
+    u64 expected_exec = 0;
+    
     update_curr_yat_casched(rq);
     
     delta_exec = rq_clock_task(rq) - p->se.exec_start;
     
-    /* --- 新增逻辑：更新历史表 --- */
-    add_history_record(rq->cpu, p, delta_exec);
+    // 获取DAG ID和预期执行时间
+    if (p->yat_casched.job) {
+        task_id = p->yat_casched.job->job_id;
+        expected_exec = p->yat_casched.job->wcet;
+        if (p->yat_casched.job->dag) {
+            dag_id = p->yat_casched.job->dag->dag_id;
+        }
+    } else {
+        expected_exec = get_wcet(p);
+    }
+    
+    /* 更新历史表 - 使用新的接口 */
+    add_history_record(rq->cpu, dag_id, task_id, expected_exec, delta_exec);
 }
 
 /*
@@ -1454,20 +1497,12 @@ static void schedule_yat_casched_tasks(void)
         struct rq_flags flags;
         
         // 此处需要获取目标rq的锁来安全地修改其运行队列
-<<<<<<< HEAD
         rq_lock(target_rq, &flags); // 使用 rq_lock 获取锁
         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
         target_yat_rq->nr_running++;
         rq_unlock(target_rq, &flags); // 使用 rq_unlock 释放锁
         
         // 唤醒目标CPU（如果它在休眠）并请求重新调度
-=======
-        rq_lock(target_rq, &flags);
-        list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
-        target_yat_rq->nr_running++;
-        rq_unlock(target_rq, &flags);
-        printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
->>>>>>> yat/ft
         resched_curr(target_rq);
     }
 }
@@ -1508,9 +1543,6 @@ void rq_online_yat_casched(struct rq *rq)
 
 void rq_offline_yat_casched(struct rq *rq)
 {
-<<<<<<< HEAD
-    /* CPU下线处理 */
-=======
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
     
     /* CPU下线处理 - 清理新的历史表数据结构 */
@@ -1518,7 +1550,6 @@ void rq_offline_yat_casched(struct rq *rq)
     
     /* 注意：全局结构不在这里释放，因为它们可能被其他CPU使用 */
     printk(KERN_INFO "yat_casched: CPU offline cleanup completed\n");
->>>>>>> yat/yat_casched-dev
 }
 
 struct task_struct *pick_task_yat_casched(struct rq *rq)
@@ -1771,187 +1802,103 @@ u64 yat_get_crp_ratio(u64 recency)
 /* 计算多层缓存recency */
 u64 yat_calculate_recency(int job_id, int cpu_id, u64 now)
 {
-    u64 l1_recency = 0, l2_recency = 0, l3_recency = 0;
-    u64 l1_last, l2_last, l3_last;
-    int *all_cpus;
-    int i;
+    s64 l1_dist, l2_dist, l3_dist;
+    int dag_id = 0; // 默认DAG ID
     
-    /* 动态分配CPU数组以避免栈溢出 */
-    all_cpus = kmalloc(NR_CPUS * sizeof(int), GFP_ATOMIC);
-    if (!all_cpus) {
-        /* 如果分配失败，只计算L1缓存新鲜度 */
-        l1_last = yat_get_task_last_timestamp(cpu_id, job_id);
-        if (l1_last > 0)
-            l1_recency = yat_sum_exec_time_since(cpu_id, l1_last, now);
-        return l1_recency;
+    // L1层：单核私有
+    l1_dist = calculate_l1_recency(dag_id, job_id, cpu_id, now);
+    if (l1_dist >= 0 && l1_dist <= YAT_V2_THRESHOLD) {
+        return (u64)l1_dist; // L1命中
     }
     
-    /* L1层（私有缓存）：单个CPU */
-    l1_last = yat_get_task_last_timestamp(cpu_id, job_id);
-    if (l1_last > 0)
-        l1_recency = yat_sum_exec_time_since(cpu_id, l1_last, now);
+    // L2层：簇共享
+    l2_dist = calculate_l2_recency(dag_id, job_id, cpu_id, now);
+    if (l2_dist >= 0 && l2_dist <= YAT_V3_THRESHOLD) {
+        return (u64)l2_dist; // L2命中
+    }
     
-    /* L2层（共享缓存）：简化为所有CPU共享L2 */
-    for (i = 0; i < NR_CPUS; i++)
-        all_cpus[i] = i;
-    l2_last = yat_get_max_last_exec_time(job_id, all_cpus, NR_CPUS);
-    if (l2_last > 0)
-        l2_recency = yat_sum_exec_time_multi(all_cpus, NR_CPUS, l2_last, now);
+    // L3层：全局共享
+    l3_dist = calculate_l3_recency(dag_id, job_id, now);
+    if (l3_dist >= 0 && l3_dist <= YAT_V4_THRESHOLD) {
+        return (u64)l3_dist; // L3命中
+    }
     
-    /* L3层（全局共享缓存）：与L2相同，简化处理 */
-    l3_last = l2_last;
-    l3_recency = l2_recency;
-    
-    kfree(all_cpus);
-    return l1_recency + l2_recency + l3_recency;
+    // 完全未命中
+    return YAT_V4_THRESHOLD + 1;
 }
 
-/* 计算Impact（简化实现） */
-u64 yat_calculate_impact(struct yat_job *job, int core)
+/* 更新AJLR历史记录添加 - 使用新接口 */
+static int yat_add_history_record(int cpu, int job_id, u64 timestamp, u64 exec_time)
 {
-    /* 简化实现：Impact = 当前核心上等待队列长度 * 平均执行时间 */
-    struct yat_casched_rq *yat_rq = &cpu_rq(core)->yat_casched;
-    return yat_rq->nr_running * job->wcet;
+    // 对于AJLR接口，使用默认DAG ID 0
+    add_history_record(cpu, 0, job_id, exec_time, exec_time);
+    return 0;
 }
 
-/* 为作业寻找最佳核心 - AJLR核心算法 */
-int yat_find_best_core_for_job(struct yat_job *job)
+/* 更新Yat_Casched运行队列 */
+void update_yat_casched_rq(struct rq *rq)
 {
-    int best_core = YAT_INVALID_CORE;
-    u64 max_benefit = 0;
-    u64 min_impact = ULLONG_MAX;
-    u64 current_benefit, current_impact;
-    u64 recency, crp_ratio;
-    u64 now = ktime_get_ns();
-    int cpu;
+    struct task_struct *p;
+    u64 now = rq_clock_task(rq);
     
-    /* 第一轮：比拼Benefit */
-    for_each_online_cpu(cpu) {
-        /* 计算recency和benefit */
-        recency = yat_calculate_recency(job->job_id, cpu, now);
-        crp_ratio = yat_get_crp_ratio(recency);
-        current_benefit = ((1000 - crp_ratio) * job->wcet) / 1000;
-        
-        if (current_benefit > max_benefit) {
-            max_benefit = current_benefit;
-        }
-        
-        /* 更新加速表 */
-        if (global_accel_table) {
-            yat_accel_table_insert(global_accel_table, job->job_id, cpu, 
-                                 current_benefit, job->wcet, crp_ratio);
+    /* 遍历所有就绪任务，更新它们的虚拟运行时间 */
+    list_for_each_entry(p, &rq->yat_casched.tasks, yat_casched.run_list) {
+        if (p->state == TASK_RUNNING) {
+            update_curr_yat_casched(rq);
         }
     }
     
-    /* 第二轮：在最大Benefit集合中比拼Impact */
-    for_each_online_cpu(cpu) {
-        if (global_accel_table) {
-            current_benefit = yat_accel_table_lookup(global_accel_table, 
-                                                   job->job_id, cpu);
-        } else {
-            /* 重新计算benefit */
-            recency = yat_calculate_recency(job->job_id, cpu, now);
-            crp_ratio = yat_get_crp_ratio(recency);
-            current_benefit = ((1000 - crp_ratio) * job->wcet) / 1000;
-        }
-        
-        if (current_benefit == max_benefit) {
-            current_impact = yat_calculate_impact(job, cpu);
-            if (current_impact < min_impact) {
-                min_impact = current_impact;
-                best_core = cpu;
-            }
-        }
-    }
-    
-    return best_core;
+    /* AJLR调度 */
+    yat_schedule_ajlr(rq);
 }
 
-/* 更新就绪池：检查所有活动DAG，将满足依赖的作业移入就绪池 */
-void yat_update_ready_pool(struct yat_casched_rq *rq)
+/* 更新任务的执行时间戳和历史记录 */
+void update_task_exec_time(struct task_struct *p, u64 exec_time)
 {
-    struct yat_dag_task *dag;
-    struct yat_job *job;
+    struct rq *rq = task_rq(p);
+    u64 now = rq_clock_task(rq);
     
-    if (!rq) {
-        printk(KERN_ERR "yat_casched: yat_update_ready_pool called with NULL rq\n");
-        return;
-    }
+    /* 更新任务的执行时间戳 */
+    p->se.exec_start = now;
     
-    if (!rq->ready_pool) {
-        printk(KERN_ERR "yat_casched: ready_pool is NULL in yat_update_ready_pool\n");
-        return;
+    /* 更新历史记录 */
+    if (p->yat_casched.job) {
+        p->yat_casched.job->per_cpu_last_ts[rq->cpu] = now;
+        add_history_record(rq->cpu, p->yat_casched.job->job_id, now, exec_time);
     }
-    
-    spin_lock(&global_dag_lock);
-    list_for_each_entry(dag, &global_dag_list, dag_list) {
-        spin_lock(&dag->lock);
-        list_for_each_entry(job, &dag->jobs, job_list) {
-            if (job->state == YAT_JOB_WAITING && job->pending_predecessors == 0) {
-                yat_ready_pool_enqueue(rq->ready_pool, job);
-            }
-        }
-        spin_unlock(&dag->lock);
-    }
-    spin_unlock(&global_dag_lock);
 }
 
-/* AJLR主调度函数 */
-void yat_schedule_ajlr(struct yat_casched_rq *rq)
+/* 清理过期的历史记录 */
+void cleanup_old_history_records(int cpu, u64 cutoff_time)
 {
-    struct yat_job *job;
-    int best_core;
-    u64 now = ktime_get_ns();
+    struct yat_history_record *rec, *tmp;
     
-    if (!rq) {
-        printk(KERN_ERR "yat_casched: yat_schedule_ajlr called with NULL rq\n");
+    if (cpu < 0 || cpu >= NR_CPUS)
         return;
-    }
     
-    if (!rq->ready_pool) {
-        printk(KERN_ERR "yat_casched: ready_pool is NULL in yat_schedule_ajlr\n");
-        return;
-    }
-    
-    /* 1. 更新就绪池 */
-    yat_update_ready_pool(rq);
-    
-    /* 2. 循环分配：只要就绪池不空且有空闲核心，就持续进行分配 */
-    while (!yat_ready_pool_empty(rq->ready_pool)) {
-        
-        /* 3. 从就绪池头部取出最高优先级的作业 */
-        job = yat_ready_pool_peek(rq->ready_pool);
-        if (!job)
+    spin_lock(&global_history_tables[cpu].lock);
+    list_for_each_entry_safe(rec, tmp, &global_history_tables[cpu].time_list, list) {
+        if (rec->timestamp >= cutoff_time)
             break;
         
-        /* 4. 为作业寻找最佳核心 */
-        best_core = yat_find_best_core_for_job(job);
-        
-        /* 5. 如果找到了合适的核心 */
-        if (best_core != YAT_INVALID_CORE) {
-            /* 5.1 分配作业并移出就绪池 */
-            yat_ready_pool_dequeue(rq->ready_pool);
-            
-            /* 5.2 更新历史表 */
-            yat_add_history_record(best_core, job->job_id, now, job->wcet);
-            job->per_cpu_last_ts[best_core] = now;
-            
-            /* 5.3 如果作业有对应的Linux任务，调度它 */
-            if (job->task && best_core == smp_processor_id()) {
-                /* 在当前CPU上直接调度 */
-                resched_curr(cpu_rq(best_core));
-            }
-            
-        } else {
-            /* 如果当前最高优先级的作业都找不到核心，则退出循环 */
-            break;
-        }
+        list_del(&rec->list);
+        kfree(rec);
     }
+    global_history_tables[cpu].last_cleanup_time = jiffies;
+    spin_unlock(&global_history_tables[cpu].lock);
 }
 
-/*
- * AJLR调度器接口函数
- */
+/* 初始化Yat_Casched调度类 */
+void init_yat_casched_class(void)
+{
+    /* 这里可以添加一些全局的初始化代码 */
+}
+
+/* 销毁Yat_Casched调度类 */
+void destroy_yat_casched_class(void)
+{
+    /* 这里可以添加一些全局的清理代码 */
+}
 
 /* 为Linux任务创建关联的作业 */
 struct yat_job *yat_create_job_for_task(struct task_struct *task, int job_priority, u64 wcet, struct yat_dag_task *dag)
@@ -2009,6 +1956,7 @@ static void yat_ajlr_enqueue_task(struct rq *rq, struct task_struct *p, int flag
     /* 检查任务是否已有关联的作业 */
     if (!p->yat_casched.job) {
         /* 获取默认DAG */
+       
         default_dag = yat_get_default_dag();
         if (!default_dag)
             return;
@@ -2068,6 +2016,58 @@ void yat_create_test_dag(void)
     job1 = yat_create_job(1, 50, 1000000, dag); /* 1ms WCET */
     job2 = yat_create_job(2, 40, 2000000, dag); /* 2ms WCET */
     job3 = yat_create_job(3, 30, 1500000, dag); /* 1.5ms WCET */
+    
+    if (job1 && job2 && job3) {
+        /* 设置依赖关系：job1 -> job2 -> job3 */
+        yat_job_add_dependency(job2, job1);
+        yat_job_add_dependency(job3, job2);
+        
+        printk(KERN_INFO "yat_casched: Created test DAG with 3 jobs\n");
+    } else {
+        printk(KERN_ERR "yat_casched: Failed to create test jobs\n");
+    }
+}
+    /* 更新作业的最后执行时间戳 */
+    if (p->yat_casched.job) {
+        p->yat_casched.job->per_cpu_last_ts[rq->cpu] = ktime_get_ns();
+        
+        /* 添加历史记录 */
+        if (p->se.sum_exec_runtime > p->se.prev_sum_exec_runtime) {
+            u64 exec_time = p->se.sum_exec_runtime - p->se.prev_sum_exec_runtime;
+            yat_add_history_record(rq->cpu, p->yat_casched.job->job_id,
+                                 ktime_get_ns(), exec_time);
+        }
+    }
+}
+
+/* 创建测试用的DAG和作业 */
+void yat_create_test_dag(void)
+{
+    struct yat_dag_task *dag;
+    struct yat_job *job1, *job2, *job3;
+    
+    /* 创建一个测试DAG */
+    dag = yat_create_dag(1, 100); /* 高优先级DAG */
+    if (!dag) {
+        printk(KERN_ERR "yat_casched: Failed to create test DAG\n");
+        return;
+    }
+    
+    /* 创建三个作业 */
+    job1 = yat_create_job(1, 50, 1000000, dag); /* 1ms WCET */
+    job2 = yat_create_job(2, 40, 2000000, dag); /* 2ms WCET */
+    job3 = yat_create_job(3, 30, 1500000, dag); /* 1.5ms WCET */
+    
+    if (job1 && job2 && job3) {
+        /* 设置依赖关系：job1 -> job2 -> job3 */
+        yat_job_add_dependency(job2, job1);
+        yat_job_add_dependency(job3, job2);
+        
+        printk(KERN_INFO "yat_casched: Created test DAG with 3 jobs\n");
+    } else {
+        printk(KERN_ERR "yat_casched: Failed to create test jobs\n");
+    }
+}
     
     if (job1 && job2 && job3) {
         /* 设置依赖关系：job1 -> job2 -> job3 */
