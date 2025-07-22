@@ -91,12 +91,12 @@ int main() {
     printf("=== YAT_CASCHED 调度器简化测试 ===\n");
     printf("当前内核版本测试，PID: %d\n", getpid());
     
-    /* 设置父进程的调度策略为YAT_CASCHED */
-    if (set_yat_scheduler(0, 10) == 0) {  /* 父进程使用优先级10 */
-        printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
-    } else {
-        printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());
-    }
+    // /* 设置父进程的调度策略为YAT_CASCHED */
+    // if (set_yat_scheduler(0, 10) == 0) {  /* 父进程使用优先级10 */
+    //     printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
+    // } else {
+    //     printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());
+    // }
     
     // 显示CPU信息
     int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
@@ -114,7 +114,7 @@ int main() {
         if (pid == 0) {
             // 子进程：立即设置调度策略，避免用默认调度器运行
             int priority = 0;  // 所有任务都使用相同的sched_priority
-            int job_priority=(i+1)%19;  // 内部作业优先级
+            int job_priority=(i+1)%19+1;  // 内部作业优先级
             
             // 立即设置调度策略
             if (set_yat_scheduler(0, job_priority) == 0) {

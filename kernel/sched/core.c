@@ -120,6 +120,8 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_compute_energy_tp);
 
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
+extern const struct sched_class yat_casched_sched_class;//new 
+
 #ifdef CONFIG_SCHED_DEBUG
 /*
  * Debugging: various feature bits
@@ -4797,12 +4799,15 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 		p->sched_reset_on_fork = 0;
 	}
 
-	if (dl_prio(p->prio))
-		return -EAGAIN;
-	else if (rt_prio(p->prio))
-		p->sched_class = &rt_sched_class;
-	else
-		p->sched_class = &fair_sched_class;
+    if (dl_prio(p->prio))
+        return -EAGAIN;
+    else if (rt_prio(p->prio))
+        p->sched_class = &rt_sched_class;
+    else if (yat_casched_policy(p->policy))
+        p->sched_class = &yat_casched_sched_class;
+    else{
+        p->sched_class = &fair_sched_class;
+	}
 
 	init_entity_runnable_average(&p->se);
 
@@ -7611,6 +7616,8 @@ static void __setscheduler_params(struct task_struct *p,
 		__setparam_dl(p, attr);
 	else if (fair_policy(policy))
 		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
+	 else if (yat_casched_policy(policy))
+        p->static_prio = attr->sched_priority; // YAT_CASCHED直接用sched_priority
 
 	/*
 	 * __sched_setscheduler() ensures attr->sched_priority == 0 when
@@ -7910,6 +7917,28 @@ change:
 		__setscheduler_prio(p, newprio);
 	}
 	__setscheduler_uclamp(p, attr);
+
+    /* 关键：根据策略号分发调度类 */
+    switch (policy) {
+    case SCHED_NORMAL:
+    case SCHED_BATCH:
+    case SCHED_IDLE:
+        p->sched_class = &fair_sched_class;
+        break;
+    case SCHED_FIFO:
+    case SCHED_RR:
+        p->sched_class = &rt_sched_class;
+        break;
+    case SCHED_DEADLINE:
+        p->sched_class = &dl_sched_class;
+        break;
+    case SCHED_YAT_CASCHED:
+        p->sched_class = &yat_casched_sched_class;
+        break;
+    default:
+        retval = -EINVAL;
+        goto unlock;
+    }
 
 	if (queued) {
 		/*
