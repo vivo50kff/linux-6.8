@@ -8,7 +8,7 @@ set -e
 echo "=== YAT_CASCHED QEMU测试启动 ==="
 
 # 配置路径
-WORK_DIR="/home/yatsched/linux-6.8"
+WORK_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SCRIPT_DIR="$WORK_DIR/boot_test_scripts"
 KERNEL="$WORK_DIR/vmlinux"
 INITRAMFS="$SCRIPT_DIR/yat_simple_test.cpio.gz"
@@ -33,19 +33,19 @@ echo "日志文件: $LOG_FILE"
 
 # QEMU启动参数
 QEMU_ARGS=(
-    -kernel "$KERNEL"
-    -initrd "$INITRAMFS"
-    -m 512M
-    -smp 4
-    -nographic
-    -no-reboot
-    -append "console=ttyS0 panic=1 nokaslr noapic acpi=off"
+    -nographic 
+    -m 1024 
+    -smp 8   
+    -kernel vmlinux   
+    -initrd boot_test_scripts/yat_simple_test.cpio.gz   
+    -append "console=ttyS0,115200"   
+    -accel tcg
 )
 
 echo ""
 echo "启动参数:"
 echo "内存: 512MB"
-echo "CPU核心: 4"
+echo "CPU核心: 8"
 echo "控制台: ttyS0"
 echo ""
 

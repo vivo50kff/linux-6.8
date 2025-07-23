@@ -4804,7 +4804,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
     // else if (rt_prio(p->prio))
     //     p->sched_class = &rt_sched_class;
     else if (yat_casched_prio(p)){
-		printk(KERN_INFO "[yat] sched_fork: pid=%d policy=%d, set sched_class yat_casched\n", p->pid, p->policy);
+		// printk(KERN_INFO "[yat] sched_fork: pid=%d policy=%d, set sched_class yat_casched\n", p->pid, p->policy);
 		p->sched_class = &yat_casched_sched_class;
 	}
     else{

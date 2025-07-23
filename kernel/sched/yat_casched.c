@@ -318,13 +318,13 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
 
     // 只允许第一个调用者执行全局初始化
     if (atomic_cmpxchg(&global_init_done, 0, 1) == 0) {
-        printk(KERN_INFO "======Yat_Casched: Global Init======\n");
+        // printk(KERN_INFO "======Yat_Casched: Global Init======\n");
         init_history_tables();
         hash_init(accelerator_table); // 初始化哈希表
         // 初始化全局锁
         spin_lock_init(&global_schedule_lock);
     }
-    printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
+    // printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
 
     INIT_LIST_HEAD(&rq->tasks);
     rq->nr_running = 0;
@@ -344,7 +344,7 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
  */
 bool yat_casched_prio(struct task_struct *p)
 {
-    printk(KERN_INFO "[yat] yat_casched_prio: PID=%d check policy\n", p->pid);
+    // printk(KERN_INFO "[yat] yat_casched_prio: PID=%d check policy\n", p->pid);
     return (p->policy == SCHED_YAT_CASCHED);
 }
 
@@ -491,7 +491,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
     spin_lock(&yat_pool_lock);
     if (list_empty(&p->yat_casched.run_list)) {
         list_add_tail(&p->yat_casched.run_list, &yat_ready_job_pool);
-        printk(KERN_INFO "[yat] select_task_rq: PID=%d enqueued into global pool\n", p->pid);
+        // printk(KERN_INFO "[yat] select_task_rq: PID=%d enqueued into global pool\n", p->pid);
     }
     spin_unlock(&yat_pool_lock);
 
@@ -530,7 +530,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
     // 将任务正式放到目标CPU的本地运行队列
     // 注意：这里不再需要获取 target_rq 的锁，因为这是在 select_task_rq 上下文中，
     // 内核框架会处理后续的入队操作。我们只需返回目标CPU即可。
-    printk(KERN_INFO "[yat] select_task_rq: PID=%d selected for CPU=%d\n", p->pid, best_cpu);
+    // printk(KERN_INFO "[yat] select_task_rq: PID=%d selected for CPU=%d\n", p->pid, best_cpu);
     return best_cpu;
 }
 
@@ -547,7 +547,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     list_add_tail(&p->yat_casched.run_list, &yat_rq->tasks);
     yat_rq->nr_running++;
     
-    printk(KERN_INFO "[yat] enqueue_task: PID=%d enqueued on CPU=%d, nr_running=%d\n", p->pid, rq->cpu, yat_rq->nr_running);
+    // printk(KERN_INFO "[yat] enqueue_task: PID=%d enqueued on CPU=%d, nr_running=%d\n", p->pid, rq->cpu, yat_rq->nr_running);
 }
 
 /*
@@ -563,14 +563,14 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     if (!list_empty(&p->yat_casched.run_list)) {
         list_del_init(&p->yat_casched.run_list);
         yat_rq->nr_running--;
-        printk(KERN_INFO "[yat] dequeue_task: PID=%d dequeued from CPU=%d, nr_running=%d\n", p->pid, rq->cpu, yat_rq->nr_running);
+        // printk(KERN_INFO "[yat] dequeue_task: PID=%d dequeued from CPU=%d, nr_running=%d\n", p->pid, rq->cpu, yat_rq->nr_running);
     }
 
     // 如果此核心变为空闲，则更新全局状态
     if (yat_rq->nr_running == 0) {
         spin_lock(&global_schedule_lock);
         idle_cores[rq->cpu] = 1; // 标记为空闲
-        printk(KERN_INFO "[yat] dequeue_task: CPU=%d is now idle. Kicking scheduler.\n", rq->cpu);
+        // printk(KERN_INFO "[yat] dequeue_task: CPU=%d is now idle. Kicking scheduler.\n", rq->cpu);
         spin_unlock(&global_schedule_lock);
         
         // 唤醒一个在 select_task_rq 中等待的任务
@@ -587,18 +587,18 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
 
-    printk(KERN_INFO "[yat] pick_next_task_yat_casched called on CPU %d, nr_running=%d\n", rq->cpu, yat_rq->nr_running);
+    // printk(KERN_INFO "[yat] pick_next_task_yat_casched called on CPU %d, nr_running=%d\n", rq->cpu, yat_rq->nr_running);
 
     if (yat_rq->nr_running == 0) {
-        printk(KERN_INFO "[yat] pick_next_task_yat_casched: no runnable task on CPU %d\n", rq->cpu);
+        // printk(KERN_INFO "[yat] pick_next_task_yat_casched: no runnable task on CPU %d\n", rq->cpu);
         return NULL;
     }
 
     struct task_struct *next = list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
-    if (next)
-        printk(KERN_INFO "[yat] pick_next_task_yat_casched: picked PID=%d on CPU %d\n", next->pid, rq->cpu);
-    else
-        printk(KERN_INFO "[yat] pick_next_task_yat_casched: list_first_entry_or_null returned NULL on CPU %d\n", rq->cpu);
+    // if (next)
+    //     // printk(KERN_INFO "[yat] pick_next_task_yat_casched: picked PID=%d on CPU %d\n", next->pid, rq->cpu);
+    // else
+    //     // printk(KERN_INFO "[yat] pick_next_task_yat_casched: list_first_entry_or_null returned NULL on CPU %d\n", rq->cpu);
 
     return next;
 }
@@ -768,7 +768,7 @@ static void schedule_yat_casched_tasks(void)
         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
         target_yat_rq->nr_running++;
         rq_unlock(target_rq, &flags);
-        printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
+        // printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
         resched_curr(target_rq);
     }
 }
@@ -822,7 +822,7 @@ void switched_to_yat_casched(struct rq *rq, struct task_struct *task)
     // 初始化任务的WCET
     if (task->yat_casched.wcet == 0) {
         task->yat_casched.wcet = get_wcet(task);
-        printk(KERN_INFO "[yat] switched_to: Initialized WCET for PID=%d\n", task->pid);
+        // printk(KERN_INFO "[yat] switched_to: Initialized WCET for PID=%d\n", task->pid);
     }
 }
 
