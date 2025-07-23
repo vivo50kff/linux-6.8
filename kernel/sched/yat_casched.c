@@ -165,8 +165,8 @@ static u64 calculate_and_prune_recency(struct cache_history_table *table, struct
         if (rec->task_id == task_id) {
             // 找到了上一次的记录，停止累加，并删除该记录
             found = true;
-            list_del(&rec->list);
-            kfree(rec);
+            // list_del(&rec->list);
+            // kfree(rec);
             break;
         }
         // 累加其他任务的执行时间

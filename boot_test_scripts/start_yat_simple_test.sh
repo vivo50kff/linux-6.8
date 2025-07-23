@@ -36,8 +36,8 @@ QEMU_ARGS=(
     -nographic 
     -m 1024 
     -smp 8   
-    -kernel vmlinux   
-    -initrd boot_test_scripts/yat_simple_test.cpio.gz   
+    -kernel $KERNEL   
+    -initrd $INITRAMFS   
     -append "console=ttyS0,115200"   
     -accel tcg
 )
