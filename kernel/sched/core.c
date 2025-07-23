@@ -4801,10 +4801,12 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 
     if (dl_prio(p->prio))
         return -EAGAIN;
-    else if (rt_prio(p->prio))
-        p->sched_class = &rt_sched_class;
-    else if (yat_casched_policy(p->policy))
-        p->sched_class = &yat_casched_sched_class;
+    // else if (rt_prio(p->prio))
+    //     p->sched_class = &rt_sched_class;
+    else if (yat_casched_prio(p)){
+		printk(KERN_INFO "[yat] sched_fork: pid=%d policy=%d, set sched_class yat_casched\n", p->pid, p->policy);
+		p->sched_class = &yat_casched_sched_class;
+	}
     else{
         p->sched_class = &fair_sched_class;
 	}
@@ -9973,6 +9975,13 @@ static struct kmem_cache *task_group_cache __ro_after_init;
 
 void __init sched_init(void)
 {
+	// sched_class_highest = &stop_sched_class;
+    // stop_sched_class.next = &dl_sched_class;
+    // dl_sched_class.next = &rt_sched_class;
+    // rt_sched_class.next = &yat_casched_class; /* 插入你的调度类 */
+    // yat_casched_class.next = &fair_sched_class; /* 你的类后面是CFS */
+    // fair_sched_class.next = &idle_sched_class;
+
 	unsigned long ptr = 0;
 	int i;
 

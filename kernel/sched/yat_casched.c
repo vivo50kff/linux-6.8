@@ -344,6 +344,7 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
  */
 bool yat_casched_prio(struct task_struct *p)
 {
+    printk(KERN_INFO "[yat] yat_casched_prio: PID=%d check policy\n", p->pid);
     return (p->policy == SCHED_YAT_CASCHED);
 }
 
@@ -585,12 +586,21 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
-    
-    if (yat_rq->nr_running == 0)
+
+    printk(KERN_INFO "[yat] pick_next_task_yat_casched called on CPU %d, nr_running=%d\n", rq->cpu, yat_rq->nr_running);
+
+    if (yat_rq->nr_running == 0) {
+        printk(KERN_INFO "[yat] pick_next_task_yat_casched: no runnable task on CPU %d\n", rq->cpu);
         return NULL;
-    
-    // 直接返回队列中的唯一任务
-    return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
+    }
+
+    struct task_struct *next = list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
+    if (next)
+        printk(KERN_INFO "[yat] pick_next_task_yat_casched: picked PID=%d on CPU %d\n", next->pid, rq->cpu);
+    else
+        printk(KERN_INFO "[yat] pick_next_task_yat_casched: list_first_entry_or_null returned NULL on CPU %d\n", rq->cpu);
+
+    return next;
 }
 
 /*

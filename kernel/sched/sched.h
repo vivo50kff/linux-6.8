@@ -2381,6 +2381,7 @@ extern const struct sched_class rt_sched_class;
 extern const struct sched_class fair_sched_class;
 extern const struct sched_class idle_sched_class;
 
+
 static inline bool sched_stop_runnable(struct rq *rq)
 {
 	return rq->stop && task_on_rq_queued(rq->stop);
