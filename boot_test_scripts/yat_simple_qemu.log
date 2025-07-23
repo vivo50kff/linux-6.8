@@ -5,7 +5,7 @@ iPXE (https://ipxe.org) 00:03.0 CA00 PCI2.10 PnP PMM+3EFCAE00+3EF0AE00 CA00
 Press Ctrl-B to configure iPXE (PCI 00:03.0)...                                                                               
 
 
-Booting from ROM..[    0.000000] Linux version 6.8.0+ (yatsched@yatsched-VMware20-1) (gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #29 SMP PREEMPT_DYNAMIC Wed Jul 23 14:44:07 CST 2025
+Booting from ROM..[    0.000000] Linux version 6.8.0+ (yatsched@yatsched-VMware20-1) (gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #31 SMP PREEMPT_DYNAMIC Thu Jul 24 01:37:05 CST 2025
 [    0.000000] Command line: console=ttyS0,115200
 [    0.000000] KERNEL supported cpus:
 [    0.000000]   Intel GenuineIntel
@@ -24,409 +24,397 @@ Booting from ROM..[    0.000000] Linux version 6.8.0+ (yatsched@yatsched-VMware2
 [    0.000000] APIC: Static calls initialized
 [    0.000000] SMBIOS 3.0.0 present.
 [    0.000000] DMI: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    0.000000] tsc: Fast TSC calibration failed
-[    0.000000] AGP: No AGP bridge found
-[    0.000000] last_pfn = 0x3ffe0 max_arch_pfn = 0x400000000
-[    0.000000] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
-[    0.000000] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
-[    0.000000] found SMP MP-table at [mem 0x000f5480-0x000f548f]
-[    0.000000] RAMDISK: [mem 0x3fe70000-0x3ffd7fff]
-[    0.000000] ACPI: Early table checksum verification disabled
-[    0.000000] ACPI: RSDP 0x00000000000F52A0 000014 (v00 BOCHS )
-[    0.000000] ACPI: RSDT 0x000000003FFE1ED0 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: FACP 0x000000003FFE1D4C 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: DSDT 0x000000003FFE0040 001D0C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: FACS 0x000000003FFE0000 000040
-[    0.000000] ACPI: APIC 0x000000003FFE1DC0 0000B0 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: HPET 0x000000003FFE1E70 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: WAET 0x000000003FFE1EA8 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.000000] ACPI: Reserving FACP table memory at [mem 0x3ffe1d4c-0x3ffe1dbf]
-[    0.000000] ACPI: Reserving DSDT table memory at [mem 0x3ffe0040-0x3ffe1d4b]
-[    0.000000] ACPI: Reserving FACS table memory at [mem 0x3ffe0000-0x3ffe003f]
-[    0.000000] ACPI: Reserving APIC table memory at [mem 0x3ffe1dc0-0x3ffe1e6f]
-[    0.000000] ACPI: Reserving HPET table memory at [mem 0x3ffe1e70-0x3ffe1ea7]
-[    0.000000] ACPI: Reserving WAET table memory at [mem 0x3ffe1ea8-0x3ffe1ecf]
-[    0.000000] No NUMA configuration found
-[    0.000000] Faking a node at [mem 0x0000000000000000-0x000000003ffdffff]
-[    0.000000] NODE_DATA(0) allocated [mem 0x3fe45000-0x3fe6ffff]
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
-[    0.000000]   DMA32    [mem 0x0000000001000000-0x000000003ffdffff]
-[    0.000000]   Normal   empty
-[    0.000000]   Device   empty
-[    0.000000] Movable zone start for each node
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000000000001000-0x000000000009efff]
-[    0.000000]   node   0: [mem 0x0000000000100000-0x000000003ffdffff]
-[    0.000000] Initmem setup node 0 [mem 0x0000000000001000-0x000000003ffdffff]
-[    0.000000] On node 0, zone DMA: 1 pages in unavailable ranges
-[    0.000000] On node 0, zone DMA: 97 pages in unavailable ranges
-[    0.000000] On node 0, zone DMA32: 32 pages in unavailable ranges
-[    0.000000] ACPI: PM-Timer IO Port: 0x608
-[    0.000000] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
-[    0.000000] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
-[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
-[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
-[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
-[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
-[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
-[    0.000000] ACPI: Using ACPI (MADT) for SMP configuration information
-[    0.000000] ACPI: HPET id: 0x8086a201 base: 0xfed00000
-[    0.000000] smpboot: Allowing 8 CPUs, 0 hotplug CPUs
-[    0.000000] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
-[    0.000000] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
-[    0.000000] PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000fffff]
-[    0.000000] [mem 0x40000000-0xfffbffff] available for PCI devices
-[    0.000000] Booting paravirtualized kernel on bare hardware
-[    0.000000] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
-[    0.000000] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:8 nr_cpu_ids:8 nr_node_ids:1
-[    0.000000] percpu: Embedded 102 pages/cpu s294912 r8192 d114688 u524288
-[    0.000000] Kernel command line: console=ttyS0,115200
-[    0.000000] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
-[    0.000000] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
-[    0.000000] Fallback order for Node 0: 0 
-[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 257760
-[    0.000000] Policy zone: DMA32
-[    0.000000] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
-[    0.000000] AGP: Checking aperture...
-[    0.000000] AGP: No AGP bridge found
-[    0.000000] Memory: 981244K/1048056K available (20480K kernel code, 4535K rwdata, 7640K rodata, 4840K init, 4780K bss, 66556K reserved, 0K cma-reserved)
-[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
-[    0.000000] ftrace: allocating 54691 entries in 214 pages
-[    0.000000] ftrace: allocated 214 pages with 5 groups
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] ======init yat_casched rq======
-[    0.000000] Dynamic Preempt: voluntary
-[    0.000000] rcu: Preemptible hierarchical RCU implementation.
-[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=8.
-[    0.000000] 	Trampoline variant of Tasks RCU enabled.
-[    0.000000] 	Rude variant of Tasks RCU enabled.
-[    0.000000] 	Tracing variant of Tasks RCU enabled.
-[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
-[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=8
-[    0.000000] NR_IRQS: 524544, nr_irqs: 488, preallocated irqs: 16
-[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
-[    0.000000] Console: colour dummy device 80x25
-[    0.000000] printk: legacy console [ttyS0] enabled
-[    0.000000] ACPI: Core revision 20230628
-[    0.000000] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
-[    0.003000] APIC: Switch to symmetric I/O mode setup
-[    0.010000] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
-[    0.019000] tsc: Unable to calibrate against PIT
-[    0.020000] tsc: using HPET reference calibration
-[    0.020000] tsc: Detected 2416.967 MHz processor
-[    0.000749] tsc: Marking TSC unstable due to TSCs unsynchronized
-[    0.001630] Calibrating delay loop (skipped), value calculated using timer frequency.. 4833.93 BogoMIPS (lpj=2416967)
-[    0.005716] process: using AMD E400 aware idle routine
-[    0.006183] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
-[    0.006265] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
-[    0.006752] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
-[    0.007432] Spectre V2 : Mitigation: Retpolines
-[    0.007571] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
-[    0.007706] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
-[    0.009141] x86/fpu: x87 FPU will use FXSAVE
-[    0.037265] Freeing SMP alternatives memory: 44K
-[    0.038265] pid_max: default: 32768 minimum: 301
-[    0.045265] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
-[    0.046265] landlock: Up and running.
-[    0.046265] Yama: becoming mindful.
-[    0.050575] AppArmor: AppArmor initialized
-[    0.058265] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.059292] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.144485] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
-[    0.147265] RCU Tasks: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
-[    0.147265] RCU Tasks Rude: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
-[    0.147709] RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
-[    0.148746] Performance Events: PMU not available due to virtualization, using software events only.
-[    0.149457] Initializing real mode trampoline at (____ptrval____)
-[    0.151150] signal: max sigframe size: 1440
-[    0.152265] rcu: Hierarchical SRCU implementation.
-[    0.152307] rcu: 	Max phase no-delay instances is 400.
-[    0.159164] NMI watchdog: Perf NMI watchdog permanently disabled
-[    0.165117] smp: Bringing up secondary CPUs ...
-[    0.171825] smpboot: x86: Booting SMP configuration:
-[    0.172025] .... node  #0, CPUs:      #1 #2 #3 #4 #5 #6 #7
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 0 = 9312213
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 3 = 3148761
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 4 = 4584262
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 3 = 4341220
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 4 = 22342802
-[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 1 = 3286821
-[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 2 = 8477438
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 2 = 26259191
-[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 3 = 14947654
-[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 3 = 22365065
-[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 0 = 33451203
-[    0.633999] smp: Brought up 1 node, 8 CPUs
-[    0.634192] smpboot: Max logical packages: 1
-[    0.634265] smpboot: Total of 8 processors activated (139576.67 BogoMIPS)
-[    0.643265] devtmpfs: initialized
-[    0.644778] x86/mm: Memory block size: 128MB
-[    0.647265] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
-[    0.647759] futex hash table entries: 2048 (order: 5, 131072 bytes, linear)
-[    0.651826] pinctrl core: initialized pinctrl subsystem
-[    0.656938] PM: RTC time: 09:31:21, date: 2025-07-23
-[    0.662265] NET: Registered PF_NETLINK/PF_ROUTE protocol family
-[    0.663882] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
-[    0.664265] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
-[    0.664265] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
-[    0.664265] audit: initializing netlink subsys (disabled)
-[    0.667329] audit: type=2000 audit(1753263078.686:1): state=initialized audit_enabled=0 res=1
-[    0.668265] thermal_sys: Registered thermal governor 'fair_share'
-[    0.668265] thermal_sys: Registered thermal governor 'bang_bang'
-[    0.668265] thermal_sys: Registered thermal governor 'step_wise'
-[    0.668265] thermal_sys: Registered thermal governor 'user_space'
-[    0.668265] thermal_sys: Registered thermal governor 'power_allocator'
-[    0.668265] cpuidle: using governor ladder
-[    0.668265] cpuidle: using governor menu
-[    0.668265] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-[    0.670265] PCI: Using configuration type 1 for base access
-[    0.670265] mtrr: your CPUs had inconsistent fixed MTRR settings
-[    0.670265] mtrr: your CPUs had inconsistent variable MTRR settings
-[    0.670265] mtrr: your CPUs had inconsistent MTRRdefType settings
-[    0.670265] mtrr: probably your BIOS does not setup all CPUs.
-[    0.670265] mtrr: corrected configuration.
-[    0.670265] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
-[    0.684721] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
-[    0.684952] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
-[    0.708265] ACPI: Added _OSI(Module Device)
-[    0.708307] ACPI: Added _OSI(Processor Device)
-[    0.708590] ACPI: Added _OSI(3.0 _SCP Extensions)
-[    0.708669] ACPI: Added _OSI(Processor Aggregator Device)
-[    0.719388] ACPI: 1 ACPI AML tables successfully acquired and loaded
-[    0.738353] ACPI: _OSC evaluation for CPUs failed, trying _PDC
-[    0.741359] ACPI: Interpreter enabled
-[    0.742265] ACPI: PM: (supports S0 S3 S4 S5)
-[    0.742368] ACPI: Using IOAPIC for interrupt routing
-[    0.743447] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
-[    0.743648] PCI: Using E820 reservations for host bridge windows
-[    0.745265] ACPI: Enabled 2 GPEs in block 00 to 0F
-[    0.770265] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-[    0.770265] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
-[    0.770265] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
-[    0.770265] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
-[    0.776265] acpiphp: Slot [3] registered
-[    0.777505] acpiphp: Slot [4] registered
-[    0.777730] acpiphp: Slot [5] registered
-[    0.777893] acpiphp: Slot [6] registered
-[    0.778048] acpiphp: Slot [7] registered
-[    0.778204] acpiphp: Slot [8] registered
-[    0.778330] acpiphp: Slot [9] registered
-[    0.778536] acpiphp: Slot [10] registered
-[    0.778701] acpiphp: Slot [11] registered
-[    0.778855] acpiphp: Slot [12] registered
-[    0.779010] acpiphp: Slot [13] registered
-[    0.779406] acpiphp: Slot [14] registered
-[    0.779598] acpiphp: Slot [15] registered
-[    0.779756] acpiphp: Slot [16] registered
-[    0.779996] acpiphp: Slot [17] registered
-[    0.780400] acpiphp: Slot [18] registered
-[    0.780560] acpiphp: Slot [19] registered
-[    0.780712] acpiphp: Slot [20] registered
-[    0.781292] acpiphp: Slot [21] registered
-[    0.781448] acpiphp: Slot [22] registered
-[    0.781597] acpiphp: Slot [23] registered
-[    0.781745] acpiphp: Slot [24] registered
-[    0.781893] acpiphp: Slot [25] registered
-[    0.782067] acpiphp: Slot [26] registered
-[    0.782218] acpiphp: Slot [27] registered
-[    0.782402] acpiphp: Slot [28] registered
-[    0.782574] acpiphp: Slot [29] registered
-[    0.782888] acpiphp: Slot [30] registered
-[    0.783325] acpiphp: Slot [31] registered
-[    0.783822] PCI host bridge to bus 0000:00
-[    0.784463] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-[    0.784749] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-[    0.784870] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-[    0.785295] pci_bus 0000:00: root bus resource [mem 0x40000000-0xfebfffff window]
-[    0.785454] pci_bus 0000:00: root bus resource [mem 0x100000000-0x17fffffff window]
-[    0.785778] pci_bus 0000:00: root bus resource [bus 00-ff]
-[    0.787754] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
-[    0.791040] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
-[    0.792394] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
-[    0.797530] pci 0000:00:01.1: BAR 4 [io  0xc040-0xc04f]
-[    0.800339] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
-[    0.800537] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
-[    0.800693] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
-[    0.800807] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
-[    0.801265] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
-[    0.801881] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
-[    0.802059] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
-[    0.803106] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
-[    0.806306] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
-[    0.808265] pci 0000:00:02.0: BAR 2 [mem 0xfebb0000-0xfebb0fff]
-[    0.812265] pci 0000:00:02.0: ROM [mem 0xfeba0000-0xfebaffff pref]
-[    0.812698] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
-[    0.814433] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
-[    0.817265] pci 0000:00:03.0: BAR 0 [mem 0xfeb80000-0xfeb9ffff]
-[    0.818315] pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
-[    0.825265] pci 0000:00:03.0: ROM [mem 0xfeb00000-0xfeb7ffff pref]
-[    0.830265] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
-[    0.830265] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
-[    0.830265] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
-[    0.830265] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
-[    0.830265] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
-[    0.831362] iommu: Default domain type: Translated
-[    0.831536] iommu: DMA domain TLB invalidation policy: lazy mode
-[    0.834265] SCSI subsystem initialized
-[    0.837265] ACPI: bus type USB registered
-[    0.837265] usbcore: registered new interface driver usbfs
-[    0.837265] usbcore: registered new interface driver hub
-[    0.837265] usbcore: registered new device driver usb
-[    0.837265] pps_core: LinuxPPS API ver. 1 registered
-[    0.837265] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-[    0.837265] PTP clock support registered
-[    0.843617] EDAC MC: Ver: 3.0.0
-[    0.847265] NetLabel: Initializing
-[    0.847265] NetLabel:  domain hash size = 128
-[    0.847265] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
-[    0.847265] NetLabel:  unlabeled traffic allowed by default
-[    0.851451] mctp: management component transport protocol core
-[    0.851647] NET: Registered PF_MCTP protocol family
-[    0.852265] PCI: Using ACPI for IRQ routing
-[    0.853778] pci 0000:00:02.0: vgaarb: setting as boot VGA device
-[    0.854179] pci 0000:00:02.0: vgaarb: bridge control possible
-[    0.854265] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
-[    0.854318] vgaarb: loaded
-[    0.855265] hpet: 3 channels of 0 reserved for per-cpu timers
-[    0.855404] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
-[    0.855615] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
-[    0.858721] clocksource: Switched to clocksource hpet
-[    0.889233] VFS: Disk quotas dquot_6.6.0
-[    0.899600] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[    0.905839] AppArmor: AppArmor Filesystem Enabled
-[    0.905983] pnp: PnP ACPI init
-[    0.905983] pnp: PnP ACPI: found 6 devices
-[    0.959508] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
-[    0.967413] NET: Registered PF_INET protocol family
-[    0.967413] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
-[    0.968904] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
-[    0.968904] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
-[    0.968904] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
-[    0.979713] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
-[    0.980563] TCP: Hash tables configured (established 8192 bind 8192)
-[    0.983594] MPTCP token hash table entries: 1024 (order: 2, 24576 bytes, linear)
-[    0.988055] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.988464] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.988470] NET: Registered PF_UNIX/PF_LOCAL protocol family
-[    0.988470] NET: Registered PF_XDP protocol family
-[    0.988470] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-[    0.988470] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-[    0.988470] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-[    0.988470] pci_bus 0000:00: resource 7 [mem 0x40000000-0xfebfffff window]
-[    0.988470] pci_bus 0000:00: resource 8 [mem 0x100000000-0x17fffffff window]
-[    0.988470] pci 0000:00:01.0: PIIX3: Enabling Passive Release
-[    0.988470] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
-[    0.988470] PCI: CLS 0 bytes, default 64
-[    1.002511] Trying to unpack rootfs image as initramfs...
-[    1.002523] Initialise system trusted keyrings
-[    1.010061] workingset: timestamp_bits=36 max_order=18 bucket_order=0
-[    1.010395] zbud: loaded
-[    1.015431] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[    1.034523] fuse: init (API version 7.39)
-[    1.099396] Key type asymmetric registered
-[    1.099396] Asymmetric key parser 'x509' registered
-[    1.099396] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
-[    1.105711] Freeing initrd memory: 1440K
-[    1.111766] io scheduler mq-deadline registered
-[    1.121163] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
-[    1.126765] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
-[    1.133881] ACPI: button: Power Button [PWRF]
-[    1.147717] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
-[    1.180517] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-[    1.220845] Linux agpgart interface v0.103
-[    1.220845] ACPI: bus type drm_connector registered
-[    1.269147] loop: module loaded
-[    1.287011] scsi host0: ata_piix
-[    1.291606] scsi host1: ata_piix
-[    1.292409] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14 lpm-pol 0
-[    1.292967] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15 lpm-pol 0
-[    1.301709] tun: Universal TUN/TAP device driver, 1.6
-[    1.303558] PPP generic driver version 2.4.2
-[    1.306511] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
-[    1.310866] serio: i8042 KBD port at 0x60,0x64 irq 1
-[    1.313032] serio: i8042 AUX port at 0x60,0x64 irq 12
-[    1.316073] mousedev: PS/2 mouse device common for all mice
-[    1.322013] rtc_cmos 00:05: RTC can wake from S4
-[    1.326252] rtc_cmos 00:05: registered as rtc0
-[    1.326435] rtc_cmos 00:05: setting system clock to 2025-07-23T09:31:22 UTC (1753263082)
-[    1.326435] rtc_cmos 00:05: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
-[    1.326435] i2c_dev: i2c /dev entries driver
-[    1.326435] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
-[    1.326435] device-mapper: uevent: version 1.0.3
-[    1.333853] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
-[    1.334674] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
-[    1.334914] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
-[    1.340144] ledtrig-cpu: registered to indicate activity on CPUs
-[    1.341065] drop_monitor: Initializing network drop monitor service
-[    1.341065] NET: Registered PF_INET6 protocol family
-[    1.393511] Segment Routing with IPv6
-[    1.394123] In-situ OAM (IOAM) with IPv6
-[    1.395332] NET: Registered PF_PACKET protocol family
-[    1.396783] Key type dns_resolver registered
-[    1.406314] IPI shorthand broadcast: enabled
-[    1.421380] [yat] late debugfs init called
-[    1.421380] [yat] debugfs init called
-[    1.424845] [yat] debugfs dir created successfully: (____ptrval____)
-[    1.425380] [yat] debugfs ready_pool file created: (____ptrval____)
-[    1.425760] [yat] debugfs accelerator_table file created: (____ptrval____)
-[    1.425933] [yat] debugfs history_table file created: (____ptrval____)
-[    1.428099] registered taskstats version 1
-[    1.436330] Loading compiled-in X.509 certificates
-[    1.455679] ata2: found unknown device (class 0)
-[    1.455992] Loaded X.509 cert 'Build time autogenerated kernel key: 544931a6c19ff8c16ab2dd99e4fbee906993093b'
-[    1.461343] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
-[    1.479615] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
-[    1.523497] Key type .fscrypt registered
-[    1.524031] Key type fscrypt-provisioning registered
-[    1.546066] Key type encrypted registered
-[    1.546258] AppArmor: AppArmor sha256 policy hashing enabled
-[    1.546651] ima: No TPM chip found, activating TPM-bypass!
-[    1.546651] Loading compiled-in module X.509 certificates
-[    1.546651] Loaded X.509 cert 'Build time autogenerated kernel key: 544931a6c19ff8c16ab2dd99e4fbee906993093b'
-[    1.546651] ima: Allocated hash algorithm: sha256
-[    1.552108] ima: No architecture policies found
-[    1.552108] evm: Initialising EVM extended attributes:
-[    1.552108] evm: security.selinux
-[    1.552108] evm: security.SMACK64
-[    1.552108] evm: security.SMACK64EXEC
-[    1.552108] evm: security.SMACK64TRANSMUTE
-[    1.552108] evm: security.SMACK64MMAP
-[    1.552108] evm: security.apparmor
-[    1.552108] evm: security.ima
-[    1.552108] evm: security.capability
-[    1.552108] evm: HMAC attrs: 0x1
-[    1.559154] PM:   Magic number: 1:167:526
-[    1.564076] powernow_k8: Power state transitions not supported
-[    1.565077] powernow_k8: Power state transitions not supported
-[    1.567040] powernow_k8: Power state transitions not supported
-[    1.568144] powernow_k8: Power state transitions not supported
-[    1.569224] powernow_k8: Power state transitions not supported
-[    1.570033] powernow_k8: Power state transitions not supported
-[    1.571027] powernow_k8: Power state transitions not supported
-[    1.571659] powernow_k8: Power state transitions not supported
-[    1.574457] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
-[    1.575121] cdrom: Uniform CD-ROM driver Revision: 3.20
-[    1.598554] hid_bpf: error while preloading HID BPF dispatcher: -22
-[    1.598554] RAS: Correctable Errors collector initialized.
-[    1.614732] Unstable clock detected, switching default tracing clock to "global"
-[    1.614732] If you want to keep using the local clock, then add:
-[    1.614732]   "trace_clock=local"
-[    1.614732] on the kernel command line
-[    1.615527] clk: Disabling unused clocks
-[    1.677803] sr 1:0:0:0: Attached scsi generic sg0 type 5
-[    1.691441] Freeing unused decrypted memory: 2028K
-[    1.954338] Freeing unused kernel image (initmem) memory: 4840K
-[    1.958088] Write protecting the kernel read-only data: 28672k
-[    1.962571] Freeing unused kernel image (rodata/data gap) memory: 552K
-[    2.075345] x86/mm: Checked W+X mappings: passed, no W+X pages found.
-[    2.075345] Run /init as init process
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] tsc: Detected 2418.990 MHz processor
+[    0.013709] AGP: No AGP bridge found
+[    0.014075] last_pfn = 0x3ffe0 max_arch_pfn = 0x400000000
+[    0.015045] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+[    0.015320] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.036693] found SMP MP-table at [mem 0x000f5480-0x000f548f]
+[    0.043341] RAMDISK: [mem 0x3fe70000-0x3ffd7fff]
+[    0.043983] ACPI: Early table checksum verification disabled
+[    0.044684] ACPI: RSDP 0x00000000000F52A0 000014 (v00 BOCHS )
+[    0.045087] ACPI: RSDT 0x000000003FFE1ED0 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.046032] ACPI: FACP 0x000000003FFE1D4C 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.046940] ACPI: DSDT 0x000000003FFE0040 001D0C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047089] ACPI: FACS 0x000000003FFE0000 000040
+[    0.047195] ACPI: APIC 0x000000003FFE1DC0 0000B0 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047232] ACPI: HPET 0x000000003FFE1E70 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047263] ACPI: WAET 0x000000003FFE1EA8 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047389] ACPI: Reserving FACP table memory at [mem 0x3ffe1d4c-0x3ffe1dbf]
+[    0.047412] ACPI: Reserving DSDT table memory at [mem 0x3ffe0040-0x3ffe1d4b]
+[    0.047422] ACPI: Reserving FACS table memory at [mem 0x3ffe0000-0x3ffe003f]
+[    0.047429] ACPI: Reserving APIC table memory at [mem 0x3ffe1dc0-0x3ffe1e6f]
+[    0.047436] ACPI: Reserving HPET table memory at [mem 0x3ffe1e70-0x3ffe1ea7]
+[    0.047443] ACPI: Reserving WAET table memory at [mem 0x3ffe1ea8-0x3ffe1ecf]
+[    0.050998] No NUMA configuration found
+[    0.051030] Faking a node at [mem 0x0000000000000000-0x000000003ffdffff]
+[    0.051861] NODE_DATA(0) allocated [mem 0x3fe45000-0x3fe6ffff]
+[    0.056113] Zone ranges:
+[    0.056157]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.056261]   DMA32    [mem 0x0000000001000000-0x000000003ffdffff]
+[    0.056278]   Normal   empty
+[    0.056302]   Device   empty
+[    0.056318] Movable zone start for each node
+[    0.056353] Early memory node ranges
+[    0.056389]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.056650]   node   0: [mem 0x0000000000100000-0x000000003ffdffff]
+[    0.056910] Initmem setup node 0 [mem 0x0000000000001000-0x000000003ffdffff]
+[    0.058191] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.058546] On node 0, zone DMA: 97 pages in unavailable ranges
+[    0.098040] On node 0, zone DMA32: 32 pages in unavailable ranges
+[    0.098782] ACPI: PM-Timer IO Port: 0x608
+[    0.099420] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.100054] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.100246] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.100658] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.100729] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.100880] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.100894] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.101152] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.101210] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.101608] smpboot: Allowing 8 CPUs, 0 hotplug CPUs
+[    0.102584] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+[    0.102641] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
+[    0.102667] PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000fffff]
+[    0.102836] [mem 0x40000000-0xfffbffff] available for PCI devices
+[    0.102938] Booting paravirtualized kernel on bare hardware
+[    0.103359] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.104120] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:8 nr_cpu_ids:8 nr_node_ids:1
+[    0.108423] percpu: Embedded 102 pages/cpu s294912 r8192 d114688 u524288
+[    0.110341] Kernel command line: console=ttyS0,115200
+[    0.112588] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.113036] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.116344] Fallback order for Node 0: 0 
+[    0.116980] Built 1 zonelists, mobility grouping on.  Total pages: 257760
+[    0.117018] Policy zone: DMA32
+[    0.117766] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.117995] AGP: Checking aperture...
+[    0.119246] AGP: No AGP bridge found
+[    0.131287] Memory: 981244K/1048056K available (20480K kernel code, 4535K rwdata, 7640K rodata, 4840K init, 4780K bss, 66556K reserved, 0K cma-reserved)
+[    0.360311] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.365239] ftrace: allocating 54690 entries in 214 pages
+[    0.418279] ftrace: allocated 214 pages with 5 groups
+[    0.426357] ======init yat_casched rq======
+[    0.427470] ======init yat_casched rq======
+[    0.427493] ======init yat_casched rq======
+[    0.427505] ======init yat_casched rq======
+[    0.427514] ======init yat_casched rq======
+[    0.427522] ======init yat_casched rq======
+[    0.427530] ======init yat_casched rq======
+[    0.427537] ======init yat_casched rq======
+[    0.435028] Dynamic Preempt: voluntary
+[    0.441680] rcu: Preemptible hierarchical RCU implementation.
+[    0.441723] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=8.
+[    0.441852] 	Trampoline variant of Tasks RCU enabled.
+[    0.441861] 	Rude variant of Tasks RCU enabled.
+[    0.441870] 	Tracing variant of Tasks RCU enabled.
+[    0.442019] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.442051] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=8
+[    0.468411] NR_IRQS: 524544, nr_irqs: 488, preallocated irqs: 16
+[    0.480794] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.487242] Console: colour dummy device 80x25
+[    0.489443] printk: legacy console [ttyS0] enabled
+[    0.504560] ACPI: Core revision 20230628
+[    0.516394] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    0.525770] APIC: Switch to symmetric I/O mode setup
+[    0.534620] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.540671] tsc: Marking TSC unstable due to TSCs unsynchronized
+[    0.541746] Calibrating delay loop (skipped), value calculated using timer frequency.. 4837.98 BogoMIPS (lpj=2418990)
+[    0.547895] process: using AMD E400 aware idle routine
+[    0.548574] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.548748] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.549548] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.549880] Spectre V2 : Mitigation: Retpolines
+[    0.550015] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+[    0.550188] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
+[    0.553867] x86/fpu: x87 FPU will use FXSAVE
+[    0.643650] Freeing SMP alternatives memory: 44K
+[    0.644505] pid_max: default: 32768 minimum: 301
+[    0.656113] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
+[    0.660411] landlock: Up and running.
+[    0.660554] Yama: becoming mindful.
+[    0.665611] AppArmor: AppArmor initialized
+[    0.672846] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.673113] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.821113] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.828779] RCU Tasks: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
+[    0.829433] RCU Tasks Rude: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
+[    0.831130] RCU Tasks Trace: Setting shift to 3 and lim to 1 rcu_task_cb_adjust=1.
+[    0.831715] Performance Events: PMU not available due to virtualization, using software events only.
+[    0.832486] Initializing real mode trampoline at (____ptrval____)
+[    0.833715] signal: max sigframe size: 1440
+[    0.835128] rcu: Hierarchical SRCU implementation.
+[    0.835263] rcu: 	Max phase no-delay instances is 400.
+[    0.845113] NMI watchdog: Perf NMI watchdog permanently disabled
+[    0.851416] smp: Bringing up secondary CPUs ...
+[    0.860147] smpboot: x86: Booting SMP configuration:
+[    0.860333] .... node  #0, CPUs:      #1 #2 #3 #4 #5 #6 #7
+[    0.044560] calibrate_delay_direct() dropping max bogoMips estimate 0 = 3458144
+[    1.318920] smp: Brought up 1 node, 8 CPUs
+[    1.319113] smpboot: Max logical packages: 1
+[    1.319230] smpboot: Total of 8 processors activated (38501.23 BogoMIPS)
+[    1.344584] devtmpfs: initialized
+[    1.349818] x86/mm: Memory block size: 128MB
+[    1.365814] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    1.367443] futex hash table entries: 2048 (order: 5, 131072 bytes, linear)
+[    1.374130] pinctrl core: initialized pinctrl subsystem
+[    1.380796] PM: RTC time: 17:38:33, date: 2025-07-23
+[    1.401605] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    1.407195] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+[    1.408278] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    1.408721] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    1.409570] audit: initializing netlink subsys (disabled)
+[    1.412221] audit: type=2000 audit(1753292312.887:1): state=initialized audit_enabled=0 res=1
+[    1.420011] thermal_sys: Registered thermal governor 'fair_share'
+[    1.420058] thermal_sys: Registered thermal governor 'bang_bang'
+[    1.420160] thermal_sys: Registered thermal governor 'step_wise'
+[    1.420343] thermal_sys: Registered thermal governor 'user_space'
+[    1.420863] thermal_sys: Registered thermal governor 'power_allocator'
+[    1.423389] cpuidle: using governor ladder
+[    1.424231] cpuidle: using governor menu
+[    1.427340] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    1.432697] PCI: Using configuration type 1 for base access
+[    1.435113] mtrr: your CPUs had inconsistent fixed MTRR settings
+[    1.436142] mtrr: your CPUs had inconsistent variable MTRR settings
+[    1.436508] mtrr: your CPUs had inconsistent MTRRdefType settings
+[    1.436661] mtrr: probably your BIOS does not setup all CPUs.
+[    1.436951] mtrr: corrected configuration.
+[    1.442759] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+[    1.455353] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    1.456226] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    1.484112] ACPI: Added _OSI(Module Device)
+[    1.484113] ACPI: Added _OSI(Processor Device)
+[    1.484113] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    1.484113] ACPI: Added _OSI(Processor Aggregator Device)
+[    1.509519] ACPI: 1 ACPI AML tables successfully acquired and loaded
+[    1.553500] ACPI: _OSC evaluation for CPUs failed, trying _PDC
+[    1.556378] ACPI: Interpreter enabled
+[    1.558848] ACPI: PM: (supports S0 S3 S4 S5)
+[    1.559146] ACPI: Using IOAPIC for interrupt routing
+[    1.560460] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    1.561169] PCI: Using E820 reservations for host bridge windows
+[    1.563883] ACPI: Enabled 2 GPEs in block 00 to 0F
+[    1.619500] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    1.620720] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
+[    1.621113] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
+[    1.623113] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
+[    1.631979] acpiphp: Slot [3] registered
+[    1.632225] acpiphp: Slot [4] registered
+[    1.633397] acpiphp: Slot [5] registered
+[    1.634274] acpiphp: Slot [6] registered
+[    1.634463] acpiphp: Slot [7] registered
+[    1.634889] acpiphp: Slot [8] registered
+[    1.635210] acpiphp: Slot [9] registered
+[    1.635483] acpiphp: Slot [10] registered
+[    1.635639] acpiphp: Slot [11] registered
+[    1.635767] acpiphp: Slot [12] registered
+[    1.636008] acpiphp: Slot [13] registered
+[    1.636209] acpiphp: Slot [14] registered
+[    1.636364] acpiphp: Slot [15] registered
+[    1.636620] acpiphp: Slot [16] registered
+[    1.637150] acpiphp: Slot [17] registered
+[    1.637352] acpiphp: Slot [18] registered
+[    1.637865] acpiphp: Slot [19] registered
+[    1.638186] acpiphp: Slot [20] registered
+[    1.638459] acpiphp: Slot [21] registered
+[    1.638781] acpiphp: Slot [22] registered
+[    1.639039] acpiphp: Slot [23] registered
+[    1.639136] acpiphp: Slot [24] registered
+[    1.639452] acpiphp: Slot [25] registered
+[    1.639879] acpiphp: Slot [26] registered
+[    1.640217] acpiphp: Slot [27] registered
+[    1.640481] acpiphp: Slot [28] registered
+[    1.640754] acpiphp: Slot [29] registered
+[    1.641236] acpiphp: Slot [30] registered
+[    1.641493] acpiphp: Slot [31] registered
+[    1.642025] PCI host bridge to bus 0000:00
+[    1.642259] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    1.642725] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    1.643238] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    1.643405] pci_bus 0000:00: root bus resource [mem 0x40000000-0xfebfffff window]
+[    1.644113] pci_bus 0000:00: root bus resource [mem 0x100000000-0x17fffffff window]
+[    1.644252] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    1.646982] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
+[    1.654556] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
+[    1.655970] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
+[    1.663113] pci 0000:00:01.1: BAR 4 [io  0xc040-0xc04f]
+[    1.664113] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
+[    1.666138] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
+[    1.666489] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
+[    1.666656] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
+[    1.668464] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
+[    1.669882] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
+[    1.670211] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
+[    1.672571] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
+[    1.674113] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
+[    1.676737] pci 0000:00:02.0: BAR 2 [mem 0xfebb0000-0xfebb0fff]
+[    1.680113] pci 0000:00:02.0: ROM [mem 0xfeba0000-0xfebaffff pref]
+[    1.680113] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+[    1.682395] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
+[    1.683161] pci 0000:00:03.0: BAR 0 [mem 0xfeb80000-0xfeb9ffff]
+[    1.684113] pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
+[    1.687113] pci 0000:00:03.0: ROM [mem 0xfeb00000-0xfeb7ffff pref]
+[    1.705642] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+[    1.706677] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+[    1.707821] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+[    1.708704] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+[    1.709521] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
+[    1.720229] iommu: Default domain type: Translated
+[    1.720398] iommu: DMA domain TLB invalidation policy: lazy mode
+[    1.726134] SCSI subsystem initialized
+[    1.728727] ACPI: bus type USB registered
+[    1.729519] usbcore: registered new interface driver usbfs
+[    1.731180] usbcore: registered new interface driver hub
+[    1.732125] usbcore: registered new device driver usb
+[    1.732888] pps_core: LinuxPPS API ver. 1 registered
+[    1.732981] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    1.733113] PTP clock support registered
+[    1.736240] EDAC MC: Ver: 3.0.0
+[    1.755603] NetLabel: Initializing
+[    1.756152] NetLabel:  domain hash size = 128
+[    1.756275] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    1.757450] NetLabel:  unlabeled traffic allowed by default
+[    1.765709] mctp: management component transport protocol core
+[    1.765938] NET: Registered PF_MCTP protocol family
+[    1.767592] PCI: Using ACPI for IRQ routing
+[    1.769681] pci 0000:00:02.0: vgaarb: setting as boot VGA device
+[    1.769856] pci 0000:00:02.0: vgaarb: bridge control possible
+[    1.770113] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+[    1.770207] vgaarb: loaded
+[    1.773503] hpet: 3 channels of 0 reserved for per-cpu timers
+[    1.774397] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[    1.775181] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
+[    1.781299] clocksource: Switched to clocksource hpet
+[    1.798149] VFS: Disk quotas dquot_6.6.0
+[    1.798887] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    1.804118] AppArmor: AppArmor Filesystem Enabled
+[    1.804775] pnp: PnP ACPI init
+[    1.812592] pnp: PnP ACPI: found 6 devices
+[    1.866222] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    1.869302] NET: Registered PF_INET protocol family
+[    1.871416] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    1.883570] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    1.884053] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    1.884282] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    1.884698] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
+[    1.885253] TCP: Hash tables configured (established 8192 bind 8192)
+[    1.888864] MPTCP token hash table entries: 1024 (order: 2, 24576 bytes, linear)
+[    1.889703] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    1.890200] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    1.892745] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    1.893597] NET: Registered PF_XDP protocol family
+[    1.894802] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    1.894802] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    1.894802] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    1.895429] pci_bus 0000:00: resource 7 [mem 0x40000000-0xfebfffff window]
+[    1.895569] pci_bus 0000:00: resource 8 [mem 0x100000000-0x17fffffff window]
+[    1.896607] pci 0000:00:01.0: PIIX3: Enabling Passive Release
+[    1.897057] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
+[    1.897412] PCI: CLS 0 bytes, default 64
+[    1.903820] Trying to unpack rootfs image as initramfs...
+[    1.908516] Initialise system trusted keyrings
+[    1.911484] workingset: timestamp_bits=36 max_order=18 bucket_order=0
+[    1.911797] zbud: loaded
+[    1.925548] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.934764] fuse: init (API version 7.39)
+[    1.992516] Freeing initrd memory: 1440K
+[    2.008199] Key type asymmetric registered
+[    2.008533] Asymmetric key parser 'x509' registered
+[    2.009078] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+[    2.011524] io scheduler mq-deadline registered
+[    2.023934] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    2.029987] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[    2.036415] ACPI: button: Power Button [PWRF]
+[    2.045457] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    2.073245] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    2.118016] Linux agpgart interface v0.103
+[    2.121257] ACPI: bus type drm_connector registered
+[    2.162372] loop: module loaded
+[    2.182345] scsi host0: ata_piix
+[    2.186489] scsi host1: ata_piix
+[    2.187431] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14 lpm-pol 0
+[    2.187833] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15 lpm-pol 0
+[    2.192019] tun: Universal TUN/TAP device driver, 1.6
+[    2.194259] PPP generic driver version 2.4.2
+[    2.199241] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    2.204356] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    2.204777] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    2.208399] mousedev: PS/2 mouse device common for all mice
+[    2.212017] rtc_cmos 00:05: RTC can wake from S4
+[    2.217899] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
+[    2.218200] rtc_cmos 00:05: registered as rtc0
+[    2.221509] rtc_cmos 00:05: setting system clock to 2025-07-23T17:38:34 UTC (1753292314)
+[    2.224271] rtc_cmos 00:05: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
+[    2.224769] i2c_dev: i2c /dev entries driver
+[    2.225559] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+[    2.226574] device-mapper: uevent: version 1.0.3
+[    2.228597] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
+[    2.229851] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
+[    2.234680] ledtrig-cpu: registered to indicate activity on CPUs
+[    2.237065] drop_monitor: Initializing network drop monitor service
+[    2.241451] NET: Registered PF_INET6 protocol family
+[    2.287020] Segment Routing with IPv6
+[    2.287644] In-situ OAM (IOAM) with IPv6
+[    2.291710] NET: Registered PF_PACKET protocol family
+[    2.294885] Key type dns_resolver registered
+[    2.310674] IPI shorthand broadcast: enabled
+[    2.328298] [yat] late debugfs init called
+[    2.328431] [yat] debugfs init called
+[    2.328553] [yat] debugfs dir created successfully: (____ptrval____)
+[    2.328703] [yat] debugfs ready_pool file created: (____ptrval____)
+[    2.328974] [yat] debugfs accelerator_table file created: (____ptrval____)
+[    2.329140] [yat] debugfs history_table file created: (____ptrval____)
+[    2.331019] registered taskstats version 1
+[    2.340171] Loading compiled-in X.509 certificates
+[    2.353401] ata2: found unknown device (class 0)
+[    2.359358] Loaded X.509 cert 'Build time autogenerated kernel key: 544931a6c19ff8c16ab2dd99e4fbee906993093b'
+[    2.363473] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    2.383116] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    2.395263] Key type .fscrypt registered
+[    2.395434] Key type fscrypt-provisioning registered
+[    2.423389] Key type encrypted registered
+[    2.423593] AppArmor: AppArmor sha256 policy hashing enabled
+[    2.425593] ima: No TPM chip found, activating TPM-bypass!
+[    2.426916] Loading compiled-in module X.509 certificates
+[    2.429358] Loaded X.509 cert 'Build time autogenerated kernel key: 544931a6c19ff8c16ab2dd99e4fbee906993093b'
+[    2.430252] ima: Allocated hash algorithm: sha256
+[    2.430484] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
+[    2.431779] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    2.439310] ima: No architecture policies found
+[    2.440639] evm: Initialising EVM extended attributes:
+[    2.441402] evm: security.selinux
+[    2.441512] evm: security.SMACK64
+[    2.441567] evm: security.SMACK64EXEC
+[    2.441620] evm: security.SMACK64TRANSMUTE
+[    2.441678] evm: security.SMACK64MMAP
+[    2.441749] evm: security.apparmor
+[    2.441801] evm: security.ima
+[    2.442281] evm: security.capability
+[    2.442399] evm: HMAC attrs: 0x1
+[    2.447065] PM:   Magic number: 1:121:644
+[    2.451166] powernow_k8: Power state transitions not supported
+[    2.452159] powernow_k8: Power state transitions not supported
+[    2.452687] powernow_k8: Power state transitions not supported
+[    2.452923] powernow_k8: Power state transitions not supported
+[    2.453974] powernow_k8: Power state transitions not supported
+[    2.455422] powernow_k8: Power state transitions not supported
+[    2.456439] powernow_k8: Power state transitions not supported
+[    2.457005] powernow_k8: Power state transitions not supported
+[    2.459011] sr 1:0:0:0: Attached scsi generic sg0 type 5
+[    2.494756] hid_bpf: error while preloading HID BPF dispatcher: -22
+[    2.495163] RAS: Correctable Errors collector initialized.
+[    2.497518] Unstable clock detected, switching default tracing clock to "global"
+[    2.497518] If you want to keep using the local clock, then add:
+[    2.497518]   "trace_clock=local"
+[    2.497518] on the kernel command line
+[    2.499628] clk: Disabling unused clocks
+[    2.516736] Freeing unused decrypted memory: 2028K
+[    2.748488] Freeing unused kernel image (initmem) memory: 4840K
+[    2.749037] Write protecting the kernel read-only data: 28672k
+[    2.754610] Freeing unused kernel image (rodata/data gap) memory: 552K
+[    2.890785] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+[    2.891379] Run /init as init process
 === YAT_CASCHED 简化测试环境启动 ===
 系统信息:
 内核版本: 6.8.0+
@@ -435,102 +423,102 @@ CPU核心数: 8
 
 开始YAT_CASCHED调度器测试...
 ----------------------------------------
-[    2.382541] ------------[ cut here ]------------
-[    2.382541] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3837:25
 === YAT_CASCHED 调度器简化测试 ===
-当前内核版本测试，PID: 138
-[    2.382541] index -90 is out of range for type 'int [40]'
-[    2.382541] CPU: 1 PID: 138 Comm: yat_simple_test Not tainted 6.8.0+ #29
-[    2.382541] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.382541] Call Trace:
-[    2.382541]  <TASK>
-[    2.382541]  dump_stack_lvl+0x48/0x70
-[    2.382541]  dump_stack+0x10/0x20
-[    2.382541]  __ubsan_handle_out_of_bounds+0xc6/0x110
-[    2.382541]  reweight_task+0x7b/0x90
-[    2.382541]  __sched_setscheduler+0xe3d/0x1010
-[    2.382541]  do_sched_setscheduler+0xe2/0x1c0
-[    2.382541]  __x64_sys_sched_setscheduler+0x1f/0x40
-[    2.382541]  do_syscall_64+0x85/0x180
-[    2.382541]  ? ksys_write+0x73/0x100
-[    2.382541]  ? syscall_exit_to_user_mode+0x86/0x260
-[    2.382541]  ? do_syscall_64+0x92/0x180
-[    2.382541]  ? irqentry_exit+0x43/0x50
-[    2.382541]  ? exc_page_fault+0x94/0x1b0
-[    2.382541]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
-[    2.382541] RIP: 0033:0x421dab
-[    2.382541] Code: 8b 5d f8 48 8d 3d 55 8b 09 00 c9 e9 ff 01 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-[    2.382541] RSP: 002b:00007ffc999fe928 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
-[    2.382541] RAX: ffffffffffffffda RBX: 00007ffc999fe960 RCX: 0000000000421dab
-[    2.382541] RDX: 00007ffc999fe944 RSI: 0000000000000008 RDI: 0000000000000000
-[    2.382541] RBP: 00007ffc999fe950 R08: 0000000000000064 R09: 0000000000000000
-[    2.382541] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc999feac8
-[    2.382541] R13: 00007ffc999fead8 R14: 00000000004af828 R15: 0000000000000001
-[    2.382541]  </TASK>
-[    2.382541] ---[ end trace ]---
-[    2.382541] ------------[ cut here ]------------
-[    2.382541] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3840:40
-[    2.382541] index -90 is out of range for type 'u32 [40]'
-[    2.382541] CPU: 1 PID: 138 Comm: yat_simple_test Not tainted 6.8.0+ #29
-[    2.382541] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    2.382541] Call Trace:
-[    2.382541]  <TASK>
-[    2.382541]  dump_stack_lvl+0x48/0x70
-[    2.382541]  dump_stack+0x10/0x20
-[    2.382541]  __ubsan_handle_out_of_bounds+0xc6/0x110
-[    2.382541]  reweight_task+0x8c/0x90
-[    2.382541]  __sched_setscheduler+0xe3d/0x1010
-[    2.382541]  do_sched_setscheduler+0xe2/0x1c0
-[    2.382541]  __x64_sys_sched_setscheduler+0x1f/0x40
-[    2.382541]  do_syscall_64+0x85/0x180
-[    2.382541]  ? ksys_write+0x73/0x100
-[    2.382541]  ? syscall_exit_to_user_mode+0x86/0x260
-[    2.382541]  ? do_syscall_64+0x92/0x180
-[    2.382541]  ? irqentry_exit+0x43/0x50
-[    2.382541]  ? exc_page_fault+0x94/0x1b0
-[    2.382541]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
-[    2.382541] RIP: 0033:0x421dab
-[    2.382541] Code: 8b 5d f8 48 8d 3d 55 8b 09 00 c9 e9 ff 01 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-[    2.382541] RSP: 002b:00007ffc999fe928 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
-[    2.382541] RAX: ffffffffffffffda RBX: 00007ffc999fe960 RCX: 0000000000421dab
-[    2.382541] RDX: 00007ffc999fe944 RSI: 0000000000000008 RDI: 0000000000000000
-[    2.382541] RBP: 00007ffc999fe950 R08: 0000000000000064 R09: 0000000000000000
-[    2.382541] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc999feac8
-[    2.382541] R13: 00007ffc999fead8 R14: 00000000004af828 R15: 0000000000000001
-[    2.382541]  </TASK>
-[    2.382541] ---[ end trace ]---
-父进程PID=138 成功设置为YAT_CASCHED调度策略
+当前内核版本测试，PID: 139
+[    3.112061] ------------[ cut here ]------------
+[    3.112212] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3837:25
+[    3.112405] index -90 is out of range for type 'int [40]'
+[    3.112709] CPU: 1 PID: 139 Comm: yat_simple_test Not tainted 6.8.0+ #31
+[    3.112709] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    3.112709] Call Trace:
+[    3.112709]  <TASK>
+[    3.112709]  dump_stack_lvl+0x48/0x70
+[    3.112709]  dump_stack+0x10/0x20
+[    3.112709]  __ubsan_handle_out_of_bounds+0xc6/0x110
+[    3.112709]  reweight_task+0x7b/0x90
+[    3.112709]  __sched_setscheduler+0xe3d/0x1010
+[    3.112709]  do_sched_setscheduler+0xe2/0x1c0
+[    3.112709]  __x64_sys_sched_setscheduler+0x1f/0x40
+[    3.112709]  do_syscall_64+0x85/0x180
+[    3.112709]  ? ksys_write+0x73/0x100
+[    3.112709]  ? syscall_exit_to_user_mode+0x86/0x260
+[    3.112709]  ? do_syscall_64+0x92/0x180
+[    3.112709]  ? irqentry_exit_to_user_mode+0x7b/0x260
+[    3.112709]  ? irqentry_exit+0x43/0x50
+[    3.112709]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+[    3.112709] RIP: 0033:0x421dab
+[    3.112709] Code: 8b 5d f8 48 8d 3d 55 8b 09 00 c9 e9 ff 01 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+[    3.112709] RSP: 002b:00007ffc4c193658 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
+[    3.112709] RAX: ffffffffffffffda RBX: 00007ffc4c193690 RCX: 0000000000421dab
+[    3.112709] RDX: 00007ffc4c193674 RSI: 0000000000000008 RDI: 0000000000000000
+[    3.112709] RBP: 00007ffc4c193680 R08: 0000000000000064 R09: 0000000000000000
+[    3.112709] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc4c1937f8
+[    3.112709] R13: 00007ffc4c193808 R14: 00000000004af828 R15: 0000000000000001
+[    3.112709]  </TASK>
+[    3.112709] ---[ end trace ]---
+[    3.112709] ------------[ cut here ]------------
+[    3.112709] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3840:40
+[    3.112709] index -90 is out of range for type 'u32 [40]'
+[    3.112709] CPU: 1 PID: 139 Comm: yat_simple_test Not tainted 6.8.0+ #31
+[    3.112709] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    3.112709] Call Trace:
+[    3.112709]  <TASK>
+[    3.112709]  dump_stack_lvl+0x48/0x70
+[    3.112709]  dump_stack+0x10/0x20
+[    3.112709]  __ubsan_handle_out_of_bounds+0xc6/0x110
+[    3.112709]  reweight_task+0x8c/0x90
+[    3.112709]  __sched_setscheduler+0xe3d/0x1010
+[    3.112709]  do_sched_setscheduler+0xe2/0x1c0
+[    3.112709]  __x64_sys_sched_setscheduler+0x1f/0x40
+[    3.112709]  do_syscall_64+0x85/0x180
+[    3.112709]  ? ksys_write+0x73/0x100
+[    3.112709]  ? syscall_exit_to_user_mode+0x86/0x260
+[    3.112709]  ? do_syscall_64+0x92/0x180
+[    3.112709]  ? irqentry_exit_to_user_mode+0x7b/0x260
+[    3.112709]  ? irqentry_exit+0x43/0x50
+[    3.112709]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+[    3.112709] RIP: 0033:0x421dab
+[    3.112709] Code: 8b 5d f8 48 8d 3d 55 8b 09 00 c9 e9 ff 01 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+[    3.112709] RSP: 002b:00007ffc4c193658 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
+[    3.112709] RAX: ffffffffffffffda RBX: 00007ffc4c193690 RCX: 0000000000421dab
+[    3.112709] RDX: 00007ffc4c193674 RSI: 0000000000000008 RDI: 0000000000000000
+[    3.112709] RBP: 00007ffc4c193680 R08: 0000000000000064 R09: 0000000000000000
+[    3.112709] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc4c1937f8
+[    3.112709] R13: 00007ffc4c193808 R14: 00000000004af828 R15: 0000000000000001
+[    3.112709]  </TASK>
+[    3.112709] ---[ end trace ]---
+父进程PID=139 成功设置为YAT_CASCHED调度策略
 系统CPU数量: 8
 
 开始创建测试任务...
-[Task 1] PID: 139, YAT调度器设置成功，sched_priority: 2
-创建子任务 1，PID: 139
-创建子任务 2，PID: 142
-创建子任务 3，PID: 143
-创建子任务 4，PID: 144
-创建子任务 5，PID: 145
-创建子任务 6，PID: 146
-创建子任务 7，PID: 147
-[Task 2] PID: 142, YAT调度器设置成功，sched_priority: 3
-创建子任务 8，PID: 148
-[Task 4] PID: 144, YAT调度器设置成功，sched_priority: 5
-[Task 5] PID: 145, YAT调度器设置成功，sched_priority: 6
-创建子任务 9，PID: 149
-[Task 6] PID: 146, YAT调度器设置成功，sched_priority: 7
-[Task 7] PID: 147, YAT调度器设置成功，sched_priority: 8
-[Task 8] PID: 148, YAT调度器设置成功，sched_priority: 9
-[Task 3] PID: 143, YAT调度器设置成功，sched_priority: 4
-[Task 9] PID: 149, YAT调度器设置成功，sched_priority: 10
-[Task 5] 完成所有工作周期
-[Task 10] PID: 150, YAT调度器设置成功，sched_priority: 11
-创建子任务 10，PID: 150
-[Task 2] 完成所有工作周期
-[Task 7] 完成所有工作周期
+创建子任务 1，PID: 142
+[Task 1] PID: 142, YAT调度器设置成功，sched_priority: 2
+[Task 2] PID: 143, YAT调度器设置成功，sched_priority: 3
+创建子任务 2，PID: 143
+[Task 3] PID: 144, YAT调度器设置成功，sched_priority: 4
+创建子任务 3，PID: 144
+创建子任务 4，PID: 145
 [Task 3] 完成所有工作周期
-[Task 4] 完成所有工作周期
+[Task 5] PID: 146, YAT调度器设置成功，sched_priority: 6
+创建子任务 5，PID: 146
+[Task 4] PID: 145, YAT调度器设置成功，sched_priority: 5
+[Task 6] PID: 147, YAT调度器设置成功，sched_priority: 7
 [Task 1] 完成所有工作周期
+[Task 2] 完成所有工作周期
+创建子任务 6，PID: 147
+创建子任务 7，PID: 148
+[Task 4] 完成所有工作周期
+[Task 8] PID: 149, YAT调度器设置成功，sched_priority: 9
+[Task 7] PID: 148, YAT调度器设置成功，sched_priority: 8
 [Task 6] 完成所有工作周期
+[Task 5] 完成所有工作周期
+创建子任务 8，PID: 149
+创建子任务 9，PID: 150
+[Task 7] 完成所有工作周期
+[Task 10] PID: 151, YAT调度器设置成功，sched_priority: 11
 [Task 8] 完成所有工作周期
+[Task 9] PID: 150, YAT调度器设置成功，sched_priority: 10
+创建子任务 10，PID: 151
 [Task 10] 完成所有工作周期
 [Task 9] 完成所有工作周期
 创建子任务 11，PID: 152
@@ -538,48 +526,48 @@ CPU核心数: 8
 创建子任务 13，PID: 154
 创建子任务 14，PID: 155
 创建子任务 15，PID: 156
-创建子任务 16，PID: 157
+[Task 11] PID: 152, YAT调度器设置成功，sched_priority: 12
 [Task 12] PID: 153, YAT调度器设置成功，sched_priority: 13
 [Task 13] PID: 154, YAT调度器设置成功，sched_priority: 14
 [Task 14] PID: 155, YAT调度器设置成功，sched_priority: 15
+创建子任务 16，PID: 157
 [Task 15] PID: 156, YAT调度器设置成功，sched_priority: 16
-[Task 16] PID: 157, YAT调度器设置成功，sched_priority: 17
 创建子任务 17，PID: 158
 创建子任务 18，PID: 159
-创建子任务 19，PID: 160
-[Task 11] PID: 152, YAT调度器设置成功，sched_priority: 12
-创建子任务 20，PID: 161
-[Task 20] PID: 161, YAT调度器设置成功，sched_priority: 2
-[Task 19] PID: 160, YAT调度器设置成功，sched_priority: 1
-[Task 17] PID: 158, YAT调度器设置成功，sched_priority: 18
-[Task 21] PID: 162, YAT调度器设置成功，sched_priority: 3
-[Task 14] 完成所有工作周期
+[Task 16] PID: 157, YAT调度器设置成功，sched_priority: 17
 [Task 18] PID: 159, YAT调度器设置成功，sched_priority: 19
-创建子任务 21，PID: 162
+[Task 17] PID: 158, YAT调度器设置成功，sched_priority: 18
+[Task 14] 完成所有工作周期
+创建子任务 19，PID: 160
+[Task 16] 完成所有工作周期
+[Task 19] PID: 160, YAT调度器设置成功，sched_priority: 1
 [Task 17] 完成所有工作周期
 [Task 13] 完成所有工作周期
-[Task 16] 完成所有工作周期
-[Task 15] 完成所有工作周期
 [Task 12] 完成所有工作周期
-[Task 19] 完成所有工作周期
-[Task 11] 完成所有工作周期
-[Task 21] 完成所有工作周期
-创建子任务 22，PID: 163
+[Task 15] 完成所有工作周期
 [Task 18] 完成所有工作周期
-[Task 22] PID: 163, YAT调度器设置成功，sched_priority: 4
-[Task 23] PID: 164, YAT调度器设置成功，sched_priority: 5
+[Task 11] 完成所有工作周期
+创建子任务 20，PID: 161
+[Task 20] PID: 161, YAT调度器设置成功，sched_priority: 2
+[Task 19] 完成所有工作周期
+创建子任务 21，PID: 162
+[Task 21] PID: 162, YAT调度器设置成功，sched_priority: 3
+创建子任务 22，PID: 163
 [Task 20] 完成所有工作周期
+[Task 22] PID: 163, YAT调度器设置成功，sched_priority: 4
 创建子任务 23，PID: 164
-[Task 23] 完成所有工作周期
+[Task 21] 完成所有工作周期
+[Task 23] PID: 164, YAT调度器设置成功，sched_priority: 5
+创建子任务 24，PID: 165
 [Task 22] 完成所有工作周期
 [Task 24] PID: 165, YAT调度器设置成功，sched_priority: 6
-创建子任务 24，PID: 165
 创建子任务 25，PID: 166
-
-等待所有任务完成...
+[Task 23] 完成所有工作周期
 [Task 25] PID: 166, YAT调度器设置成功，sched_priority: 7
-[Task 25] 完成所有工作周期
+
 [Task 24] 完成所有工作周期
+等待所有任务完成...
+[Task 25] 完成所有工作周期
 
 === 所有测试任务完成 ===
 
@@ -600,4 +588,649 @@ BusyBox v1.36.1 (Ubuntu 1:1.36.1-6ubuntu3.1) built-in shell (ash)
 Enter 'help' for a list of built-in commands.
 
 /bin/sh: can't access tty; job control turned off
+~ # [6nmount -t debugfs none /sys/kernel/debug
+~ # [6ncat /sys/kernel/debug/yat_casched/accelerator_table
+Yat_Casched Accelerator Table:
+Idx | PID | CPU | Benefit
+  0 |   164 |   1 |        0
+  1 |   164 |   1 |        0
+  2 |   139 |   7 |        0
+  3 |   139 |   7 |        0
+  4 |   139 |   7 |        0
+  5 |   139 |   7 |        0
+  6 |   139 |   7 |        0
+  7 |   139 |   7 |        0
+  8 |   151 |   6 |        0
+  9 |   151 |   6 |        0
+ 10 |   151 |   6 |        0
+ 11 |   151 |   6 |        0
+ 12 |   151 |   6 |        0
+ 13 |   158 |   5 |        0
+ 14 |   158 |   5 |        0
+ 15 |   158 |   5 |        0
+ 16 |   158 |   5 |        0
+ 17 |   142 |   4 |        0
+ 18 |   142 |   4 |        0
+ 19 |   142 |   4 |        0
+ 20 |   142 |   4 |        0
+ 21 |   142 |   4 |        0
+ 22 |   165 |   2 |        0
+ 23 |   165 |   2 |        0
+ 24 |   168 |   7 |        0
+ 25 |   168 |   7 |        0
+ 26 |   168 |   7 |        0
+ 27 |   168 |   7 |        0
+ 28 |   168 |   7 |        0
+ 29 |   153 |   3 |        0
+ 30 |   168 |   7 |        0
+ 31 |   146 |   5 |        0
+ 32 |   146 |   5 |        0
+ 33 |   146 |   5 |        0
+ 34 |   146 |   5 |        0
+ 35 |   143 |   7 |        0
+ 36 |   143 |   7 |        0
+ 37 |   143 |   7 |        0
+ 38 |   143 |   7 |        0
+ 39 |   143 |   7 |        0
+ 40 |   162 |   6 |        0
+ 41 |   162 |   6 |        0
+ 42 |   162 |   6 |        0
+ 43 |   162 |   6 |        0
+ 44 |   162 |   6 |        0
+ 45 |   162 |   6 |        0
+ 46 |   152 |   2 |        0
+ 47 |   154 |   3 |        0
+ 48 |   159 |   5 |        0
+ 49 |   150 |   3 |        0
+ 50 |   150 |   3 |        0
+ 51 |   150 |   3 |        0
+ 52 |   150 |   3 |        0
+ 53 |   160 |   2 |        0
+ 54 |   160 |   2 |        0
+ 55 |   148 |   6 |        0
+ 56 |   148 |   6 |        0
+ 57 |   148 |   6 |        0
+ 58 |   148 |   6 |        0
+ 59 |   148 |   6 |        0
+ 60 |   148 |   6 |        0
+ 61 |   166 |   7 |        0
+ 62 |   166 |   7 |        0
+ 63 |   166 |   7 |        0
+ 64 |   166 |   7 |        0
+ 65 |   166 |   7 |        0
+ 66 |   166 |   7 |        0
+ 67 |   139 |   2 |        0
+ 68 |   139 |   2 |        0
+ 69 |   139 |   2 |        0
+ 70 |   139 |   2 |        0
+ 71 |   139 |   2 |        0
+ 72 |   163 |   6 |        0
+ 73 |   163 |   6 |        0
+ 74 |   163 |   6 |        0
+ 75 |   163 |   6 |        0
+ 76 |   163 |   6 |        0
+ 77 |   151 |   1 |        0
+ 78 |   151 |   1 |        0
+ 79 |   151 |   1 |        0
+ 80 |   155 |   3 |        0
+ 81 |   168 |   2 |        0
+ 82 |   168 |   2 |        0
+ 83 |   168 |   2 |        0
+ 84 |   168 |   2 |        0
+ 85 |   149 |   6 |        0
+ 86 |   149 |   6 |        0
+ 87 |   149 |   6 |        0
+ 88 |   149 |   6 |        0
+ 89 |   149 |   6 |        0
+ 90 |   164 |   4 |        0
+ 91 |   164 |   4 |        0
+ 92 |   164 |   4 |        0
+ 93 |   164 |   4 |        0
+ 94 |   164 |   4 |        0
+ 95 |   164 |   4 |        0
+ 96 |   144 |   5 |        0
+ 97 |   144 |   5 |        0
+ 98 |   144 |   5 |        0
+ 99 |   144 |   5 |        0
+100 |   144 |   5 |        0
+101 |   162 |   1 |        0
+102 |   162 |   1 |        0
+103 |   143 |   2 |        0
+104 |   156 |   3 |        0
+105 |   159 |   0 |        0
+106 |   159 |   0 |        0
+107 |   159 |   0 |        0
+108 |   142 |   7 |        0
+109 |   142 |   7 |        0
+110 |   142 |   7 |        0
+111 |   142 |   7 |        0
+112 |   142 |   7 |        0
+113 |   142 |   7 |        0
+114 |   165 |   5 |        0
+115 |   165 |   5 |        0
+116 |   165 |   5 |        0
+117 |   165 |   5 |        0
+118 |   165 |   5 |        0
+119 |   148 |   1 |        0
+120 |   166 |   2 |        0
+121 |   166 |   2 |        0
+122 |   166 |   2 |        0
+123 |   166 |   2 |        0
+124 |   153 |   6 |        0
+125 |   153 |   6 |        0
+126 |   153 |   6 |        0
+127 |   145 |   5 |        0
+128 |   145 |   5 |        0
+129 |   145 |   5 |        0
+130 |   163 |   1 |        0
+131 |   163 |   1 |        0
+132 |   147 |   4 |        0
+133 |   147 |   4 |        0
+134 |   147 |   4 |        0
+135 |   147 |   4 |        0
+136 |   147 |   4 |        0
+137 |   152 |   5 |        0
+138 |   154 |   6 |        0
+139 |   154 |   6 |        0
+140 |   152 |   5 |        0
+141 |   152 |   5 |        0
+142 |   150 |   6 |        0
+143 |   150 |   6 |        0
+144 |   150 |   6 |        0
+145 |   150 |   6 |        0
+146 |   150 |   6 |        0
+147 |   160 |   5 |        0
+148 |   160 |   5 |        0
+149 |   160 |   5 |        0
+150 |   160 |   5 |        0
+151 |   160 |   5 |        0
+152 |   160 |   5 |        0
+153 |   149 |   1 |        0
+154 |   149 |   1 |        0
+155 |   149 |   1 |        0
+156 |   149 |   1 |        0
+157 |   144 |   0 |        0
+158 |   139 |   5 |        0
+159 |   139 |   5 |        0
+160 |   139 |   5 |        0
+161 |   139 |   5 |        0
+162 |   139 |   5 |        0
+163 |   139 |   5 |        0
+164 |   151 |   4 |        0
+165 |   151 |   4 |        0
+166 |   151 |   4 |        0
+167 |   151 |   4 |        0
+168 |   151 |   4 |        0
+169 |   155 |   6 |        0
+170 |   158 |   3 |        0
+171 |   158 |   3 |        0
+172 |   158 |   3 |        0
+173 |   158 |   3 |        0
+174 |   142 |   2 |        0
+175 |   142 |   2 |        0
+176 |   168 |   5 |        0
+177 |   168 |   5 |        0
+178 |   168 |   5 |        0
+179 |   168 |   5 |        0
+180 |   168 |   5 |        0
+181 |   153 |   1 |        0
+182 |   168 |   5 |        0
+183 |   146 |   3 |        0
+184 |   145 |   0 |        0
+185 |   164 |   7 |        0
+186 |   164 |   7 |        0
+187 |   164 |   7 |        0
+188 |   164 |   7 |        0
+189 |   164 |   7 |        0
+190 |   164 |   7 |        0
+191 |   162 |   4 |        0
+192 |   162 |   4 |        0
+193 |   162 |   4 |        0
+194 |   162 |   4 |        0
+195 |   162 |   4 |        0
+196 |   162 |   4 |        0
+197 |   143 |   5 |        0
+198 |   143 |   5 |        0
+199 |   143 |   5 |        0
+200 |   143 |   5 |        0
+201 |   156 |   6 |        0
+202 |   156 |   6 |        0
+203 |   156 |   6 |        0
+204 |   156 |   6 |        0
+205 |   159 |   3 |        0
+206 |   150 |   1 |        0
+207 |   160 |   0 |        0
+208 |   160 |   0 |        0
+209 |   160 |   0 |        0
+210 |   160 |   0 |        0
+211 |   148 |   4 |        0
+212 |   148 |   4 |        0
+213 |   148 |   4 |        0
+214 |   148 |   4 |        0
+215 |   148 |   4 |        0
+216 |   148 |   4 |        0
+217 |   166 |   5 |        0
+218 |   166 |   5 |        0
+219 |   166 |   5 |        0
+220 |   166 |   5 |        0
+221 |   166 |   5 |        0
+222 |   166 |   5 |        0
+223 |   139 |   0 |        0
+224 |   139 |   0 |        0
+225 |   163 |   4 |        0
+226 |   163 |   4 |        0
+227 |   163 |   4 |        0
+228 |   163 |   4 |        0
+229 |   163 |   4 |        0
+230 |   147 |   7 |        0
+231 |   147 |   7 |        0
+232 |   147 |   7 |        0
+233 |   147 |   7 |        0
+234 |   147 |   7 |        0
+235 |   157 |   6 |        0
+236 |   149 |   4 |        0
+237 |   149 |   4 |        0
+238 |   149 |   4 |        0
+239 |   149 |   4 |        0
+240 |   164 |   2 |        0
+241 |   164 |   2 |        0
+242 |   164 |   2 |        0
+243 |   164 |   2 |        0
+244 |   144 |   3 |        0
+245 |   144 |   3 |        0
+246 |   144 |   3 |        0
+247 |   144 |   3 |        0
+248 |   144 |   3 |        0
+249 |   151 |   7 |        0
+250 |   151 |   7 |        0
+251 |   151 |   7 |        0
+252 |   151 |   7 |        0
+253 |   151 |   7 |        0
+254 |   158 |   6 |        0
+255 |   158 |   6 |        0
+256 |   158 |   6 |        0
+257 |   142 |   5 |        0
+258 |   142 |   5 |        0
+259 |   142 |   5 |        0
+260 |   142 |   5 |        0
+261 |   142 |   5 |        0
+262 |   142 |   5 |        0
+263 |   165 |   3 |        0
+264 |   165 |   3 |        0
+265 |   165 |   3 |        0
+266 |   165 |   3 |        0
+267 |   165 |   3 |        0
+268 |   153 |   4 |        0
+269 |   153 |   4 |        0
+270 |   146 |   6 |        0
+271 |   146 |   6 |        0
+272 |   146 |   6 |        0
+273 |   146 |   6 |        0
+274 |   146 |   6 |        0
+275 |   145 |   3 |        0
+276 |   145 |   3 |        0
+277 |   145 |   3 |        0
+278 |   145 |   3 |        0
+279 |   145 |   3 |        0
+280 |   162 |   7 |        0
+281 |   162 |   7 |        0
+282 |   162 |   7 |        0
+283 |   162 |   7 |        0
+284 |   162 |   7 |        0
+285 |   162 |   7 |        0
+286 |   154 |   4 |        0
+287 |   152 |   3 |        0
+288 |   152 |   3 |        0
+289 |   159 |   6 |        0
+290 |   150 |   4 |        0
+291 |   150 |   4 |        0
+292 |   150 |   4 |        0
+293 |   150 |   4 |        0
+294 |   150 |   4 |        0
+295 |   160 |   3 |        0
+296 |   160 |   3 |        0
+297 |   148 |   7 |        0
+298 |   148 |   7 |        0
+299 |   148 |   7 |        0
+300 |   148 |   7 |        0
+301 |   148 |   7 |        0
+302 |   148 |   7 |        0
+303 |   139 |   3 |        0
+304 |   139 |   3 |        0
+305 |   139 |   3 |        0
+306 |   139 |   3 |        0
+307 |   163 |   7 |        0
+308 |   163 |   7 |        0
+309 |   163 |   7 |        0
+310 |   163 |   7 |        0
+311 |   163 |   7 |        0
+312 |   151 |   2 |        0
+313 |   151 |   2 |        0
+314 |   151 |   2 |        0
+315 |   151 |   2 |        0
+316 |   158 |   1 |        0
+317 |   158 |   1 |        0
+318 |   142 |   0 |        0
+319 |   142 |   0 |        0
+320 |   142 |   0 |        0
+321 |   142 |   0 |        0
+322 |   142 |   0 |        0
+323 |   168 |   3 |        0
+324 |   168 |   3 |        0
+325 |   168 |   3 |        0
+326 |   168 |   3 |        0
+327 |   168 |   3 |        0
+328 |   149 |   7 |        0
+329 |   149 |   7 |        0
+330 |   149 |   7 |        0
+331 |   149 |   7 |        0
+332 |   149 |   7 |        0
+333 |   146 |   1 |        0
+334 |   146 |   1 |        0
+335 |   146 |   1 |        0
+336 |   146 |   1 |        0
+337 |   164 |   5 |        0
+338 |   164 |   5 |        0
+339 |   164 |   5 |        0
+340 |   164 |   5 |        0
+341 |   164 |   5 |        0
+342 |   164 |   5 |        0
+343 |   144 |   6 |        0
+344 |   144 |   6 |        0
+345 |   144 |   6 |        0
+346 |   144 |   6 |        0
+347 |   144 |   6 |        0
+348 |   162 |   2 |        0
+349 |   162 |   2 |        0
+350 |   162 |   2 |        0
+351 |   162 |   2 |        0
+352 |   162 |   2 |        0
+353 |   162 |   2 |        0
+354 |   143 |   3 |        0
+355 |   143 |   3 |        0
+356 |   156 |   4 |        0
+357 |   165 |   6 |        0
+358 |   165 |   6 |        0
+359 |   165 |   6 |        0
+360 |   165 |   6 |        0
+361 |   165 |   6 |        0
+362 |   148 |   2 |        0
+363 |   148 |   2 |        0
+364 |   148 |   2 |        0
+365 |   148 |   2 |        0
+366 |   148 |   2 |        0
+367 |   166 |   3 |        0
+368 |   166 |   3 |        0
+369 |   166 |   3 |        0
+370 |   166 |   3 |        0
+371 |   166 |   3 |        0
+372 |   166 |   3 |        0
+373 |   153 |   7 |        0
+374 |   153 |   7 |        0
+375 |   145 |   6 |        0
+376 |   145 |   6 |        0
+377 |   145 |   6 |        0
+378 |   145 |   6 |        0
+379 |   145 |   6 |        0
+380 |   163 |   2 |        0
+381 |   163 |   2 |        0
+382 |   163 |   2 |        0
+383 |   163 |   2 |        0
+384 |   147 |   5 |        0
+385 |   147 |   5 |        0
+386 |   147 |   5 |        0
+387 |   152 |   6 |        0
+388 |   154 |   7 |        0
+389 |   154 |   7 |        0
+390 |   152 |   6 |        0
+391 |   152 |   6 |        0
+392 |   157 |   4 |        0
+393 |   157 |   4 |        0
+394 |   157 |   4 |        0
+395 |   157 |   4 |        0
+396 |   150 |   7 |        0
+397 |   150 |   7 |        0
+398 |   150 |   7 |        0
+399 |   150 |   7 |        0
+400 |   150 |   7 |        0
+401 |   160 |   6 |        0
+402 |   160 |   6 |        0
+403 |   160 |   6 |        0
+404 |   160 |   6 |        0
+405 |   160 |   6 |        0
+406 |   149 |   2 |        0
+407 |   149 |   2 |        0
+408 |   139 |   6 |        0
+409 |   139 |   6 |        0
+410 |   139 |   6 |        0
+411 |   139 |   6 |        0
+412 |   139 |   6 |        0
+413 |   139 |   6 |        0
+414 |   151 |   5 |        0
+415 |   151 |   5 |        0
+416 |   151 |   5 |        0
+417 |   151 |   5 |        0
+418 |   151 |   5 |        0
+419 |   155 |   7 |        0
+420 |   155 |   7 |        0
+421 |   155 |   7 |        0
+422 |   158 |   4 |        0
+423 |   158 |   4 |        0
+424 |   142 |   3 |        0
+425 |   142 |   3 |        0
+426 |   165 |   1 |        0
+427 |   165 |   1 |        0
+428 |   168 |   6 |        0
+429 |   168 |   6 |        0
+430 |   168 |   6 |        0
+431 |   168 |   6 |        0
+432 |   168 |   6 |        0
+433 |   168 |   6 |        0
+434 |   153 |   2 |        0
+435 |   146 |   4 |        0
+436 |   146 |   4 |        0
+437 |   146 |   4 |        0
+438 |   145 |   1 |        0
+439 |   162 |   5 |        0
+440 |   162 |   5 |        0
+441 |   162 |   5 |        0
+442 |   162 |   5 |        0
+443 |   162 |   5 |        0
+444 |   162 |   5 |        0
+445 |   143 |   6 |        0
+446 |   143 |   6 |        0
+447 |   143 |   6 |        0
+448 |   143 |   6 |        0
+449 |   143 |   6 |        0
+450 |   147 |   0 |        0
+451 |   147 |   0 |        0
+452 |   147 |   0 |        0
+453 |   154 |   2 |        0
+454 |   152 |   1 |        0
+455 |   152 |   1 |        0
+456 |   154 |   2 |        0
+457 |   152 |   1 |        0
+458 |   156 |   7 |        0
+459 |   156 |   7 |        0
+460 |   156 |   7 |        0
+461 |   159 |   4 |        0
+462 |   160 |   1 |        0
+463 |   150 |   2 |        0
+464 |   150 |   2 |        0
+465 |   150 |   2 |        0
+466 |   150 |   2 |        0
+467 |   148 |   5 |        0
+468 |   148 |   5 |        0
+469 |   148 |   5 |        0
+470 |   148 |   5 |        0
+471 |   148 |   5 |        0
+472 |   148 |   5 |        0
+473 |   166 |   6 |        0
+474 |   166 |   6 |        0
+475 |   166 |   6 |        0
+476 |   166 |   6 |        0
+477 |   166 |   6 |        0
+478 |   166 |   6 |        0
+479 |   139 |   1 |        0
+480 |   163 |   5 |        0
+481 |   163 |   5 |        0
+482 |   163 |   5 |        0
+483 |   163 |   5 |        0
+484 |   163 |   5 |        0
+485 |   151 |   0 |        0
+486 |   151 |   0 |        0
+487 |   151 |   0 |        0
+488 |   157 |   7 |        0
+489 |   157 |   7 |        0
+490 |   168 |   1 |        0
+491 |   168 |   1 |        0
+492 |   168 |   1 |        0
+493 |   168 |   1 |        0
+494 |   149 |   5 |        0
+495 |   149 |   5 |        0
+496 |   149 |   5 |        0
+497 |   149 |   5 |        0
+498 |   149 |   5 |        0
+499 |   144 |   4 |        0
+500 |   144 |   4 |        0
+501 |   144 |   4 |        0
+502 |   144 |   4 |        0
+503 |   144 |   4 |        0
+504 |   164 |   3 |        0
+505 |   164 |   3 |        0
+506 |   164 |   3 |        0
+507 |   164 |   3 |        0
+508 |   164 |   3 |        0
+509 |   143 |   1 |        0
+510 |   143 |   1 |        0
+511 |   143 |   1 |        0
+512 |   143 |   1 |        0
+513 |   156 |   2 |        0
+514 |   158 |   7 |        0
+515 |   158 |   7 |        0
+516 |   158 |   7 |        0
+517 |   142 |   6 |        0
+518 |   142 |   6 |        0
+519 |   142 |   6 |        0
+520 |   142 |   6 |        0
+521 |   142 |   6 |        0
+522 |   142 |   6 |        0
+523 |   165 |   4 |        0
+524 |   165 |   4 |        0
+525 |   165 |   4 |        0
+526 |   165 |   4 |        0
+527 |   165 |   4 |        0
+528 |   148 |   0 |        0
+529 |   148 |   0 |        0
+530 |   148 |   0 |        0
+531 |   148 |   0 |        0
+532 |   166 |   1 |        0
+533 |   166 |   1 |        0
+534 |   153 |   5 |        0
+535 |   153 |   5 |        0
+536 |   153 |   5 |        0
+537 |   146 |   7 |        0
+538 |   146 |   7 |        0
+539 |   146 |   7 |        0
+540 |   146 |   7 |        0
+541 |   146 |   7 |        0
+542 |   145 |   4 |        0
+543 |   145 |   4 |        0
+544 |   145 |   4 |        0
+545 |   145 |   4 |        0
+546 |   145 |   4 |        0
+547 |   147 |   3 |        0
+548 |   154 |   5 |        0
+549 |   154 |   5 |        0
+550 |   152 |   4 |        0
+551 |   152 |   4 |        0
+552 |   152 |   4 |        0
+553 |   159 |   7 |        0
+554 |   159 |   7 |        0
+555 |   159 |   7 |        0
+556 |   150 |   5 |        0
+557 |   150 |   5 |        0
+558 |   150 |   5 |        0
+559 |   150 |   5 |        0
+560 |   150 |   5 |        0
+561 |   160 |   4 |        0
+562 |   160 |   4 |        0
+563 |   160 |   4 |        0
+564 |   160 |   4 |        0
+565 |   139 |   4 |        0
+566 |   139 |   4 |        0
+567 |   139 |   4 |        0
+568 |   139 |   4 |        0
+569 |   139 |   4 |        0
+570 |   151 |   3 |        0
+571 |   158 |   2 |        0
+572 |   142 |   1 |        0
+573 |   142 |   1 |        0
+574 |   168 |   4 |        0
+575 |   168 |   4 |        0
+576 |   168 |   4 |        0
+577 |   168 |   4 |        0
+578 |   168 |   4 |        0
+579 |   168 |   4 |        0
+580 |   164 |   6 |        0
+581 |   164 |   6 |        0
+582 |   164 |   6 |        0
+583 |   164 |   6 |        0
+584 |   164 |   6 |        0
+585 |   164 |   6 |        0
+586 |   144 |   7 |        0
+587 |   144 |   7 |        0
+588 |   144 |   7 |        0
+589 |   144 |   7 |        0
+590 |   144 |   7 |        0
+591 |   162 |   3 |        0
+592 |   162 |   3 |        0
+593 |   162 |   3 |        0
+594 |   162 |   3 |        0
+595 |   143 |   4 |        0
+596 |   143 |   4 |        0
+597 |   143 |   4 |        0
+598 |   154 |   0 |        0
+599 |   154 |   0 |        0
+600 |   156 |   5 |        0
+601 |   165 |   7 |        0
+602 |   165 |   7 |        0
+603 |   165 |   7 |        0
+604 |   165 |   7 |        0
+605 |   165 |   7 |        0
+606 |   148 |   3 |        0
+607 |   166 |   4 |        0
+608 |   166 |   4 |        0
+609 |   166 |   4 |        0
+610 |   166 |   4 |        0
+611 |   166 |   4 |        0
+612 |   166 |   4 |        0
+613 |   145 |   7 |        0
+614 |   145 |   7 |        0
+615 |   145 |   7 |        0
+616 |   145 |   7 |        0
+617 |   145 |   7 |        0
+618 |   145 |   7 |        0
+619 |   163 |   3 |        0
+620 |   163 |   3 |        0
+621 |   163 |   3 |        0
+622 |   163 |   3 |        0
+623 |   147 |   6 |        0
+624 |   147 |   6 |        0
+625 |   147 |   6 |        0
+626 |   147 |   6 |        0
+627 |   152 |   7 |        0
+628 |   152 |   7 |        0
+629 |   152 |   7 |        0
+630 |   152 |   7 |        0
+631 |   157 |   5 |        0
+632 |   160 |   7 |        0
+633 |   160 |   7 |        0
+634 |   160 |   7 |        0
+635 |   160 |   7 |        0
+636 |   160 |   7 |        0
+637 |   149 |   3 |        0
+638 |   149 |   3 |        0
+639 |   149 |   3 |        0
+Total: 640
 ~ # [6n

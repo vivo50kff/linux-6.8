@@ -103,10 +103,47 @@ static void init_history_tables(void) {
 // 添加历史记录
 static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     struct history_record *rec_l1, *rec_l2, *rec_l3;
+    struct history_record *tmp, *pos;
     struct cache_history_table *table_l1, *table_l2, *table_l3;
     int l2_cluster_id = cpu / 4; // 简化假设
     u64 now = ktime_get();
 
+    // 先删除L1历史表中同一PID的旧记录
+    table_l1 = &L1_caches[cpu];
+    spin_lock(&table_l1->lock);
+    list_for_each_entry_safe(pos, tmp, &table_l1->time_list, list) {
+        if (pos->task_id == p->pid) {
+            list_del(&pos->list);
+            kfree(pos);
+            break;
+        }
+    }
+    spin_unlock(&table_l1->lock);
+
+    // 先删除L2历史表中同一PID的旧记录
+    table_l2 = &L2_caches[l2_cluster_id];
+    spin_lock(&table_l2->lock);
+    list_for_each_entry_safe(pos, tmp, &table_l2->time_list, list) {
+        if (pos->task_id == p->pid) {
+            list_del(&pos->list);
+            kfree(pos);
+            break;
+        }
+    }
+    spin_unlock(&table_l2->lock);
+
+    // 先删除L3历史表中同一PID的旧记录
+    table_l3 = &L3_cache;
+    spin_lock(&table_l3->lock);
+    list_for_each_entry_safe(pos, tmp, &table_l3->time_list, list) {
+        if (pos->task_id == p->pid) {
+            list_del(&pos->list);
+            kfree(pos);
+            break;
+        }
+    }
+    spin_unlock(&table_l3->lock);
+    
     // 为 L1, L2, L3 分别创建记录
     rec_l1 = kmalloc(sizeof(*rec_l1), GFP_ATOMIC);
     rec_l2 = kmalloc(sizeof(*rec_l2), GFP_ATOMIC);
@@ -426,6 +463,20 @@ static int find_best_cpu_for_task(struct task_struct *p)
             recency = calculate_recency(p, i);
             crp_ratio = get_crp_ratio(recency);
             benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
+
+            //  新增：插入加速表
+            if (benefit > 0 || 1) { // 允许插入0或负值的任务(暂时)
+                struct accelerator_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+                if (entry) {
+                    entry->p = p;
+                    entry->cpu = i;
+                    entry->benefit = benefit;
+
+                    spin_lock(&accelerator_lock);
+                    hash_add(accelerator_table, &entry->node, (unsigned long)p + i);
+                    spin_unlock(&accelerator_lock);
+                }
+            }
 
             if (benefit > max_benefit) {
                 // 发现了新的更高 benefit，重置候选列表
