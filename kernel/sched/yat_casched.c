@@ -276,33 +276,33 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
 }
 
 // 计算将任务 p 放到 cpu_id 上对其他任务的 Impact
-static u64 calculate_impact(struct task_struct *p, int cpu_id) {
-    // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
-    u64 total_impact = 0;
-    struct task_struct *other_p;
+// static u64 calculate_impact(struct task_struct *p, int cpu_id) {
+//     // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
+//     u64 total_impact = 0;
+//     struct task_struct *other_p;
 
-    spin_lock(&yat_pool_lock);
-    list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
-        if (other_p == p) continue;
+//     spin_lock(&yat_pool_lock);
+//     list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
+//         if (other_p == p) continue;
 
-        // 原本 other_p 在 cpu_id 上的 benefit
-        u64 old_recency = calculate_recency(other_p, cpu_id);
-        u64 old_crp = get_crp_ratio(old_recency);
-        u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
+//         // 原本 other_p 在 cpu_id 上的 benefit
+//         u64 old_recency = calculate_recency(other_p, cpu_id);
+//         u64 old_crp = get_crp_ratio(old_recency);
+//         u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
 
-        // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
-        u64 new_recency = old_recency + p->yat_casched.wcet;
-        u64 new_crp = get_crp_ratio(new_recency);
-        u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
+//         // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
+//         u64 new_recency = old_recency + p->yat_casched.wcet;
+//         u64 new_crp = get_crp_ratio(new_recency);
+//         u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
         
-        if (old_benefit > new_benefit) {
-            total_impact += (old_benefit - new_benefit);
-        }
-    }
-    spin_unlock(&yat_pool_lock);
+//         if (old_benefit > new_benefit) {
+//             total_impact += (old_benefit - new_benefit);
+//         }
+//     }
+//     spin_unlock(&yat_pool_lock);
 
-    return total_impact;
-}
+//     return total_impact;
+// }
 
 
 /*
@@ -449,14 +449,14 @@ static int find_best_cpu_for_task(struct task_struct *p)
     int i;
     int best_cpu = -1;
     u64 max_benefit = 0;
-    u64 min_impact = ULLONG_MAX;
-    int *candidate_cpus;
-    int num_candidates = 0;
-    u64 recency, crp_ratio, benefit, impact;
+    // u64 min_impact = ULLONG_MAX;
+    // int *candidate_cpus;
+    // int num_candidates = 0;
+    u64 recency, crp_ratio, benefit;
 
-    candidate_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
-    if (!candidate_cpus)
-        return -ENOMEM; // 内存分配失败
+    // candidate_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
+    // if (!candidate_cpus)
+    //     return -ENOMEM; // 内存分配失败
 
     // 这个函数必须在 global_schedule_lock 保护下调用
     
@@ -468,7 +468,7 @@ static int find_best_cpu_for_task(struct task_struct *p)
             benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
 
             //  新增：插入加速表
-            if (benefit > 0 || 1) { // 允许插入0或负值的任务(暂时)
+            if (benefit >= 0 ) { // 允许插入0或负值的任务(暂时)
                 struct accelerator_entry *entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
                 if (entry) {
                     entry->p = p;
@@ -484,47 +484,49 @@ static int find_best_cpu_for_task(struct task_struct *p)
             if (benefit > max_benefit) {
                 // 发现了新的更高 benefit，重置候选列表
                 max_benefit = benefit;
-                num_candidates = 0;
-                candidate_cpus[num_candidates++] = i;
-            } else if (benefit == max_benefit) {
-                // 发现了 benefit 相同的 CPU，加入候选列表
-                candidate_cpus[num_candidates++] = i;
+                best_cpu = i; // 记录当前最佳 CPU
+                // num_candidates = 0;
+                // candidate_cpus[num_candidates++] = i;
             }
+            //  else if (benefit == max_benefit) {
+            //     // 发现了 benefit 相同的 CPU，加入候选列表
+            //     candidate_cpus[num_candidates++] = i;
+            // }
         }
     }
+//     相同则随机分配
+//     // 第二轮：根据候选 CPU 的数量做出决策
+//     if (num_candidates == 0) {
+//         // 没有任何 CPU 有 benefit > 0，或者没有空闲 CPU。
+//         // 尝试返回第一个可用的空闲 CPU 作为后备。
+//         for_each_online_cpu(i) {
+//             if (idle_cores[i]) {
+//                 best_cpu = i;
+//                 goto out;
+//             }
+//         }
+//         best_cpu = -1; // 确实没有空闲核心
+//         goto out;
+//     }
 
-    // 第二轮：根据候选 CPU 的数量做出决策
-    if (num_candidates == 0) {
-        // 没有任何 CPU 有 benefit > 0，或者没有空闲 CPU。
-        // 尝试返回第一个可用的空闲 CPU 作为后备。
-        for_each_online_cpu(i) {
-            if (idle_cores[i]) {
-                best_cpu = i;
-                goto out;
-            }
-        }
-        best_cpu = -1; // 确实没有空闲核心
-        goto out;
-    }
+//     if (num_candidates == 1) {
+//         // 只有一个最佳选择
+//         best_cpu = candidate_cpus[0];
+//     } else {
+//         // 有多个 benefit 相同的 CPU，需要通过 impact 来打破平局
+//         best_cpu = candidate_cpus[0]; // 默认选择第一个
+//         for (i = 0; i < num_candidates; i++) {
+//             int cpu_id = candidate_cpus[i];
+//             impact = calculate_impact(p, cpu_id);
+//             if (impact < min_impact) {
+//                 min_impact = impact;
+//                 best_cpu = cpu_id;
+//             }
+//         }
+//     }
 
-    if (num_candidates == 1) {
-        // 只有一个最佳选择
-        best_cpu = candidate_cpus[0];
-    } else {
-        // 有多个 benefit 相同的 CPU，需要通过 impact 来打破平局
-        best_cpu = candidate_cpus[0]; // 默认选择第一个
-        for (i = 0; i < num_candidates; i++) {
-            int cpu_id = candidate_cpus[i];
-            impact = calculate_impact(p, cpu_id);
-            if (impact < min_impact) {
-                min_impact = impact;
-                best_cpu = cpu_id;
-            }
-        }
-    }
-
-out:
-    kfree(candidate_cpus);
+// out:
+//     kfree(candidate_cpus);
     return best_cpu;
 }
 
