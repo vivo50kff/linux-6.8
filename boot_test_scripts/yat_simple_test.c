@@ -117,11 +117,11 @@ int main() {
             int job_priority=(i+1)%19+1;  // 内部作业优先级
             
             // 立即设置调度策略
-            if (set_yat_scheduler(0, job_priority) == 0) {
-                printf("[Task %d] PID: %d, YAT调度器设置成功，sched_priority: %d\n", i+1, getpid(), job_priority);
-            } else {
-                printf("[Task %d] PID: %d, 调度器设置失败，使用默认策略，sched_priority: %d\n", i+1, getpid(), job_priority);
-            }
+            // if (set_yat_scheduler(0, job_priority) == 0) {
+            //     printf("[Task %d] PID: %d, YAT调度器设置成功，sched_priority: %d\n", i+1, getpid(), job_priority);
+            // } else {
+            //     printf("[Task %d] PID: %d, 调度器设置失败，使用默认策略，sched_priority: %d\n", i+1, getpid(), job_priority);
+            // }
             
             // 然后执行任务
             child_task(i + 1, job_priority, work_cycles);
@@ -147,12 +147,12 @@ int main() {
     printf("\n=== 所有测试任务完成 ===\n");
     
     // 显示一些调度统计信息
-    printf("\n--- 调度器测试总结 ---\n");
-    printf("测试任务数量: %d\n", num_tasks);
-    printf("每个任务工作周期: %d\n", work_cycles);
-    printf("系统CPU数量: %d\n", num_cpus);
-    printf("调度策略: YAT_CASCHED \n");
-    printf("内部作业优先级分配:\n");
+    // printf("\n--- 调度器测试总结 ---\n");
+    // printf("测试任务数量: %d\n", num_tasks);
+    // printf("每个任务工作周期: %d\n", work_cycles);
+    // printf("系统CPU数量: %d\n", num_cpus);
+    // printf("调度策略: YAT_CASCHED \n");
+    // printf("内部作业优先级分配:\n");
 
     return 0;
 }

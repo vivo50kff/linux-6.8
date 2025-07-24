@@ -22,6 +22,7 @@
 #include <linux/time.h>
 #include <linux/atomic.h>
 #include <linux/limits.h>
+#include <linux/random.h>
 
 
 /* debugfs 导出接口声明，避免隐式声明和 static 冲突 */
@@ -336,9 +337,11 @@ static u64 get_crp_ratio(u64 recency)
  */
 static u64 get_wcet(struct task_struct *p)
 {
-    // 初步实现：给所有任务一个固定的WCET，例如10ms
-    // return 10 * 1000 * 1000; // 10ms in ns
-    return p->yat_casched.wcet;
+    // 返回 1~10ms 的随机值（单位：纳秒）
+    // u32 rand_ms = (get_random_u32() % 100000)+1; // 1~100000
+    // return (u64)rand_ms  ;   // 1~100ms
+    u64 test_wcet=10; // 测试用，假设WCET为10ms
+    return test_wcet;
 }
 
 /* 缓存热度阈值（jiffies）*/
@@ -350,7 +353,7 @@ static u64 get_wcet(struct task_struct *p)
  */
 void init_yat_casched_rq(struct yat_casched_rq *rq)
 {
-    struct rq *main_rq = container_of(rq, struct rq, yat_casched);
+    // struct rq *main_rq = container_of(rq, struct rq, yat_casched);
     static atomic_t global_init_done = ATOMIC_INIT(0);
 
     // 只允许第一个调用者执行全局初始化
@@ -391,7 +394,7 @@ bool yat_casched_prio(struct task_struct *p)
 void update_curr_yat_casched(struct rq *rq)
 {
     struct task_struct *curr = rq->curr;
-    u64 now = rq_clock_task(rq);
+    u64 now = ktime_get();
     u64 delta_exec;
 
     if (curr->sched_class != &yat_casched_sched_class)
@@ -666,7 +669,7 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
  */
 void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 {
-    p->se.exec_start = rq_clock_task(rq);
+    p->se.exec_start = ktime_get();
 }
 
 /*
@@ -681,13 +684,13 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
  */
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
-    u64 delta_exec;
-    update_curr_yat_casched(rq);
-    
-    delta_exec = rq_clock_task(rq) - p->se.exec_start;
-    
+    u64 now = ktime_get();
+    u64 delta_exec = now - p->se.exec_start;
+
     /* --- 新增逻辑：更新历史表 --- */
     add_history_record(rq->cpu, p, delta_exec);
+
+    update_curr_yat_casched(rq);
 
     // 任务放回时，如果它不再运行（例如，它已完成），
     // 我们需要确保它已从本地运行队列中正确移除。
