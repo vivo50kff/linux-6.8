@@ -24,7 +24,7 @@
 #include <linux/limits.h>
 #include <linux/random.h>
 
-
+#define CPU_NUM_PER_SET 2  // L2缓存集群的核心数
 /* debugfs 导出接口声明，避免隐式声明和 static 冲突 */
 static void yat_debugfs_init(void);
 static void yat_debugfs_cleanup(void);
@@ -49,8 +49,8 @@ struct cache_history_table {
 // L1 cache is per-cpu
 static struct cache_history_table L1_caches[NR_CPUS];
 // 假设每个L2缓存集群有4个核心，这是一个简化
-#define L2_CACHE_CLUSTERS (NR_CPUS / 4)
-static struct cache_history_table L2_caches[NR_CPUS/4]; // 每个集群一个历史表
+#define L2_CACHE_CLUSTERS (NR_CPUS / CPU_NUM_PER_SET)
+static struct cache_history_table L2_caches[NR_CPUS/CPU_NUM_PER_SET]; // 每个集群一个历史表
 // L3 cache is global
 static struct cache_history_table L3_cache;
 
@@ -93,7 +93,7 @@ static void init_history_tables(void) {
         INIT_LIST_HEAD(&L1_caches[i].time_list);
         spin_lock_init(&L1_caches[i].lock);
     }
-    for (i = 0; i < NR_CPUS / 4; i++) {
+    for (i = 0; i < NR_CPUS / CPU_NUM_PER_SET; i++) {
         INIT_LIST_HEAD(&L2_caches[i].time_list);
         spin_lock_init(&L2_caches[i].lock);
     }
@@ -106,7 +106,7 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     struct history_record *rec_l1, *rec_l2, *rec_l3;
     struct history_record *tmp, *pos;
     struct cache_history_table *table_l1, *table_l2, *table_l3;
-    int l2_cluster_id = cpu / 4; // 简化假设
+    int l2_cluster_id = cpu / CPU_NUM_PER_SET; // 简化假设
     u64 now = ktime_get();
 
     // 先删除L1历史表中同一PID的旧记录
@@ -251,7 +251,7 @@ static u64 calculate_and_prune_recency(struct cache_history_table *table, struct
 // 计算多层缓存 Recency (v3.1 - 选择性计算)
 static u64 calculate_recency(struct task_struct *p, int cpu_id) {
     u64 recency;
-    int l2_cluster_id = cpu_id / 4; // 简化假设
+    int l2_cluster_id = cpu_id / CPU_NUM_PER_SET; // 简化假设
 
     // 1. 尝试 L1
     recency = calculate_and_prune_recency(&L1_caches[cpu_id], p);
@@ -275,34 +275,34 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
     return ULLONG_MAX;
 }
 
-// 计算将任务 p 放到 cpu_id 上对其他任务的 Impact
-// static u64 calculate_impact(struct task_struct *p, int cpu_id) {
-//     // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
-//     u64 total_impact = 0;
-//     struct task_struct *other_p;
+//计算将任务 p 放到 cpu_id 上对其他任务的 Impact
+static u64 calculate_impact(struct task_struct *p, int cpu_id) {
+    // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
+    u64 total_impact = 0;
+    struct task_struct *other_p;
 
-//     spin_lock(&yat_pool_lock);
-//     list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
-//         if (other_p == p) continue;
+    spin_lock(&yat_pool_lock);
+    list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
+        if (other_p == p) continue;
 
-//         // 原本 other_p 在 cpu_id 上的 benefit
-//         u64 old_recency = calculate_recency(other_p, cpu_id);
-//         u64 old_crp = get_crp_ratio(old_recency);
-//         u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
+        // 原本 other_p 在 cpu_id 上的 benefit
+        u64 old_recency = calculate_recency(other_p, cpu_id);
+        u64 old_crp = get_crp_ratio(old_recency);
+        u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
 
-//         // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
-//         u64 new_recency = old_recency + p->yat_casched.wcet;
-//         u64 new_crp = get_crp_ratio(new_recency);
-//         u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
+        // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
+        u64 new_recency = old_recency + p->yat_casched.wcet;
+        u64 new_crp = get_crp_ratio(new_recency);
+        u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
         
-//         if (old_benefit > new_benefit) {
-//             total_impact += (old_benefit - new_benefit);
-//         }
-//     }
-//     spin_unlock(&yat_pool_lock);
+        if (old_benefit > new_benefit) {
+            total_impact += (old_benefit - new_benefit);
+        }
+    }
+    spin_unlock(&yat_pool_lock);
 
-//     return total_impact;
-// }
+    return total_impact;
+}
 
 
 /*
@@ -449,14 +449,14 @@ static int find_best_cpu_for_task(struct task_struct *p)
     int i;
     int best_cpu = -1;
     u64 max_benefit = 0;
-    // u64 min_impact = ULLONG_MAX;
-    // int *candidate_cpus;
-    // int num_candidates = 0;
-    u64 recency, crp_ratio, benefit;
+    u64 min_impact = ULLONG_MAX;
+    int *candidate_cpus;
+    int num_candidates = 0;
+    u64 recency, crp_ratio, benefit,impact;
 
-    // candidate_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
-    // if (!candidate_cpus)
-    //     return -ENOMEM; // 内存分配失败
+    candidate_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
+    if (!candidate_cpus)
+        return -ENOMEM; // 内存分配失败
 
     // 这个函数必须在 global_schedule_lock 保护下调用
     
@@ -485,48 +485,48 @@ static int find_best_cpu_for_task(struct task_struct *p)
                 // 发现了新的更高 benefit，重置候选列表
                 max_benefit = benefit;
                 best_cpu = i; // 记录当前最佳 CPU
-                // num_candidates = 0;
-                // candidate_cpus[num_candidates++] = i;
+                num_candidates = 0;
+                candidate_cpus[num_candidates++] = i;
             }
-            //  else if (benefit == max_benefit) {
-            //     // 发现了 benefit 相同的 CPU，加入候选列表
-            //     candidate_cpus[num_candidates++] = i;
-            // }
+             else if (benefit == max_benefit) {
+                // 发现了 benefit 相同的 CPU，加入候选列表
+                candidate_cpus[num_candidates++] = i;
+            }
         }
     }
-//     相同则随机分配
-//     // 第二轮：根据候选 CPU 的数量做出决策
-//     if (num_candidates == 0) {
-//         // 没有任何 CPU 有 benefit > 0，或者没有空闲 CPU。
-//         // 尝试返回第一个可用的空闲 CPU 作为后备。
-//         for_each_online_cpu(i) {
-//             if (idle_cores[i]) {
-//                 best_cpu = i;
-//                 goto out;
-//             }
-//         }
-//         best_cpu = -1; // 确实没有空闲核心
-//         goto out;
-//     }
+    // 相同则随机分配
+    // 第二轮：根据候选 CPU 的数量做出决策
+    if (num_candidates == 0) {
+        // 没有任何 CPU 有 benefit > 0，或者没有空闲 CPU。
+        // 尝试返回第一个可用的空闲 CPU 作为后备。
+        for_each_online_cpu(i) {
+            if (idle_cores[i]) {
+                best_cpu = i;
+                goto out;
+            }
+        }
+        best_cpu = -1; // 确实没有空闲核心
+        goto out;
+    }
 
-//     if (num_candidates == 1) {
-//         // 只有一个最佳选择
-//         best_cpu = candidate_cpus[0];
-//     } else {
-//         // 有多个 benefit 相同的 CPU，需要通过 impact 来打破平局
-//         best_cpu = candidate_cpus[0]; // 默认选择第一个
-//         for (i = 0; i < num_candidates; i++) {
-//             int cpu_id = candidate_cpus[i];
-//             impact = calculate_impact(p, cpu_id);
-//             if (impact < min_impact) {
-//                 min_impact = impact;
-//                 best_cpu = cpu_id;
-//             }
-//         }
-//     }
+    if (num_candidates == 1) {
+        // 只有一个最佳选择
+        best_cpu = candidate_cpus[0];
+    } else {
+        // 有多个 benefit 相同的 CPU，需要通过 impact 来打破平局
+        best_cpu = candidate_cpus[0]; // 默认选择第一个
+        for (i = 0; i < num_candidates; i++) {
+            int cpu_id = candidate_cpus[i];
+            impact = calculate_impact(p, cpu_id);
+            if (impact < min_impact) {
+                min_impact = impact;
+                best_cpu = cpu_id;
+            }
+        }
+    }
 
-// out:
-//     kfree(candidate_cpus);
+out:
+    kfree(candidate_cpus);
     return best_cpu;
 }
 
@@ -724,110 +724,110 @@ void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 /* --- 全局调度逻辑 (v2.2) --- */
 
 // 步骤1: 更新加速表，计算并缓存所有可能的 benefit
-static void update_accelerator_table(void)
-{
-    struct task_struct *p;
-    int i;
-    struct hlist_node *tmp;
-    struct accelerator_entry *entry;
-    int bkt;
+// static void update_accelerator_table(void)
+// {
+//     struct task_struct *p;
+//     int i;
+//     struct hlist_node *tmp;
+//     struct accelerator_entry *entry;
+//     int bkt;
 
-    // 清空旧的加速表
-    spin_lock(&accelerator_lock);
-    hash_for_each_safe(accelerator_table, bkt, tmp, entry, node) {
-        hash_del(&entry->node);
-        kfree(entry);
-    }
-    spin_unlock(&accelerator_lock);
+//     // 清空旧的加速表
+//     spin_lock(&accelerator_lock);
+//     hash_for_each_safe(accelerator_table, bkt, tmp, entry, node) {
+//         hash_del(&entry->node);
+//         kfree(entry);
+//     }
+//     spin_unlock(&accelerator_lock);
 
-    // 遍历就绪池中的任务和所有空闲核心，计算并填充新的benefit
-    spin_lock(&yat_pool_lock);
-    list_for_each_entry(p, &yat_ready_job_pool, yat_casched.run_list) {
-        for_each_online_cpu(i) {
-            // 只为当前空闲的核心计算benefit
-            if (cpu_rq(i)->yat_casched.nr_running > 0)
-                continue;
+//     // 遍历就绪池中的任务和所有空闲核心，计算并填充新的benefit
+//     spin_lock(&yat_pool_lock);
+//     list_for_each_entry(p, &yat_ready_job_pool, yat_casched.run_list) {
+//         for_each_online_cpu(i) {
+//             // 只为当前空闲的核心计算benefit
+//             if (cpu_rq(i)->yat_casched.nr_running > 0)
+//                 continue;
 
-            u64 recency = calculate_recency(p, i);
-            u64 crp_ratio = get_crp_ratio(recency);
-            u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
+//             u64 recency = calculate_recency(p, i);
+//             u64 crp_ratio = get_crp_ratio(recency);
+//             u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
 
-            if (benefit > 0) {
-                entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
-                if (!entry) continue;
-                entry->p = p;
-                entry->cpu = i;
-                entry->benefit = benefit;
+//             if (benefit > 0) {
+//                 entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+//                 if (!entry) continue;
+//                 entry->p = p;
+//                 entry->cpu = i;
+//                 entry->benefit = benefit;
                 
-                spin_lock(&accelerator_lock);
-                // 使用任务和CPU的地址组合作为唯一的key
-                hash_add(accelerator_table, &entry->node, (unsigned long)p + i);
-                spin_unlock(&accelerator_lock);
-            }
-        }
-    }
-    spin_unlock(&yat_pool_lock);
-}
+//                 spin_lock(&accelerator_lock);
+//                 // 使用任务和CPU的地址组合作为唯一的key
+//                 hash_add(accelerator_table, &entry->node, (unsigned long)p + i);
+//                 spin_unlock(&accelerator_lock);
+//             }
+//         }
+//     }
+//     spin_unlock(&yat_pool_lock);
+// }
 
 
 // 步骤2: 根据加速表进行调度决策
-static void schedule_yat_casched_tasks(void)
-{
-    struct accelerator_entry *entry, *best_entry = NULL;
-    struct task_struct *p_to_run = NULL;
-    int best_cpu = -1;
-    u64 max_benefit = 0;
-    u64 min_impact = ULLONG_MAX;
-    int bkt;
+// static void schedule_yat_casched_tasks(void)
+// {
+//     struct accelerator_entry *entry, *best_entry = NULL;
+//     struct task_struct *p_to_run = NULL;
+//     int best_cpu = -1;
+//     u64 max_benefit = 0;
+//     u64 min_impact = ULLONG_MAX;
+//     int bkt;
     
-    // 1. 更新加速表，缓存所有当前可行的(任务,核心)对的benefit
-    update_accelerator_table();
+//     // 1. 更新加速表，缓存所有当前可行的(任务,核心)对的benefit
+//     update_accelerator_table();
 
-    // 2. 第一轮：遍历加速表，找到最大的 benefit 值
-    spin_lock(&accelerator_lock);
-    hash_for_each(accelerator_table, bkt, entry, node) {
-        if (entry->benefit > max_benefit) {
-            max_benefit = entry->benefit;
-        }
-    }
+//     // 2. 第一轮：遍历加速表，找到最大的 benefit 值
+//     spin_lock(&accelerator_lock);
+//     hash_for_each(accelerator_table, bkt, entry, node) {
+//         if (entry->benefit > max_benefit) {
+//             max_benefit = entry->benefit;
+//         }
+//     }
 
-    // 3. 第二轮：在 benefit 最大的条目中，通过计算 impact 来打破平局
-    hash_for_each(accelerator_table, bkt, entry, node) {
-        if (entry->benefit == max_benefit) {
-            // 只有在此时，才需要计算 Impact
-            u64 current_impact = calculate_impact(entry->p, entry->cpu);
-            if (current_impact < min_impact) {
-                min_impact = current_impact;
-                best_entry = entry; // 记录最佳条目
-            }
-        }
-    }
-    spin_unlock(&accelerator_lock);
+//     // 3. 第二轮：在 benefit 最大的条目中，通过计算 impact 来打破平局
+//     hash_for_each(accelerator_table, bkt, entry, node) {
+//         if (entry->benefit == max_benefit) {
+//             // 只有在此时，才需要计算 Impact
+//             u64 current_impact = calculate_impact(entry->p, entry->cpu);
+//             if (current_impact < min_impact) {
+//                 min_impact = current_impact;
+//                 best_entry = entry; // 记录最佳条目
+//             }
+//         }
+//     }
+//     spin_unlock(&accelerator_lock);
 
-    // 4. 如果找到了最佳选择，则执行调度
-    if (best_entry) {
-        p_to_run = best_entry->p;
-        best_cpu = best_entry->cpu;
+//     // 4. 如果找到了最佳选择，则执行调度
+//     if (best_entry) {
+//         p_to_run = best_entry->p;
+//         best_cpu = best_entry->cpu;
 
-        // 从就绪池移除
-        spin_lock(&yat_pool_lock);
-        list_del_init(&p_to_run->yat_casched.run_list);
-        spin_unlock(&yat_pool_lock);
+//         // 从就绪池移除
+//         spin_lock(&yat_pool_lock);
+//         list_del_init(&p_to_run->yat_casched.run_list);
+//         spin_unlock(&yat_pool_lock);
 
-        // 加入目标CPU的本地运行队列
-        struct rq *target_rq = cpu_rq(best_cpu);
-        struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
-        struct rq_flags flags;
+//         // 加入目标CPU的本地运行队列
+//         struct rq *target_rq = cpu_rq(best_cpu);
+//         struct yat_casched_rq *target_yat_rq = &target_rq->yat_casched;
+//         struct rq_flags flags;
         
-        // 此处需要获取目标rq的锁来安全地修改其运行队列
-        rq_lock(target_rq, &flags);
-        list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
-        target_yat_rq->nr_running++;
-        rq_unlock(target_rq, &flags);
-        // printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
-        resched_curr(target_rq);
-    }
-}
+//         // 此处需要获取目标rq的锁来安全地修改其运行队列
+//         rq_lock(target_rq, &flags);
+//         list_add_tail(&p_to_run->yat_casched.run_list, &target_yat_rq->tasks);
+//         target_yat_rq->nr_running++;
+//         rq_unlock(target_rq, &flags);
+//         // printk(KERN_INFO "[yat] schedule: PID=%d -> CPU=%d, benefit=%llu, impact=%llu\n", p_to_run->pid, best_cpu, max_benefit, min_impact);
+//         resched_curr(target_rq);
+//     }
+// }
 
 /*
  * 负载均衡 - 现在不是我们的主调度入口
@@ -904,7 +904,14 @@ static int yat_accelerator_show(struct seq_file *m, void *v)
     spin_lock(&accelerator_lock);
     hash_for_each(accelerator_table, bkt, entry, node) {
         if (entry && entry->p) {
-            seq_printf(m, "%3d | %5d | %3d | %8llu\n", count, entry->p->pid, entry->cpu, entry->benefit);
+            // 假设 benefit 单位为 1/10000
+            seq_printf(m, "%3d | %5d | %3d | %8llu.%04llu\n",
+                count,
+                entry->p->pid,
+                entry->cpu,
+                entry->benefit / 10000,           // 整数部分
+                entry->benefit % 10000            // 小数部分
+            );
             count++;
         }
     }
@@ -943,7 +950,7 @@ static int yat_history_show(struct seq_file *m, void *v)
     }
 
     seq_printf(m, "\nYat_Casched History Table (L2 Caches):\nL2$ | PID | Timestamp | ExecTime\n");
-    for (i = 0; i < NR_CPUS/4; i++) {
+    for (i = 0; i < NR_CPUS/CPU_NUM_PER_SET; i++) {
         spin_lock(&L2_caches[i].lock);
         list_for_each_entry(rec, &L2_caches[i].time_list, list) {
             seq_printf(m, "%3d | %5d | %10llu | %8llu\n", i, rec->task_id, rec->timestamp, rec->exec_time);

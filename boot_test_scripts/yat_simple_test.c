@@ -16,6 +16,7 @@
 #include <signal.h>
 
 #define SCHED_YAT_CASCHED 8  // YAT_CASCHED调度策略
+#define CPU_NUM_PER_SET 2  // L2缓存集群的核心数
 
 // 模拟工作负载的函数
 void do_work(int task_id, int work_time_ms) {
@@ -102,7 +103,7 @@ int main() {
     int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
     printf("系统CPU数量: %d\n", num_cpus);
     
-    const int num_tasks = 25;
+    const int num_tasks = 12;
     const int work_cycles = 3;
     pid_t children[num_tasks];
     int i=0;

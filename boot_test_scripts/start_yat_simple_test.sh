@@ -35,7 +35,7 @@ echo "日志文件: $LOG_FILE"
 QEMU_ARGS=(
     -nographic 
     -m 1024 
-    -smp 8   
+    -smp 4   
     -kernel $KERNEL   
     -initrd $INITRAMFS   
     -append "console=ttyS0,115200"   
@@ -45,7 +45,7 @@ QEMU_ARGS=(
 echo ""
 echo "启动参数:"
 echo "内存: 512MB"
-echo "CPU核心: 8"
+echo "CPU核心: 4"
 echo "控制台: ttyS0"
 echo ""
 
