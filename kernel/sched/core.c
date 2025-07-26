@@ -4554,7 +4554,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 	/* Initialize Yat_Casched scheduling entity */
-	INIT_LIST_HEAD(&p->yat_casched.run_list);
+	// INIT_LIST_HEAD(&p->yat_casched.run_list);
+	RB_CLEAR_NODE(&p->yat_casched.rb_node);
 	p->yat_casched.vruntime = 0;
 	p->yat_casched.slice = 0;
 	p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化状态 */
