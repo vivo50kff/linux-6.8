@@ -23,6 +23,7 @@
 #include <linux/atomic.h>
 #include <linux/limits.h>
 #include <linux/random.h>
+#include <linux/rbtree.h> // <-- 关键修复：添加红黑树头文件
 
 #define CPU_NUM_PER_SET 2  // L2缓存集群的核心数
 /* debugfs 导出接口声明，避免隐式声明和 static 冲突 */
@@ -114,7 +115,7 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     spin_lock(&table_l1->lock);
     list_for_each_entry_safe(pos, tmp, &table_l1->time_list, list) {
         if (pos->task_id == p->pid) {
-            list_del(&pos->list);
+            list_del_init(&pos->list);
             kfree(pos);
             break;
         }
@@ -126,7 +127,7 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     spin_lock(&table_l2->lock);
     list_for_each_entry_safe(pos, tmp, &table_l2->time_list, list) {
         if (pos->task_id == p->pid) {
-            list_del(&pos->list);
+            list_del_init(&pos->list);
             kfree(pos);
             break;
         }
@@ -138,7 +139,7 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     spin_lock(&table_l3->lock);
     list_for_each_entry_safe(pos, tmp, &table_l3->time_list, list) {
         if (pos->task_id == p->pid) {
-            list_del(&pos->list);
+            list_del_init(&pos->list);
             kfree(pos);
             break;
         }
@@ -161,12 +162,19 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     rec_l1->task_id = p->pid;
     rec_l1->timestamp = now;
     rec_l1->exec_time = exec_time;
-    
+    INIT_LIST_HEAD(&rec_l1->list); // 初始化链表头
+
     // 填充记录 (L2)
-    *rec_l2 = *rec_l1;
+    rec_l2->task_id = p->pid;
+    rec_l2->timestamp = now;
+    rec_l2->exec_time = exec_time;
+    INIT_LIST_HEAD(&rec_l2->list); // 初始化链表头
 
     // 填充记录 (L3)
-    *rec_l3 = *rec_l1;
+    rec_l3->task_id = p->pid;
+    rec_l3->timestamp = now;
+    rec_l3->exec_time = exec_time;
+    INIT_LIST_HEAD(&rec_l3->list); // 初始化链表头
 
     // 更新任务的 per-cpu 最近执行时间戳
     p->yat_casched.per_cpu_recency[cpu] = now;
@@ -203,8 +211,8 @@ static u64 calculate_and_prune_recency(struct cache_history_table *table, struct
         if (rec->task_id == task_id) {
             // 找到了上一次的记录，停止累加，并删除该记录
             found = true;
-            // list_del(&rec->list);
-            // kfree(rec);
+            // _initlist_del_init(&rec->list);
+            // kfree(rec);y
             break;
         }
         // 累加其他任务的执行时间
@@ -449,7 +457,7 @@ void update_curr_yat_casched(struct rq *rq)
 // 如果出现两个相同benefit，则采用最小影响法，计算对其他的impact，选择impact最小的核心
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
-    printk(KERN_INFO "[yat] select_task_rq_yat_casched: PID=%d, task_cpu=%d\n", p->pid, task_cpu);
+    // printk(KERN_INFO "[yat] select_task_rq_yat_casched: PID=%d, task_cpu=%d\n", p->pid, task_cpu);
     int best_cpu = -1;
     int idle_count = 0;
     int *idle_cpus = NULL;
@@ -497,7 +505,8 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
                 break;
             }
             // 记录其他空闲核心
-            idle_cpus[idle_count++] = i;
+            idle_cpus[idle_count] = i;
+            idle_count++;
         }
     }
 
@@ -542,30 +551,45 @@ out:
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
-    /* --- 关键修复：确保 wcet 被初始化 --- */
-    if (unlikely(p->yat_casched.wcet == 0)) {
-        // 对于新任务或第一次入队的任务，初始化其WCET。
-        p->yat_casched.wcet = get_wcet(p);
-    }
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
     struct rb_node **link = &yat_rq->tasks.rb_root.rb_node, *parent = NULL;
-    struct task_struct *entry;
-    int key = p->prio - p->yat_casched.wcet; // 综合排序键
-    printk(KERN_INFO "[yat] enqueue_task_yat_casched: PID=%d,CPU=%d, prio=%d, wcet=%llu\n", p->pid,rq->cpu, p->prio, p->yat_casched.wcet);
+    struct sched_yat_casched_entity *se_entry; // <-- 使用正确的类型
+    struct task_struct *task_entry;
+    u64 key;
+    int leftmost = 1;
+
+    /* --- 关键修复 #1：在入队前，彻底清除节点的旧状态 --- */
+    RB_CLEAR_NODE(&p->yat_casched.rb_node);
+
+    /* --- 关键修复 #2：确保 wcet 被初始化 (仍然保留以备后用) --- */
+    if (unlikely(p->yat_casched.wcet == 0)) {
+        p->yat_casched.wcet = get_wcet(p);
+    }
+
+    key = (u64)p->pid;
+
     while (*link) {
         parent = *link;
-        entry = rb_entry(parent, struct task_struct, yat_casched.rb_node);
-        int entry_key = entry->prio - entry->yat_casched.wcet;
-        if (key < entry_key)
+        // --- 关键修复：第一步，找到 sched_yat_casched_entity ---
+        se_entry = rb_entry(parent, struct sched_yat_casched_entity, rb_node);
+        // --- 关键修复：第二步，从 entity 找到 task_struct ---
+        task_entry = container_of(se_entry, struct task_struct, yat_casched);
+
+        u64 entry_key = (u64)task_entry->pid; // 使用正确的 task_entry
+        if (key < entry_key) {
             link = &parent->rb_left;
-        else
+        } else {
             link = &parent->rb_right;
+            leftmost = 0;
+        }
     }
 
     rb_link_node(&p->yat_casched.rb_node, parent, link);
-    rb_insert_color_cached(&p->yat_casched.rb_node, &yat_rq->tasks, NULL);
+    rb_insert_color_cached(&p->yat_casched.rb_node, &yat_rq->tasks, leftmost);
     yat_rq->nr_running++;
+    // printk(KERN_INFO "[yat] enqueue_task_yat_casched: PID=%d,CPU=%d, prio=%d, wcet=%llu, key(PID)=%llu\n", p->pid,rq->cpu, p->prio, p->yat_casched.wcet, key);
 }
+
 
 /*
  * 将任务从本地运行队列移除 (v3.0)
@@ -593,19 +617,21 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
  */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
-    printk(KERN_INFO "[yat] pick_next_task_yat_casched: CPU=%d\n", rq->cpu);
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
     struct rb_node *node = rb_first_cached(&yat_rq->tasks);
+    struct sched_yat_casched_entity *se;
     struct task_struct *p;
 
-    if (!node)
+    if (!node){
+        // printk(KERN_INFO "[yat] pick_next_task_yat_casched: CPU=%d return NULL ",rq->cpu);
         return NULL;
+    }
+        
 
-    p = rb_entry(node, struct task_struct, yat_casched.rb_node);
-
-    /* 关键修复：选出任务后，必须将其从队列中移除 */
-    dequeue_task_yat_casched(rq, p, 0);
-
+    // --- 关键修复：分两步走，正确地从节点找到任务结构体 ---
+    se = rb_entry(node, struct sched_yat_casched_entity, rb_node);
+    p = container_of(se, struct task_struct, yat_casched);
+    // printk(KERN_INFO "[yat]  CPU=%d  PID=%d",rq->cpu,p->pid);
     return p;
 }
 
@@ -639,17 +665,21 @@ void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
     u64 now = ktime_get();
     u64 delta_exec = now - p->se.exec_start;
 
-    // 更新任务的上次运行CPU
-    p->yat_casched.last_cpu = rq->cpu;
-
-    /* --- 新增逻辑：更新历史表 --- */
-    add_history_record(rq->cpu, p, delta_exec);
-
     update_curr_yat_casched(rq);
 
-    // 任务放回时，如果它不再运行（例如，它已完成），
-    // 我们需要确保它已从本地运行队列中正确移除。
-    // dequeue_task_yat_casched 已经处理了大部分逻辑。
+    /* --- 关键修复：在这里移除任务 --- */
+    // 任务 p 刚刚执行完毕，现在将它从运行队列中正式移除。
+    // dequeue_task_yat_casched(rq, p, 0);
+
+    // 更新任务的上次运行CPU，并添加到历史记录
+    p->yat_casched.last_cpu = rq->cpu;
+    add_history_record(rq->cpu, p, delta_exec);
+
+    /*
+     * 触发重新调度，检查队列中是否还有下一个任务。
+     * 这是我们之前修复过的，必须保留。
+     */
+    // resched_curr(rq);
 }
 
 /*
@@ -667,11 +697,13 @@ void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
 void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
     /*
-     * 在我们的模型中，任务唤醒时不应该抢占当前正在运行的任务。
-     * 唤醒的任务会通过 select_task_rq_yat_casched 进入全局等待队列，
-     * 等待调度器在有核心空闲时进行调度。
-     * 因此，此函数不执行任何操作。
+     * 关键修复：如果CPU当前正在运行空闲任务(swapper)，
+     * 任何一个新唤醒的任务都必须触发一次重新调度来抢占它。
+     * 否则，新任务将被困在运行队列中，永远无法执行，导致系统卡死。
      */
+    if (is_idle_task(rq->curr)) {
+        resched_curr(rq);
+    }
 }
 
 /* --- 全局调度逻辑 (v2.2) --- */

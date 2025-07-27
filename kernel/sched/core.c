@@ -10066,8 +10066,8 @@ void __init sched_init(void)
 		init_rt_rq(&rq->rt);
 		init_dl_rq(&rq->dl);
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-    printk("======init yat_casched rq======\n");
-    init_yat_casched_rq(&rq->yat_casched);
+    	printk("======init yat_casched rq======\n");
+    	init_yat_casched_rq(&rq->yat_casched);
 #endif
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
