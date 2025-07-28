@@ -25,397 +25,397 @@ Booting from ROM..[    0.000000] Linux version 6.8.0+ (yatsched@yatsched-VMware2
 [    0.000000] SMBIOS 3.0.0 present.
 [    0.000000] DMI: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
 [    0.000000] tsc: Fast TSC calibration using PIT
-[    0.000000] tsc: Detected 2419.255 MHz processor
-[    0.015300] AGP: No AGP bridge found
-[    0.015598] last_pfn = 0x3ffe0 max_arch_pfn = 0x400000000
-[    0.016501] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
-[    0.016754] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
-[    0.037115] found SMP MP-table at [mem 0x000f5480-0x000f548f]
-[    0.044548] RAMDISK: [mem 0x3fe70000-0x3ffd7fff]
-[    0.045153] ACPI: Early table checksum verification disabled
-[    0.045702] ACPI: RSDP 0x00000000000F52A0 000014 (v00 BOCHS )
-[    0.046053] ACPI: RSDT 0x000000003FFE1D57 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.046923] ACPI: FACP 0x000000003FFE1BF3 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.047750] ACPI: DSDT 0x000000003FFE0040 001BB3 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.047875] ACPI: FACS 0x000000003FFE0000 000040
-[    0.047945] ACPI: APIC 0x000000003FFE1C67 000090 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.047979] ACPI: HPET 0x000000003FFE1CF7 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.048008] ACPI: WAET 0x000000003FFE1D2F 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
-[    0.048123] ACPI: Reserving FACP table memory at [mem 0x3ffe1bf3-0x3ffe1c66]
-[    0.048146] ACPI: Reserving DSDT table memory at [mem 0x3ffe0040-0x3ffe1bf2]
-[    0.048156] ACPI: Reserving FACS table memory at [mem 0x3ffe0000-0x3ffe003f]
-[    0.048163] ACPI: Reserving APIC table memory at [mem 0x3ffe1c67-0x3ffe1cf6]
-[    0.048169] ACPI: Reserving HPET table memory at [mem 0x3ffe1cf7-0x3ffe1d2e]
-[    0.048175] ACPI: Reserving WAET table memory at [mem 0x3ffe1d2f-0x3ffe1d56]
-[    0.051438] No NUMA configuration found
-[    0.051475] Faking a node at [mem 0x0000000000000000-0x000000003ffdffff]
-[    0.052296] NODE_DATA(0) allocated [mem 0x3fe45000-0x3fe6ffff]
-[    0.056526] Zone ranges:
-[    0.056564]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
-[    0.056666]   DMA32    [mem 0x0000000001000000-0x000000003ffdffff]
-[    0.056681]   Normal   empty
-[    0.056704]   Device   empty
-[    0.056718] Movable zone start for each node
-[    0.056751] Early memory node ranges
-[    0.056782]   node   0: [mem 0x0000000000001000-0x000000000009efff]
-[    0.056966]   node   0: [mem 0x0000000000100000-0x000000003ffdffff]
-[    0.057220] Initmem setup node 0 [mem 0x0000000000001000-0x000000003ffdffff]
-[    0.058395] On node 0, zone DMA: 1 pages in unavailable ranges
-[    0.058646] On node 0, zone DMA: 97 pages in unavailable ranges
-[    0.085069] On node 0, zone DMA32: 32 pages in unavailable ranges
-[    0.085814] ACPI: PM-Timer IO Port: 0x608
-[    0.086589] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
-[    0.087308] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
-[    0.087483] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
-[    0.087851] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
-[    0.087916] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
-[    0.088041] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
-[    0.088053] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
-[    0.088465] ACPI: Using ACPI (MADT) for SMP configuration information
-[    0.088529] ACPI: HPET id: 0x8086a201 base: 0xfed00000
-[    0.088951] smpboot: Allowing 4 CPUs, 0 hotplug CPUs
-[    0.089987] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
-[    0.090048] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
-[    0.090075] PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000fffff]
-[    0.090218] [mem 0x40000000-0xfffbffff] available for PCI devices
-[    0.090301] Booting paravirtualized kernel on bare hardware
-[    0.090657] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
-[    0.091424] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
-[    0.093391] percpu: Embedded 102 pages/cpu s294912 r8192 d114688 u524288
-[    0.095157] Kernel command line: console=ttyS0,115200
-[    0.099929] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
-[    0.100185] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
-[    0.103142] Fallback order for Node 0: 0 
-[    0.103726] Built 1 zonelists, mobility grouping on.  Total pages: 257760
-[    0.103780] Policy zone: DMA32
-[    0.104546] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
-[    0.104726] AGP: Checking aperture...
-[    0.105982] AGP: No AGP bridge found
-[    0.119794] Memory: 982876K/1048056K available (20480K kernel code, 4503K rwdata, 7640K rodata, 4836K init, 4816K bss, 64924K reserved, 0K cma-reserved)
-[    0.347494] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
-[    0.351455] ftrace: allocating 54687 entries in 214 pages
-[    0.399883] ftrace: allocated 214 pages with 5 groups
-[    0.407652] ======init yat_casched rq======
-[    0.408673] ======init yat_casched rq======
-[    0.408693] ======init yat_casched rq======
-[    0.408703] ======init yat_casched rq======
-[    0.414505] Dynamic Preempt: voluntary
-[    0.419968] rcu: Preemptible hierarchical RCU implementation.
-[    0.420010] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=4.
-[    0.420136] 	Trampoline variant of Tasks RCU enabled.
-[    0.420144] 	Rude variant of Tasks RCU enabled.
-[    0.420151] 	Tracing variant of Tasks RCU enabled.
-[    0.420270] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
-[    0.420301] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
-[    0.446379] NR_IRQS: 524544, nr_irqs: 456, preallocated irqs: 16
-[    0.457688] rcu: srcu_init: Setting srcu_struct sizes based on contention.
-[    0.463607] Console: colour dummy device 80x25
-[    0.465914] printk: legacy console [ttyS0] enabled
-[    0.479565] ACPI: Core revision 20230628
-[    0.488502] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
-[    0.496447] APIC: Switch to symmetric I/O mode setup
-[    0.502799] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
-[    0.521005] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
-[    0.521227] ...trying to set up timer (IRQ0) through the 8259A ...
-[    0.521321] ..... (found apic 0 pin 2) ...
-[    0.538119] ....... failed.
-[    0.538267] ...trying to set up timer as Virtual Wire IRQ...
-[    0.555087] ..... works.
-[    0.555685] tsc: Marking TSC unstable due to TSCs unsynchronized
-[    0.556578] Calibrating delay loop (skipped), value calculated using timer frequency.. 4838.51 BogoMIPS (lpj=2419255)
-[    0.556945] process: using AMD E400 aware idle routine
-[    0.556945] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
-[    0.556945] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
-[    0.556945] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
-[    0.558163] Spectre V2 : Mitigation: Retpolines
-[    0.558275] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
-[    0.558433] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
-[    0.558945] x86/fpu: x87 FPU will use FXSAVE
-[    0.580945] Freeing SMP alternatives memory: 44K
-[    0.580945] pid_max: default: 32768 minimum: 301
-[    0.582945] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
-[    0.584088] landlock: Up and running.
-[    0.584193] Yama: becoming mindful.
-[    0.584945] AppArmor: AppArmor initialized
-[    0.586945] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.586945] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
-[    0.614945] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
-[    0.615945] RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
-[    0.615945] RCU Tasks Rude: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
-[    0.615945] RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
-[    0.615945] Performance Events: PMU not available due to virtualization, using software events only.
-[    0.615945] Initializing real mode trampoline at (____ptrval____)
-[    0.616795] signal: max sigframe size: 1440
-[    0.617945] rcu: Hierarchical SRCU implementation.
-[    0.617945] rcu: 	Max phase no-delay instances is 400.
-[    0.621364] NMI watchdog: Perf NMI watchdog permanently disabled
-[    0.621945] smp: Bringing up secondary CPUs ...
-[    0.621945] smpboot: x86: Booting SMP configuration:
-[    0.621945] .... node  #0, CPUs:      #1 #2 #3
-[    0.086570] calibrate_delay_direct() dropping min bogoMips estimate 1 = 2372985
-[    0.086570] calibrate_delay_direct() dropping max bogoMips estimate 4 = 4076447
-[    0.086570] calibrate_delay_direct() dropping min bogoMips estimate 0 = 3109555
-[    0.086570] calibrate_delay_direct() dropping min bogoMips estimate 0 = 11480869
-[    0.086570] calibrate_delay_direct() dropping max bogoMips estimate 2 = 36976644
-[    0.820945] smp: Brought up 1 node, 4 CPUs
-[    0.820945] smpboot: Max logical packages: 1
-[    0.820945] smpboot: Total of 4 processors activated (135777.70 BogoMIPS)
-[    0.825945] devtmpfs: initialized
-[    0.826945] x86/mm: Memory block size: 128MB
-[    0.826945] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
-[    0.826945] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
-[    0.827945] pinctrl core: initialized pinctrl subsystem
-[    0.827945] PM: RTC time: 11:23:22, date: 2025-07-28
-[    0.830945] NET: Registered PF_NETLINK/PF_ROUTE protocol family
-[    0.830945] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
-[    0.830945] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
-[    0.830945] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
-[    0.830945] audit: initializing netlink subsys (disabled)
-[    0.830945] audit: type=2000 audit(1753701800.286:1): state=initialized audit_enabled=0 res=1
-[    0.831945] thermal_sys: Registered thermal governor 'fair_share'
-[    0.831945] thermal_sys: Registered thermal governor 'bang_bang'
-[    0.831945] thermal_sys: Registered thermal governor 'step_wise'
-[    0.831945] thermal_sys: Registered thermal governor 'user_space'
-[    0.831945] thermal_sys: Registered thermal governor 'power_allocator'
-[    0.831945] cpuidle: using governor ladder
-[    0.831945] cpuidle: using governor menu
-[    0.831945] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
-[    0.831945] PCI: Using configuration type 1 for base access
-[    0.831945] mtrr: your CPUs had inconsistent fixed MTRR settings
-[    0.831945] mtrr: your CPUs had inconsistent variable MTRR settings
-[    0.831945] mtrr: your CPUs had inconsistent MTRRdefType settings
-[    0.831945] mtrr: probably your BIOS does not setup all CPUs.
-[    0.831945] mtrr: corrected configuration.
-[    0.831945] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
-[    0.834945] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
-[    0.834945] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
-[    0.837945] ACPI: Added _OSI(Module Device)
-[    0.837945] ACPI: Added _OSI(Processor Device)
-[    0.837945] ACPI: Added _OSI(3.0 _SCP Extensions)
-[    0.837945] ACPI: Added _OSI(Processor Aggregator Device)
-[    0.840945] ACPI: 1 ACPI AML tables successfully acquired and loaded
-[    0.843945] ACPI: _OSC evaluation for CPUs failed, trying _PDC
-[    0.844945] ACPI: Interpreter enabled
-[    0.844945] ACPI: PM: (supports S0 S3 S4 S5)
-[    0.844945] ACPI: Using IOAPIC for interrupt routing
-[    0.844945] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
-[    0.844945] PCI: Using E820 reservations for host bridge windows
-[    0.844945] ACPI: Enabled 2 GPEs in block 00 to 0F
-[    0.851945] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
-[    0.851945] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
-[    0.851945] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
-[    0.852590] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
-[    0.852945] acpiphp: Slot [3] registered
-[    0.852945] acpiphp: Slot [4] registered
-[    0.852945] acpiphp: Slot [5] registered
-[    0.853097] acpiphp: Slot [6] registered
-[    0.853261] acpiphp: Slot [7] registered
-[    0.853488] acpiphp: Slot [8] registered
-[    0.853680] acpiphp: Slot [9] registered
-[    0.853832] acpiphp: Slot [10] registered
-[    0.853945] acpiphp: Slot [11] registered
-[    0.853945] acpiphp: Slot [12] registered
-[    0.853945] acpiphp: Slot [13] registered
-[    0.853945] acpiphp: Slot [14] registered
-[    0.853945] acpiphp: Slot [15] registered
-[    0.853945] acpiphp: Slot [16] registered
-[    0.853945] acpiphp: Slot [17] registered
-[    0.853945] acpiphp: Slot [18] registered
-[    0.853945] acpiphp: Slot [19] registered
-[    0.853945] acpiphp: Slot [20] registered
-[    0.853945] acpiphp: Slot [21] registered
-[    0.853945] acpiphp: Slot [22] registered
-[    0.853945] acpiphp: Slot [23] registered
-[    0.853945] acpiphp: Slot [24] registered
-[    0.853945] acpiphp: Slot [25] registered
-[    0.853945] acpiphp: Slot [26] registered
-[    0.853945] acpiphp: Slot [27] registered
-[    0.853945] acpiphp: Slot [28] registered
-[    0.853945] acpiphp: Slot [29] registered
-[    0.853945] acpiphp: Slot [30] registered
-[    0.853945] acpiphp: Slot [31] registered
-[    0.853945] PCI host bridge to bus 0000:00
-[    0.853945] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
-[    0.853945] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
-[    0.853945] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
-[    0.853945] pci_bus 0000:00: root bus resource [mem 0x40000000-0xfebfffff window]
-[    0.853945] pci_bus 0000:00: root bus resource [mem 0x100000000-0x17fffffff window]
-[    0.853945] pci_bus 0000:00: root bus resource [bus 00-ff]
-[    0.855683] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
-[    0.855945] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
-[    0.855945] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
-[    0.855945] pci 0000:00:01.1: BAR 4 [io  0xc040-0xc04f]
-[    0.855945] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
-[    0.855945] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
-[    0.857140] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
-[    0.857270] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
-[    0.859447] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
-[    0.859447] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
-[    0.859565] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
-[    0.860945] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
-[    0.860945] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
-[    0.862427] pci 0000:00:02.0: BAR 2 [mem 0xfebb0000-0xfebb0fff]
-[    0.863945] pci 0000:00:02.0: ROM [mem 0xfeba0000-0xfebaffff pref]
-[    0.864256] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
-[    0.864945] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
-[    0.864945] pci 0000:00:03.0: BAR 0 [mem 0xfeb80000-0xfeb9ffff]
-[    0.865945] pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
-[    0.867945] pci 0000:00:03.0: ROM [mem 0xfeb00000-0xfeb7ffff pref]
-[    0.872945] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
-[    0.872945] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
-[    0.874627] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
-[    0.874945] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
-[    0.874945] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
-[    0.876415] iommu: Default domain type: Translated
-[    0.876415] iommu: DMA domain TLB invalidation policy: lazy mode
-[    0.876945] SCSI subsystem initialized
-[    0.878945] ACPI: bus type USB registered
-[    0.878945] usbcore: registered new interface driver usbfs
-[    0.879060] usbcore: registered new interface driver hub
-[    0.879422] usbcore: registered new device driver usb
-[    0.879426] pps_core: LinuxPPS API ver. 1 registered
-[    0.879537] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
-[    0.879720] PTP clock support registered
-[    0.880276] EDAC MC: Ver: 3.0.0
-[    0.884268] NetLabel: Initializing
-[    0.884409] NetLabel:  domain hash size = 128
-[    0.884475] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
-[    0.884945] NetLabel:  unlabeled traffic allowed by default
-[    0.884945] mctp: management component transport protocol core
-[    0.884945] NET: Registered PF_MCTP protocol family
-[    0.884945] PCI: Using ACPI for IRQ routing
-[    0.884945] pci 0000:00:02.0: vgaarb: setting as boot VGA device
-[    0.884945] pci 0000:00:02.0: vgaarb: bridge control possible
-[    0.884945] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
-[    0.884945] vgaarb: loaded
-[    0.884945] hpet: 3 channels of 0 reserved for per-cpu timers
-[    0.884945] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
-[    0.884945] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
-[    0.886260] clocksource: Switched to clocksource hpet
-[    0.887162] VFS: Disk quotas dquot_6.6.0
-[    0.887162] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
-[    0.900717] AppArmor: AppArmor Filesystem Enabled
-[    0.901809] pnp: PnP ACPI init
-[    0.903735] pnp: PnP ACPI: found 6 devices
-[    0.961062] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
-[    0.963578] NET: Registered PF_INET protocol family
-[    0.964259] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
-[    0.966778] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
-[    0.974194] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
-[    0.974531] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
-[    0.975270] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
-[    0.975699] TCP: Hash tables configured (established 8192 bind 8192)
-[    0.977665] MPTCP token hash table entries: 1024 (order: 2, 24576 bytes, linear)
-[    0.979409] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.979870] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
-[    0.981178] NET: Registered PF_UNIX/PF_LOCAL protocol family
-[    0.982535] NET: Registered PF_XDP protocol family
-[    0.983816] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
-[    0.983816] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
-[    0.983816] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
-[    0.983816] pci_bus 0000:00: resource 7 [mem 0x40000000-0xfebfffff window]
-[    0.983816] pci_bus 0000:00: resource 8 [mem 0x100000000-0x17fffffff window]
-[    0.985362] pci 0000:00:01.0: PIIX3: Enabling Passive Release
-[    0.985541] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
-[    0.985887] PCI: CLS 0 bytes, default 64
-[    0.993542] Trying to unpack rootfs image as initramfs...
-[    0.994784] Initialise system trusted keyrings
-[    0.997982] workingset: timestamp_bits=36 max_order=18 bucket_order=0
-[    0.999131] zbud: loaded
-[    1.008926] squashfs: version 4.0 (2009/01/31) Phillip Lougher
-[    1.017995] fuse: init (API version 7.39)
-[    1.100725] Freeing initrd memory: 1440K
-[    1.109033] Key type asymmetric registered
-[    1.109033] Asymmetric key parser 'x509' registered
-[    1.113365] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
-[    1.118213] io scheduler mq-deadline registered
-[    1.125637] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
-[    1.129642] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
-[    1.135695] ACPI: button: Power Button [PWRF]
-[    1.146938] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
-[    1.183654] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-[    1.227233] Linux agpgart interface v0.103
-[    1.231071] ACPI: bus type drm_connector registered
-[    1.262734] loop: module loaded
-[    1.280448] scsi host0: ata_piix
-[    1.284091] scsi host1: ata_piix
-[    1.284733] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14 lpm-pol 0
-[    1.284885] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15 lpm-pol 0
-[    1.288184] tun: Universal TUN/TAP device driver, 1.6
-[    1.289657] PPP generic driver version 2.4.2
-[    1.292202] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
-[    1.296812] serio: i8042 KBD port at 0x60,0x64 irq 1
-[    1.296812] serio: i8042 AUX port at 0x60,0x64 irq 12
-[    1.303167] mousedev: PS/2 mouse device common for all mice
-[    1.310953] rtc_cmos 00:05: RTC can wake from S4
-[    1.312116] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
-[    1.318612] rtc_cmos 00:05: registered as rtc0
-[    1.319596] rtc_cmos 00:05: setting system clock to 2025-07-28T11:23:23 UTC (1753701803)
-[    1.322092] rtc_cmos 00:05: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
-[    1.322514] i2c_dev: i2c /dev entries driver
-[    1.323022] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
-[    1.323022] device-mapper: uevent: version 1.0.3
-[    1.327403] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
-[    1.328022] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
-[    1.329940] ledtrig-cpu: registered to indicate activity on CPUs
-[    1.330867] drop_monitor: Initializing network drop monitor service
-[    1.333798] NET: Registered PF_INET6 protocol family
-[    1.361562] Segment Routing with IPv6
-[    1.361977] In-situ OAM (IOAM) with IPv6
-[    1.363205] NET: Registered PF_PACKET protocol family
-[    1.365037] Key type dns_resolver registered
-[    1.370482] IPI shorthand broadcast: enabled
-[    1.380873] [yat] late debugfs init called
-[    1.380873] [yat] debugfs init called
-[    1.380873] [yat] debugfs dir created successfully: (____ptrval____)
-[    1.386041] [yat] debugfs accelerator_table file created: (____ptrval____)
-[    1.386217] [yat] debugfs history_table file created: (____ptrval____)
-[    1.388246] registered taskstats version 1
-[    1.392745] Loading compiled-in X.509 certificates
-[    1.406947] Loaded X.509 cert 'Build time autogenerated kernel key: 5f1de723909117e5201f4971269b903989086572'
-[    1.437512] Key type .fscrypt registered
-[    1.437512] Key type fscrypt-provisioning registered
-[    1.452658] ata2: found unknown device (class 0)
-[    1.456137] Key type encrypted registered
-[    1.456320] AppArmor: AppArmor sha256 policy hashing enabled
-[    1.456854] ima: No TPM chip found, activating TPM-bypass!
-[    1.457925] Loading compiled-in module X.509 certificates
-[    1.458720] Loaded X.509 cert 'Build time autogenerated kernel key: 5f1de723909117e5201f4971269b903989086572'
-[    1.458720] ima: Allocated hash algorithm: sha256
-[    1.458905] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
-[    1.458720] ima: No architecture policies found
-[    1.458720] evm: Initialising EVM extended attributes:
-[    1.458720] evm: security.selinux
-[    1.458720] evm: security.SMACK64
-[    1.458720] evm: security.SMACK64EXEC
-[    1.458720] evm: security.SMACK64TRANSMUTE
-[    1.458720] evm: security.SMACK64MMAP
-[    1.458720] evm: security.apparmor
-[    1.458720] evm: security.ima
-[    1.458720] evm: security.capability
-[    1.458720] evm: HMAC attrs: 0x1
-[    1.469525] PM:   Magic number: 1:101:379
-[    1.472891] powernow_k8: Power state transitions not supported
-[    1.472967] powernow_k8: Power state transitions not supported
-[    1.474231] powernow_k8: Power state transitions not supported
-[    1.474787] powernow_k8: Power state transitions not supported
-[    1.477805] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
-[    1.501904] hid_bpf: error while preloading HID BPF dispatcher: -22
-[    1.506735] RAS: Correctable Errors collector initialized.
-[    1.507628] Unstable clock detected, switching default tracing clock to "global"
-[    1.507628] If you want to keep using the local clock, then add:
-[    1.507628]   "trace_clock=local"
-[    1.507628] on the kernel command line
-[    1.507628] clk: Disabling unused clocks
-[    1.569489] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
-[    1.569489] cdrom: Uniform CD-ROM driver Revision: 3.20
-[    1.600713] sr 1:0:0:0: Attached scsi generic sg0 type 5
-[    1.608737] Freeing unused decrypted memory: 2028K
-[    1.794774] Freeing unused kernel image (initmem) memory: 4836K
-[    1.794774] Write protecting the kernel read-only data: 28672k
-[    1.794774] Freeing unused kernel image (rodata/data gap) memory: 552K
-[    1.995292] x86/mm: Checked W+X mappings: passed, no W+X pages found.
-[    1.996649] Run /init as init process
+[    0.000000] tsc: Detected 2419.188 MHz processor
+[    0.015474] AGP: No AGP bridge found
+[    0.015806] last_pfn = 0x3ffe0 max_arch_pfn = 0x400000000
+[    0.016677] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+[    0.016937] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.037648] found SMP MP-table at [mem 0x000f5480-0x000f548f]
+[    0.044172] RAMDISK: [mem 0x3fe70000-0x3ffd7fff]
+[    0.044770] ACPI: Early table checksum verification disabled
+[    0.045321] ACPI: RSDP 0x00000000000F52A0 000014 (v00 BOCHS )
+[    0.045713] ACPI: RSDT 0x000000003FFE1D57 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.046538] ACPI: FACP 0x000000003FFE1BF3 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047412] ACPI: DSDT 0x000000003FFE0040 001BB3 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047567] ACPI: FACS 0x000000003FFE0000 000040
+[    0.047643] ACPI: APIC 0x000000003FFE1C67 000090 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047679] ACPI: HPET 0x000000003FFE1CF7 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047710] ACPI: WAET 0x000000003FFE1D2F 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.047833] ACPI: Reserving FACP table memory at [mem 0x3ffe1bf3-0x3ffe1c66]
+[    0.047855] ACPI: Reserving DSDT table memory at [mem 0x3ffe0040-0x3ffe1bf2]
+[    0.047864] ACPI: Reserving FACS table memory at [mem 0x3ffe0000-0x3ffe003f]
+[    0.047871] ACPI: Reserving APIC table memory at [mem 0x3ffe1c67-0x3ffe1cf6]
+[    0.047878] ACPI: Reserving HPET table memory at [mem 0x3ffe1cf7-0x3ffe1d2e]
+[    0.047884] ACPI: Reserving WAET table memory at [mem 0x3ffe1d2f-0x3ffe1d56]
+[    0.051088] No NUMA configuration found
+[    0.051118] Faking a node at [mem 0x0000000000000000-0x000000003ffdffff]
+[    0.051930] NODE_DATA(0) allocated [mem 0x3fe45000-0x3fe6ffff]
+[    0.055917] Zone ranges:
+[    0.055955]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.056054]   DMA32    [mem 0x0000000001000000-0x000000003ffdffff]
+[    0.056069]   Normal   empty
+[    0.056092]   Device   empty
+[    0.056108] Movable zone start for each node
+[    0.056141] Early memory node ranges
+[    0.056173]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.056360]   node   0: [mem 0x0000000000100000-0x000000003ffdffff]
+[    0.056608] Initmem setup node 0 [mem 0x0000000000001000-0x000000003ffdffff]
+[    0.057788] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.058121] On node 0, zone DMA: 97 pages in unavailable ranges
+[    0.086778] On node 0, zone DMA32: 32 pages in unavailable ranges
+[    0.087447] ACPI: PM-Timer IO Port: 0x608
+[    0.088010] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.088627] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.088778] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.089308] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.089377] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.089509] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.089521] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.089754] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.089807] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.090166] smpboot: Allowing 4 CPUs, 0 hotplug CPUs
+[    0.091150] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+[    0.091206] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
+[    0.091232] PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000fffff]
+[    0.091372] [mem 0x40000000-0xfffbffff] available for PCI devices
+[    0.091448] Booting paravirtualized kernel on bare hardware
+[    0.091796] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.092519] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
+[    0.095044] percpu: Embedded 102 pages/cpu s294912 r8192 d114688 u524288
+[    0.096825] Kernel command line: console=ttyS0,115200
+[    0.098925] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.099312] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.102066] Fallback order for Node 0: 0 
+[    0.102642] Built 1 zonelists, mobility grouping on.  Total pages: 257760
+[    0.102677] Policy zone: DMA32
+[    0.103448] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.103637] AGP: Checking aperture...
+[    0.104882] AGP: No AGP bridge found
+[    0.117786] Memory: 982876K/1048056K available (20480K kernel code, 4503K rwdata, 7640K rodata, 4836K init, 4816K bss, 64924K reserved, 0K cma-reserved)
+[    0.368012] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.374714] ftrace: allocating 54687 entries in 214 pages
+[    0.426487] ftrace: allocated 214 pages with 5 groups
+[    0.433335] ======init yat_casched rq======
+[    0.434110] ======init yat_casched rq======
+[    0.434124] ======init yat_casched rq======
+[    0.434134] ======init yat_casched rq======
+[    0.440296] Dynamic Preempt: voluntary
+[    0.446349] rcu: Preemptible hierarchical RCU implementation.
+[    0.446407] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=4.
+[    0.446538] 	Trampoline variant of Tasks RCU enabled.
+[    0.446547] 	Rude variant of Tasks RCU enabled.
+[    0.446553] 	Tracing variant of Tasks RCU enabled.
+[    0.446678] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.446708] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+[    0.477942] NR_IRQS: 524544, nr_irqs: 456, preallocated irqs: 16
+[    0.495430] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.502310] Console: colour dummy device 80x25
+[    0.505439] printk: legacy console [ttyS0] enabled
+[    0.523963] ACPI: Core revision 20230628
+[    0.533125] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    0.541587] APIC: Switch to symmetric I/O mode setup
+[    0.547816] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.565693] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
+[    0.565897] ...trying to set up timer (IRQ0) through the 8259A ...
+[    0.565997] ..... (found apic 0 pin 2) ...
+[    0.582808] ....... failed.
+[    0.582964] ...trying to set up timer as Virtual Wire IRQ...
+[    0.587795] ..... works.
+[    0.588430] tsc: Marking TSC unstable due to TSCs unsynchronized
+[    0.589287] Calibrating delay loop (skipped), value calculated using timer frequency.. 4838.37 BogoMIPS (lpj=2419188)
+[    0.591741] process: using AMD E400 aware idle routine
+[    0.592891] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.593029] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.593540] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.593741] Spectre V2 : Mitigation: Retpolines
+[    0.593741] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+[    0.593741] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
+[    0.593741] x86/fpu: x87 FPU will use FXSAVE
+[    0.620741] Freeing SMP alternatives memory: 44K
+[    0.620741] pid_max: default: 32768 minimum: 301
+[    0.622741] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
+[    0.622741] landlock: Up and running.
+[    0.622741] Yama: becoming mindful.
+[    0.622741] AppArmor: AppArmor initialized
+[    0.624741] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.624741] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.644741] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.645741] RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.645741] RCU Tasks Rude: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.645741] RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.645741] Performance Events: PMU not available due to virtualization, using software events only.
+[    0.645741] Initializing real mode trampoline at (____ptrval____)
+[    0.645741] signal: max sigframe size: 1440
+[    0.645741] rcu: Hierarchical SRCU implementation.
+[    0.645741] rcu: 	Max phase no-delay instances is 400.
+[    0.646741] NMI watchdog: Perf NMI watchdog permanently disabled
+[    0.646741] smp: Bringing up secondary CPUs ...
+[    0.648741] smpboot: x86: Booting SMP configuration:
+[    0.648741] .... node  #0, CPUs:      #1 #2 #3
+[    0.075570] calibrate_delay_direct() dropping min bogoMips estimate 4 = 20737958
+[    0.075570] calibrate_delay_direct() dropping min bogoMips estimate 0 = 22432287
+[    0.075570] calibrate_delay_direct() dropping min bogoMips estimate 1 = 30066339
+[    0.075570] calibrate_delay_direct() dropping min bogoMips estimate 4 = 26242892
+[    0.075570] calibrate_delay_direct() dropping min bogoMips estimate 4 = 28947373
+[    0.845741] smp: Brought up 1 node, 4 CPUs
+[    0.845741] smpboot: Max logical packages: 1
+[    0.845950] smpboot: Total of 4 processors activated (224057.18 BogoMIPS)
+[    0.851387] devtmpfs: initialized
+[    0.853741] x86/mm: Memory block size: 128MB
+[    0.854741] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.854897] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.855741] pinctrl core: initialized pinctrl subsystem
+[    0.855741] PM: RTC time: 11:39:57, date: 2025-07-28
+[    0.858741] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.859741] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+[    0.859741] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.859741] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.859741] audit: initializing netlink subsys (disabled)
+[    0.859741] audit: type=2000 audit(1753702794.288:1): state=initialized audit_enabled=0 res=1
+[    0.859741] thermal_sys: Registered thermal governor 'fair_share'
+[    0.859741] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.859741] thermal_sys: Registered thermal governor 'step_wise'
+[    0.859741] thermal_sys: Registered thermal governor 'user_space'
+[    0.859741] thermal_sys: Registered thermal governor 'power_allocator'
+[    0.859911] cpuidle: using governor ladder
+[    0.860308] cpuidle: using governor menu
+[    0.860741] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.860741] PCI: Using configuration type 1 for base access
+[    0.860741] mtrr: your CPUs had inconsistent fixed MTRR settings
+[    0.860741] mtrr: your CPUs had inconsistent variable MTRR settings
+[    0.860741] mtrr: your CPUs had inconsistent MTRRdefType settings
+[    0.860741] mtrr: probably your BIOS does not setup all CPUs.
+[    0.860741] mtrr: corrected configuration.
+[    0.860741] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+[    0.865741] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.865741] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.867741] ACPI: Added _OSI(Module Device)
+[    0.867741] ACPI: Added _OSI(Processor Device)
+[    0.867741] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.867741] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.869741] ACPI: 1 ACPI AML tables successfully acquired and loaded
+[    0.873384] ACPI: _OSC evaluation for CPUs failed, trying _PDC
+[    0.874741] ACPI: Interpreter enabled
+[    0.875741] ACPI: PM: (supports S0 S3 S4 S5)
+[    0.875815] ACPI: Using IOAPIC for interrupt routing
+[    0.876741] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.876741] PCI: Using E820 reservations for host bridge windows
+[    0.877741] ACPI: Enabled 2 GPEs in block 00 to 0F
+[    0.883741] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.885346] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
+[    0.885984] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
+[    0.887741] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
+[    0.889741] acpiphp: Slot [3] registered
+[    0.889741] acpiphp: Slot [4] registered
+[    0.889929] acpiphp: Slot [5] registered
+[    0.890183] acpiphp: Slot [6] registered
+[    0.890809] acpiphp: Slot [7] registered
+[    0.890980] acpiphp: Slot [8] registered
+[    0.891209] acpiphp: Slot [9] registered
+[    0.891569] acpiphp: Slot [10] registered
+[    0.891741] acpiphp: Slot [11] registered
+[    0.891901] acpiphp: Slot [12] registered
+[    0.892059] acpiphp: Slot [13] registered
+[    0.892330] acpiphp: Slot [14] registered
+[    0.892511] acpiphp: Slot [15] registered
+[    0.892835] acpiphp: Slot [16] registered
+[    0.893019] acpiphp: Slot [17] registered
+[    0.893446] acpiphp: Slot [18] registered
+[    0.893595] acpiphp: Slot [19] registered
+[    0.893886] acpiphp: Slot [20] registered
+[    0.894124] acpiphp: Slot [21] registered
+[    0.894415] acpiphp: Slot [22] registered
+[    0.894533] acpiphp: Slot [23] registered
+[    0.894754] acpiphp: Slot [24] registered
+[    0.894908] acpiphp: Slot [25] registered
+[    0.895166] acpiphp: Slot [26] registered
+[    0.895630] acpiphp: Slot [27] registered
+[    0.895878] acpiphp: Slot [28] registered
+[    0.896056] acpiphp: Slot [29] registered
+[    0.896307] acpiphp: Slot [30] registered
+[    0.896795] acpiphp: Slot [31] registered
+[    0.897339] PCI host bridge to bus 0000:00
+[    0.897608] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.897741] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.897741] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.897741] pci_bus 0000:00: root bus resource [mem 0x40000000-0xfebfffff window]
+[    0.897741] pci_bus 0000:00: root bus resource [mem 0x100000000-0x17fffffff window]
+[    0.898077] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.898741] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
+[    0.899741] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
+[    0.900430] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
+[    0.905960] pci 0000:00:01.1: BAR 4 [io  0xc040-0xc04f]
+[    0.906843] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
+[    0.907035] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
+[    0.907929] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
+[    0.908042] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
+[    0.908741] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
+[    0.908741] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
+[    0.908741] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
+[    0.908741] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
+[    0.908741] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
+[    0.909741] pci 0000:00:02.0: BAR 2 [mem 0xfebb0000-0xfebb0fff]
+[    0.909741] pci 0000:00:02.0: ROM [mem 0xfeba0000-0xfebaffff pref]
+[    0.909741] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+[    0.909741] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
+[    0.909741] pci 0000:00:03.0: BAR 0 [mem 0xfeb80000-0xfeb9ffff]
+[    0.910421] pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
+[    0.910741] pci 0000:00:03.0: ROM [mem 0xfeb00000-0xfeb7ffff pref]
+[    0.911741] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+[    0.911741] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+[    0.911741] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+[    0.911741] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+[    0.911741] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
+[    0.912741] iommu: Default domain type: Translated
+[    0.912741] iommu: DMA domain TLB invalidation policy: lazy mode
+[    0.912741] SCSI subsystem initialized
+[    0.912741] ACPI: bus type USB registered
+[    0.912741] usbcore: registered new interface driver usbfs
+[    0.912741] usbcore: registered new interface driver hub
+[    0.912741] usbcore: registered new device driver usb
+[    0.912741] pps_core: LinuxPPS API ver. 1 registered
+[    0.912741] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.912741] PTP clock support registered
+[    0.913150] EDAC MC: Ver: 3.0.0
+[    0.913741] NetLabel: Initializing
+[    0.913741] NetLabel:  domain hash size = 128
+[    0.913741] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    0.913741] NetLabel:  unlabeled traffic allowed by default
+[    0.914486] mctp: management component transport protocol core
+[    0.914631] NET: Registered PF_MCTP protocol family
+[    0.914741] PCI: Using ACPI for IRQ routing
+[    0.914741] pci 0000:00:02.0: vgaarb: setting as boot VGA device
+[    0.914741] pci 0000:00:02.0: vgaarb: bridge control possible
+[    0.914741] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+[    0.914741] vgaarb: loaded
+[    0.914741] hpet: 3 channels of 0 reserved for per-cpu timers
+[    0.914741] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[    0.914741] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
+[    0.916284] clocksource: Switched to clocksource hpet
+[    0.930175] VFS: Disk quotas dquot_6.6.0
+[    0.930175] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.930175] AppArmor: AppArmor Filesystem Enabled
+[    0.937270] pnp: PnP ACPI init
+[    0.937874] pnp: PnP ACPI: found 6 devices
+[    0.991995] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    0.994603] NET: Registered PF_INET protocol family
+[    0.997020] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    1.007014] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    1.008195] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    1.008707] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    1.009312] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
+[    1.009679] TCP: Hash tables configured (established 8192 bind 8192)
+[    1.010893] MPTCP token hash table entries: 1024 (order: 2, 24576 bytes, linear)
+[    1.013516] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    1.014095] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    1.014963] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    1.016868] NET: Registered PF_XDP protocol family
+[    1.018095] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    1.018622] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    1.018798] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    1.018918] pci_bus 0000:00: resource 7 [mem 0x40000000-0xfebfffff window]
+[    1.019035] pci_bus 0000:00: resource 8 [mem 0x100000000-0x17fffffff window]
+[    1.019594] pci 0000:00:01.0: PIIX3: Enabling Passive Release
+[    1.020081] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
+[    1.020356] PCI: CLS 0 bytes, default 64
+[    1.023133] Trying to unpack rootfs image as initramfs...
+[    1.028618] Initialise system trusted keyrings
+[    1.033808] workingset: timestamp_bits=36 max_order=18 bucket_order=0
+[    1.034614] zbud: loaded
+[    1.038226] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.056397] fuse: init (API version 7.39)
+[    1.108785] Freeing initrd memory: 1440K
+[    1.137012] Key type asymmetric registered
+[    1.137455] Asymmetric key parser 'x509' registered
+[    1.138000] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+[    1.140517] io scheduler mq-deadline registered
+[    1.146172] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    1.152929] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[    1.157757] ACPI: button: Power Button [PWRF]
+[    1.168025] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.188952] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    1.228708] Linux agpgart interface v0.103
+[    1.231964] ACPI: bus type drm_connector registered
+[    1.265695] loop: module loaded
+[    1.282296] scsi host0: ata_piix
+[    1.285704] scsi host1: ata_piix
+[    1.286848] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14 lpm-pol 0
+[    1.287304] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15 lpm-pol 0
+[    1.291005] tun: Universal TUN/TAP device driver, 1.6
+[    1.294112] PPP generic driver version 2.4.2
+[    1.299103] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    1.302566] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.304797] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.308095] mousedev: PS/2 mouse device common for all mice
+[    1.311740] rtc_cmos 00:05: RTC can wake from S4
+[    1.316685] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
+[    1.318686] rtc_cmos 00:05: registered as rtc0
+[    1.318686] rtc_cmos 00:05: setting system clock to 2025-07-28T11:39:58 UTC (1753702798)
+[    1.320968] rtc_cmos 00:05: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
+[    1.322058] i2c_dev: i2c /dev entries driver
+[    1.322815] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+[    1.322815] device-mapper: uevent: version 1.0.3
+[    1.325099] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
+[    1.325681] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
+[    1.328655] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.330003] drop_monitor: Initializing network drop monitor service
+[    1.331816] NET: Registered PF_INET6 protocol family
+[    1.363502] Segment Routing with IPv6
+[    1.364152] In-situ OAM (IOAM) with IPv6
+[    1.364852] NET: Registered PF_PACKET protocol family
+[    1.366645] Key type dns_resolver registered
+[    1.372132] IPI shorthand broadcast: enabled
+[    1.374801] [yat] late debugfs init called
+[    1.374801] [yat] debugfs init called
+[    1.374801] [yat] debugfs dir created successfully: (____ptrval____)
+[    1.386951] [yat] debugfs accelerator_table file created: (____ptrval____)
+[    1.387472] [yat] debugfs history_table file created: (____ptrval____)
+[    1.390176] registered taskstats version 1
+[    1.393972] Loading compiled-in X.509 certificates
+[    1.404906] Loaded X.509 cert 'Build time autogenerated kernel key: 5f1de723909117e5201f4971269b903989086572'
+[    1.452797] Key type .fscrypt registered
+[    1.453330] ata2: found unknown device (class 0)
+[    1.453386] Key type fscrypt-provisioning registered
+[    1.472517] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    1.487800] Key type encrypted registered
+[    1.488015] AppArmor: AppArmor sha256 policy hashing enabled
+[    1.489438] ima: No TPM chip found, activating TPM-bypass!
+[    1.489726] Loading compiled-in module X.509 certificates
+[    1.491863] Loaded X.509 cert 'Build time autogenerated kernel key: 5f1de723909117e5201f4971269b903989086572'
+[    1.493560] ima: Allocated hash algorithm: sha256
+[    1.495321] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    1.499815] ima: No architecture policies found
+[    1.503217] evm: Initialising EVM extended attributes:
+[    1.503795] evm: security.selinux
+[    1.505418] evm: security.SMACK64
+[    1.505746] evm: security.SMACK64EXEC
+[    1.506801] evm: security.SMACK64TRANSMUTE
+[    1.507180] evm: security.SMACK64MMAP
+[    1.507745] evm: security.apparmor
+[    1.507745] evm: security.ima
+[    1.507745] evm: security.capability
+[    1.507745] evm: HMAC attrs: 0x1
+[    1.514876] PM:   Magic number: 1:410:682
+[    1.517960] powernow_k8: Power state transitions not supported
+[    1.518414] powernow_k8: Power state transitions not supported
+[    1.518978] powernow_k8: Power state transitions not supported
+[    1.519186] powernow_k8: Power state transitions not supported
+[    1.547977] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
+[    1.548441] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    1.550294] hid_bpf: error while preloading HID BPF dispatcher: -22
+[    1.550294] RAS: Correctable Errors collector initialized.
+[    1.557730] Unstable clock detected, switching default tracing clock to "global"
+[    1.557730] If you want to keep using the local clock, then add:
+[    1.557730]   "trace_clock=local"
+[    1.557730] on the kernel command line
+[    1.562589] clk: Disabling unused clocks
+[    1.582872] sr 1:0:0:0: Attached scsi generic sg0 type 5
+[    1.594379] Freeing unused decrypted memory: 2028K
+[    1.730839] Freeing unused kernel image (initmem) memory: 4836K
+[    1.730839] Write protecting the kernel read-only data: 28672k
+[    1.745287] Freeing unused kernel image (rodata/data gap) memory: 552K
+[    1.902989] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+[    1.902989] Run /init as init process
 === CFS 简化测试环境启动 ===
 系统信息:
 内核版本: 6.8.0+
@@ -429,18 +429,18 @@ CPU核心数: 4
 当前内核版本测试，PID: 112
 
 开始创建测试任务...
-创建子任务 1，PID: 113
-创建子任务 2，PID: 114
-创建子任务 3，PID: 115
-创建子任务 4，PID: 116
-创建子任务 5，PID: 117
-创建子任务 6，PID: 118
-创建子任务 7，PID: 119
-创建子任务 8，PID: 120
-创建子任务 9，PID: 121
-创建子任务 10，PID: 122
-创建子任务 11，PID: 123
-创建子任务 12，PID: 124
+创建子任务 1，PID: 114
+创建子任务 2，PID: 115
+创建子任务 3，PID: 116
+创建子任务 4，PID: 117
+创建子任务 5，PID: 118
+创建子任务 6，PID: 119
+创建子任务 7，PID: 120
+创建子任务 8，PID: 121
+创建子任务 9，PID: 122
+创建子任务 10，PID: 123
+创建子任务 11，PID: 124
+创建子任务 12，PID: 125
 
 等待所有任务完成...
 
@@ -459,4 +459,321 @@ BusyBox v1.36.1 (Ubuntu 1:1.36.1-6ubuntu3.1) built-in shell (ash)
 Enter 'help' for a list of built-in commands.
 
 /bin/sh: can't access tty; job control turned off
+~ # [6ncat /sys/kernel/debug/tracing/trace
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 304/304   #P:4
+#
+#                                _-----=> irqs-off/BH-disabled
+#                               / _----=> need-resched
+#                              | / _---=> hardirq/softirq
+#                              || / _--=> preempt-depth
+#                              ||| / _-=> migrate-disable
+#                              |||| /     delay
+#           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+#              | |         |   |||||     |         |
+          <idle>-0       [000] d..2.     2.326979: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+          <idle>-0       [001] d..2.     2.326979: sched_switch: prev_comm=swapper/1 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=init next_pid=112 next_prio=120
+            init-1       [002] d..2.     2.326979: sched_switch: prev_comm=init prev_pid=1 prev_prio=120 prev_state=S ==> next_comm=swapper/2 next_pid=0 next_prio=120
+     rcu_preempt-17      [000] d..2.     2.328560: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [000] d..2.     2.339636: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [000] d..2.     2.339727: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+          <idle>-0       [003] d..2.     2.340664: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/3:1 next_pid=50 next_prio=120
+          <idle>-0       [002] d..2.     2.340732: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/2:1 next_pid=56 next_prio=120
+     kworker/0:1-9       [000] d..2.     2.342240: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     kworker/2:1-56      [002] d..2.     2.342252: sched_switch: prev_comm=kworker/2:1 prev_pid=56 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+     kworker/3:1-50      [003] d..2.     2.342292: sched_switch: prev_comm=kworker/3:1 prev_pid=50 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+     rcu_preempt-17      [000] d..2.     2.342324: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.343547: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/2:1 next_pid=56 next_prio=120
+     kworker/2:1-56      [002] d..2.     2.343731: sched_switch: prev_comm=kworker/2:1 prev_pid=56 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-112     [001] d..2.     2.344910: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=R ==> next_comm=kworker/1:1 next_pid=43 next_prio=120
+     kworker/1:1-43      [001] d..2.     2.344910: sched_switch: prev_comm=kworker/1:1 prev_pid=43 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=112 next_prio=120
+          <idle>-0       [002] d..2.     2.354819: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+          <idle>-0       [000] d..2.     2.354823: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.354893: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+     kworker/0:1-9       [000] d..2.     2.354923: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.360452: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.360548: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-112     [001] d..2.     2.360558: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=R+ ==> next_comm=kworker/1:0H next_pid=26 next_prio=100
+    kworker/1:0H-26      [001] d..2.     2.360803: sched_switch: prev_comm=kworker/1:0H prev_pid=26 prev_prio=100 prev_state=D ==> next_comm=CFS_test next_pid=112 next_prio=120
+          <idle>-0       [003] d..2.     2.360927: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kthreadd next_pid=2 next_prio=120
+        kthreadd-2       [003] d..2.     2.361568: sched_switch: prev_comm=kthreadd prev_pid=2 prev_prio=120 prev_state=S ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [000] d..2.     2.361610: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/1:1H next_pid=113 next_prio=120
+        CFS_test-112     [001] d..2.     2.361648: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=R+ ==> next_comm=kworker/1:0H next_pid=26 next_prio=100
+    kworker/1:1H-113     [000] d..2.     2.361721: sched_switch: prev_comm=kworker/1:1H prev_pid=113 prev_prio=120 prev_state=D ==> next_comm=swapper/0 next_pid=0 next_prio=120
+    kworker/1:0H-26      [001] d..2.     2.361728: sched_switch: prev_comm=kworker/1:0H prev_pid=26 prev_prio=100 prev_state=I ==> next_comm=kworker/1:1H next_pid=113 next_prio=100
+    kworker/1:1H-113     [001] d..2.     2.361728: sched_switch: prev_comm=kworker/1:1H prev_pid=113 prev_prio=100 prev_state=I ==> next_comm=CFS_test next_pid=112 next_prio=120
+          <idle>-0       [003] d..2.     2.362444: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+          <idle>-0       [002] d..2.     2.364568: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+          <idle>-0       [000] d..2.     2.365675: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-116     [000] d..2.     2.368786: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-114     [003] d..2.     2.368966: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-115     [002] d..2.     2.369485: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-117     [000] d..2.     2.371424: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-118     [003] d..2.     2.371859: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-119     [002] d..2.     2.372068: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-120     [000] d..2.     2.373960: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-115     [002] d..2.     2.375281: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-114     [003] d..2.     2.375429: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-116     [000] d..2.     2.377209: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-112     [001] d..2.     2.378118: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-121     [003] d..2.     2.381521: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-117     [000] d..2.     2.381595: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-123     [001] d..2.     2.381595: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-122     [002] d..2.     2.381696: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-112     [001] d..2.     2.383549: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-120     [000] d..2.     2.387521: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-119     [002] d..2.     2.389131: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-118     [003] d..2.     2.390052: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-124     [000] d..2.     2.390102: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-114     [003] d..2.     2.402384: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-115     [002] d..2.     2.404480: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-125     [003] d..2.     2.405426: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=kcompactd0 next_pid=48 next_prio=120
+      kcompactd0-48      [003] d..2.     2.405570: sched_switch: prev_comm=kcompactd0 prev_pid=48 prev_prio=120 prev_state=S ==> next_comm=ksoftirqd/3 next_pid=36 next_prio=120
+     ksoftirqd/3-36      [003] d..2.     2.405597: sched_switch: prev_comm=ksoftirqd/3 prev_pid=36 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-122     [002] d..2.     2.406988: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-116     [000] d..2.     2.407148: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-119     [002] d..2.     2.408660: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-121     [003] d..2.     2.408723: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-124     [000] d..2.     2.410158: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-122     [002] d..2.     2.411843: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-125     [003] d..2.     2.411934: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-118     [003] d..2.     2.413135: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-117     [000] d..2.     2.413158: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-119     [002] d..2.     2.414068: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-124     [000] d..2.     2.417670: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-121     [003] d..2.     2.418511: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-122     [002] d..2.     2.418882: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-120     [000] d..2.     2.435454: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-125     [003] d..2.     2.436034: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-119     [002] d..2.     2.438010: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-115     [002] d..2.     2.438010: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-122     [002] d..2.     2.446088: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-117     [000] d..2.     2.446224: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-121     [002] d..2.     2.448916: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-114     [002] d..2.     2.449197: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-124     [000] d..2.     2.454357: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-121     [002] d..2.     2.454537: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-117     [000] d..2.     2.457301: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-115     [002] d..2.     2.466084: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-124     [000] d..2.     2.466190: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-116     [000] d..2.     2.466850: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-118     [003] d..2.     2.467336: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-114     [002] d..2.     2.481600: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-120     [000] d..2.     2.481843: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-119     [003] d..2.     2.482739: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-116     [000] d..2.     2.496256: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-122     [002] d..2.     2.496383: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-121     [002] d..2.     2.496758: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-124     [000] d..2.     2.510728: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-118     [003] d..2.     2.510756: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-125     [002] d..2.     2.510819: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-117     [000] d..2.     2.518309: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-115     [002] d..2.     2.518486: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-120     [000] d..2.     2.518625: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-117     [000] d..2.     2.526047: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-121     [002] d..2.     2.527326: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-114     [002] d..2.     2.527637: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-119     [003] d..2.     2.528028: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-122     [002] d..2.     2.528177: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-115     [002] d..2.     2.528260: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-116     [000] d..2.     2.528739: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-123     [001] d..2.     2.528900: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-124     [000] d..2.     2.531661: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-118     [003] d..2.     2.531733: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.542263: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-125     [002] d..2.     2.542490: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-120     [000] d..2.     2.542545: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-115     [002] d..2.     2.556710: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-116     [000] d..2.     2.557544: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-121     [001] d..2.     2.557594: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-118     [003] d..2.     2.558065: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-122     [002] d..2.     2.559179: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-124     [000] d..2.     2.560513: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-114     [002] d..2.     2.572053: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-117     [003] d..2.     2.572882: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-123     [001] d..2.     2.573163: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-120     [000] d..2.     2.573338: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-116     [000] d..2.     2.573805: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-119     [003] d..2.     2.587775: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-118     [003] d..2.     2.588194: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-122     [002] d..2.     2.588395: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-120     [000] d..2.     2.588893: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-125     [002] d..2.     2.589096: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-121     [001] d..2.     2.589172: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-117     [003] d..2.     2.589172: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.603550: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-114     [002] d..2.     2.603738: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-116     [000] d..2.     2.603829: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-115     [002] d..2.     2.604611: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-123     [001] d..2.     2.619212: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-124     [000] d..2.     2.620397: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-125     [002] d..2.     2.620486: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-118     [003] d..2.     2.620619: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.621580: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-121     [001] d..2.     2.635721: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-120     [000] d..2.     2.635869: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-122     [002] d..2.     2.636101: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=115 next_prio=120
+        CFS_test-117     [003] d..2.     2.636184: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-115     [002] d..2.     2.636994: sched_switch: prev_comm=CFS_test prev_pid=115 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=114 next_prio=120
+        CFS_test-114     [002] d..2.     2.636994: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-116     [000] d..2.     2.651744: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-125     [002] d..2.     2.652557: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-118     [003] d..2.     2.653128: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-123     [001] d..2.     2.653142: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-121     [001] d..2.     2.653482: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-124     [000] d..2.     2.667203: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-123     [001] d..2.     2.667886: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-120     [000] d..2.     2.668054: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=S ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+        CFS_test-119     [003] d..2.     2.668075: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-122     [002] d..2.     2.668126: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=114 next_prio=120
+     kworker/0:1-9       [000] d..2.     2.668918: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-116     [000] d..2.     2.668958: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-114     [002] d..2.     2.668958: sched_switch: prev_comm=CFS_test prev_pid=114 prev_prio=120 prev_state=Z ==> next_comm=kworker/u8:1 next_pid=41 next_prio=120
+    kworker/u8:1-41      [002] d..2.     2.669074: sched_switch: prev_comm=kworker/u8:1 prev_pid=41 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-117     [003] d..2.     2.683022: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-121     [001] d..2.     2.683026: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-124     [000] d..2.     2.683053: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-125     [002] d..2.     2.683078: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-112     [001] d..2.     2.683396: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-119     [003] d..2.     2.685313: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-120     [000] d..2.     2.686383: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=116 next_prio=120
+        CFS_test-116     [000] d..2.     2.687312: sched_switch: prev_comm=CFS_test prev_pid=116 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-123     [001] d..2.     2.687312: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [001] d..2.     2.687312: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-122     [002] d..2.     2.687312: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-120     [000] d..2.     2.698597: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-123     [001] d..2.     2.699300: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [001] d..2.     2.699382: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-118     [003] d..2.     2.699571: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.713906: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-124     [000] d..2.     2.714004: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-121     [001] d..2.     2.714080: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [001] d..2.     2.714155: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-125     [002] d..2.     2.714317: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.714402: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-117     [003] d..2.     2.714506: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-118     [003] d..2.     2.714705: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-123     [001] d..2.     2.714796: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-119     [003] d..2.     2.728982: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=117 next_prio=120
+        CFS_test-120     [000] d..2.     2.729056: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+     kworker/0:1-9       [000] d..2.     2.729174: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-122     [002] d..2.     2.729369: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-121     [001] d..2.     2.729703: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-117     [003] d..2.     2.729842: sched_switch: prev_comm=CFS_test prev_pid=117 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [003] d..2.     2.729848: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-123     [001] d..2.     2.745033: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-124     [000] d..2.     2.746032: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-125     [002] d..2.     2.746534: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+        CFS_test-118     [001] d..2.     2.747534: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=R+ ==> next_comm=CFS_test next_pid=121 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.748131: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-120     [000] d..2.     2.760859: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-121     [001] d..2.     2.760978: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=118 next_prio=120
+        CFS_test-122     [002] d..2.     2.761226: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+        CFS_test-119     [003] d..2.     2.761306: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-118     [001] d..2.     2.761336: sched_switch: prev_comm=CFS_test prev_pid=118 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=123 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.761346: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-112     [003] d..2.     2.761500: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.761654: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-124     [000] d..2.     2.761811: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-125     [002] d..2.     2.777197: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+        CFS_test-120     [000] d..2.     2.777243: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.777255: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-121     [003] d..2.     2.778885: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=119 next_prio=120
+        CFS_test-119     [003] d..2.     2.779627: sched_switch: prev_comm=CFS_test prev_pid=119 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [003] d..2.     2.779793: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=121 next_prio=120
+        CFS_test-122     [002] d..2.     2.792091: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-125     [002] d..2.     2.792268: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-122     [002] d..2.     2.792811: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+        CFS_test-124     [000] d..2.     2.792882: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.792923: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-121     [003] d..2.     2.793769: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-120     [000] d..2.     2.793812: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=S ==> next_comm=swapper/0 next_pid=0 next_prio=120
+        CFS_test-122     [002] d..2.     2.808698: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.808760: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-124     [003] d..2.     2.823110: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=121 next_prio=120
+          <idle>-0       [000] d..2.     2.823448: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=120 next_prio=120
+        CFS_test-121     [003] d..2.     2.823924: sched_switch: prev_comm=CFS_test prev_pid=121 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-125     [002] d..2.     2.824291: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+        CFS_test-120     [000] d..2.     2.824355: sched_switch: prev_comm=CFS_test prev_pid=120 prev_prio=120 prev_state=Z ==> next_comm=CFS_test next_pid=112 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.824357: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-112     [000] d..2.     2.824640: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-122     [002] d..2.     2.840016: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=S ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.855844: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.855905: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.870761: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=122 next_prio=120
+        CFS_test-122     [002] d..2.     2.871585: sched_switch: prev_comm=CFS_test prev_pid=122 prev_prio=120 prev_state=Z ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.871585: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [002] d..2.     2.871585: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-123     [001] d..2.     2.871867: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=S ==> next_comm=swapper/1 next_pid=0 next_prio=120
+        CFS_test-124     [003] d..2.     2.885186: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=kworker/3:1 next_pid=50 next_prio=120
+     kworker/3:1-50      [003] d..2.     2.885299: sched_switch: prev_comm=kworker/3:1 prev_pid=50 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=124 next_prio=120
+          <idle>-0       [002] d..2.     2.885420: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.885484: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [001] d..2.     2.900581: sched_switch: prev_comm=swapper/1 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=123 next_prio=120
+        CFS_test-125     [000] d..2.     2.902825: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=R ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+     kworker/0:1-9       [000] d..2.     2.902915: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=125 next_prio=120
+          <idle>-0       [002] d..2.     2.903098: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=ksoftirqd/2 next_pid=30 next_prio=120
+     ksoftirqd/2-30      [002] d..2.     2.903156: sched_switch: prev_comm=ksoftirqd/2 prev_pid=30 prev_prio=120 prev_state=S ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.903188: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-124     [003] d..2.     2.903840: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=kworker/3:1 next_pid=50 next_prio=120
+     kworker/3:1-50      [003] d..2.     2.903912: sched_switch: prev_comm=kworker/3:1 prev_pid=50 prev_prio=120 prev_state=I ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-123     [001] d..2.     2.904021: sched_switch: prev_comm=CFS_test prev_pid=123 prev_prio=120 prev_state=Z ==> next_comm=swapper/1 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.904241: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [002] d..2.     2.904329: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-124     [003] d..2.     2.916072: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=R ==> next_comm=kcompactd0 next_pid=48 next_prio=120
+      kcompactd0-48      [003] d..2.     2.916144: sched_switch: prev_comm=kcompactd0 prev_pid=48 prev_prio=120 prev_state=S ==> next_comm=CFS_test next_pid=124 next_prio=120
+          <idle>-0       [002] d..2.     2.931885: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.931947: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.933494: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/2:1 next_pid=56 next_prio=120
+     kworker/2:1-56      [002] d..2.     2.933567: sched_switch: prev_comm=kworker/2:1 prev_pid=56 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-124     [003] d..2.     2.935000: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=S ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     2.947320: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=124 next_prio=120
+        CFS_test-124     [003] d..2.     2.948132: sched_switch: prev_comm=CFS_test prev_pid=124 prev_prio=120 prev_state=Z ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.948222: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+        CFS_test-112     [002] d..2.     2.948333: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=S ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.963178: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.963310: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.978588: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.978652: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+        CFS_test-125     [000] d..2.     2.979182: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=S ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.993619: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [002] d..2.     2.993735: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [000] d..2.     2.994496: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=125 next_prio=120
+        CFS_test-125     [000] d..2.     2.996625: sched_switch: prev_comm=CFS_test prev_pid=125 prev_prio=120 prev_state=Z ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     2.996920: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=CFS_test next_pid=112 next_prio=120
+          <idle>-0       [003] d..2.     2.999523: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     2.999609: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+        CFS_test-112     [002] d..2.     3.000211: sched_switch: prev_comm=CFS_test prev_pid=112 prev_prio=120 prev_state=Z ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [001] d..2.     3.000927: sched_switch: prev_comm=swapper/1 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=init next_pid=1 next_prio=120
+          <idle>-0       [003] d..2.     3.003773: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.004344: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.005030: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/3:1 next_pid=50 next_prio=120
+     kworker/3:1-50      [003] d..2.     3.005153: sched_switch: prev_comm=kworker/3:1 prev_pid=50 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+            init-1       [001] d..2.     3.005790: sched_switch: prev_comm=init prev_pid=1 prev_prio=120 prev_state=D ==> next_comm=swapper/1 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.009574: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.009646: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [001] d..2.     3.009823: sched_switch: prev_comm=swapper/1 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/1:1 next_pid=43 next_prio=120
+     kworker/1:1-43      [001] d..2.     3.010180: sched_switch: prev_comm=kworker/1:1 prev_pid=43 prev_prio=120 prev_state=I ==> next_comm=swapper/1 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.024890: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.025014: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [000] d..2.     3.026086: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+     kworker/0:1-9       [000] d..2.     3.026242: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.040347: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.040439: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [002] d..2.     3.054708: sched_switch: prev_comm=swapper/2 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/2:1 next_pid=56 next_prio=120
+     kworker/2:1-56      [002] d..2.     3.055082: sched_switch: prev_comm=kworker/2:1 prev_pid=56 prev_prio=120 prev_state=I ==> next_comm=swapper/2 next_pid=0 next_prio=120
+          <idle>-0       [000] d..2.     3.060041: sched_switch: prev_comm=swapper/0 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=kworker/0:1 next_pid=9 next_prio=120
+     kworker/0:1-9       [000] d..2.     3.060159: sched_switch: prev_comm=kworker/0:1 prev_pid=9 prev_prio=120 prev_state=I ==> next_comm=swapper/0 next_pid=0 next_prio=120
+          <idle>-0       [001] d..2.     3.060333: sched_switch: prev_comm=swapper/1 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=init next_pid=1 next_prio=120
+          <idle>-0       [003] d..2.     3.060775: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.060858: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.069928: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.070029: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+          <idle>-0       [003] d..2.     3.083731: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.083855: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+            init-1       [001] d..2.     3.085485: sched_switch: prev_comm=init prev_pid=1 prev_prio=120 prev_state=R+ ==> next_comm=kworker/1:1 next_pid=43 next_prio=120
+          <idle>-0       [003] d..2.     3.085548: sched_switch: prev_comm=swapper/3 prev_pid=0 prev_prio=120 prev_state=R ==> next_comm=rcu_preempt next_pid=17 next_prio=120
+     rcu_preempt-17      [003] d..2.     3.085645: sched_switch: prev_comm=rcu_preempt prev_pid=17 prev_prio=120 prev_state=I ==> next_comm=swapper/3 next_pid=0 next_prio=120
+     kworker/1:1-43      [001] d..2.     3.085704: sched_switch: prev_comm=kworker/1:1 prev_pid=43 prev_prio=120 prev_state=I ==> next_comm=init next_pid=1 next_prio=120
 ~ # [6n
