@@ -49,6 +49,8 @@ echo "=== YAT_CASCHED 简化测试环境启动 ==="
 # 挂载基本文件系统
 mount -t proc none /proc 2>/dev/null || true
 mount -t sysfs none /sys 2>/dev/null || true
+mkdir -p /sys/kernel/debug
+mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
 
 echo "系统信息:"
 echo "内核版本: $(uname -r)"
@@ -71,7 +73,9 @@ echo "----------------------------------------"
 echo "测试完成"
 
 echo ""
-echo "系统将保持运行状态，您可以手动测试其他功能"
+echo "debugfs已挂载到 /sys/kernel/debug"
+echo "您现在可以使用ftrace进行内核跟踪"
+echo "例如: cd /sys/kernel/debug/tracing && echo sched_switch > current_tracer"
 echo "输入 'exit' 或按 Ctrl+C 结束"
 
 # 启动简单的shell

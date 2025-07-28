@@ -87,7 +87,7 @@ void child_task(int task_id, int priority, int work_cycles) {
         usleep(10000);  // 10ms
     }
     
-    printf("[Task %d] 完成所有工作周期\n", task_id);
+    // printf("[Task %d] 完成所有工作周期\n", task_id);
 }
 
 int main() {
@@ -103,7 +103,7 @@ int main() {
     
     // 显示CPU信息
     int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-    printf("系统CPU数量: %d\n", num_cpus);
+    // printf("系统CPU数量: %d\n", num_cpus);
     
     const int num_tasks = 12;
     const int work_cycles = 3;
