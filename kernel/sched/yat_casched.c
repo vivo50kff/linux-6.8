@@ -515,6 +515,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
         goto out;
     }
 
+    
     // --- 根据遍历结果进行决策 ---
     if (idle_count == 0) {
         // 没有任何空闲核心，只能选择 last_cpu (即使它很忙)。
@@ -526,8 +527,9 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
         // 有多个空闲核心，计算 benefit 来选择最佳的一个。
         u64 max_benefit = 0;
         best_cpu = idle_cpus[0]; // 默认选第一个作为保底
+        int cpu_id;
         for (i = 0; i < idle_count; i++) {
-            int cpu_id = idle_cpus[i];
+            cpu_id = idle_cpus[i];
             u64 recency = calculate_recency(p, cpu_id);
             u64 crp_ratio = get_crp_ratio(recency);
             u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
@@ -535,6 +537,19 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
                 max_benefit = benefit;
                 best_cpu = cpu_id;
             }
+        }
+        struct accelerator_entry *entry;
+        entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+        if (entry) {
+            entry->p = p;
+            entry->cpu = cpu_id;
+            entry->benefit = max_benefit;
+            
+            spin_lock(&accelerator_lock);
+            // 使用任务和CPU的地址组合作为唯一的key。
+            // 注意：在实际生产环境中，加入前最好先检查并删除旧条目以避免重复。
+            hash_add(accelerator_table, &entry->node, (unsigned long)p + cpu_id);
+            spin_unlock(&accelerator_lock);
         }
     }
 
