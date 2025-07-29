@@ -243,3 +243,59 @@
 ---
 
 > 优化建议、测试结果、性能对比等也可在此补充。
+
+7/29
+
+通过分析，核心问题在于你自定义的 YAT_CASCHED 调度器在任务创建和上下文切换的路径上引入了大量的内存分配/释放操作，导致了严重的性能瓶颈。
+
+下面是详细的对比和分析：
+
+1. 宏观现象对比
+特征	CFS_qemu.log (正常/快速)	yat_simple_qemu.log (异常/慢速)	分析
+测试完成时间	大约在 37秒 左右，测试任务开始运行并切换。	测试任务直到 125秒 才开始有详细的trace，并且持续到 169秒 之后。	性能差距巨大。YAT_CASCHED 版本耗时是 CFS 版本的数倍。
+ftrace 核心内容	主要记录了 scheduler_tick, task_tick_fair, pick_next_task_fair, schedule 等调度核心函数。这是正常的调度器行为。	主要记录了 copy_process, kmem_cache_alloc, handle_mm_fault, do_wp_page 等进程创建和内存管理相关的函数。	这说明 YAT_CASCHED 的性能瓶颈不在于调度算法本身，而是在于与进程生命周期管理（创建、切换）相关的部分。
+内核警告	在 36.7秒 出现 RCU not on for: amd_e400_idle	在 53.3秒 出现 RCU not on for: amd_e400_idle	两个日志都有这个警告。这是因为 ftrace 尝试追踪 CPU idle 函数，而该函数在 RCU 非活跃区运行。这是一个通用问题，与你的调度器性能问题没有直接关系，可以忽略。
+2. 深入 ftrace 日志分析 (问题的根源)
+CFS (正常情况) 的 ftrace 片段：
+分析:
+
+这是一个非常干净、高效的上下文切换流程。
+schedule 被调用，然后 pick_next_task_fair 选择下一个任务。
+put_prev_entity 和 set_next_entity 只是更新红黑树和一些状态变量。
+整个过程没有涉及复杂的内存分配 (kmalloc/kfree)。
+YAT_CASCHED (慢速情况) 的 ftrace 片段：
+片段一：进程创建 (copy_process) 在 yat_simple_qemu.log 中，从 125.067018 秒开始，yat_simple_test-114 (父进程) 在调用 kernel_clone -> copy_process 时产生了海量的 ftrace 日志。这说明仅仅是创建一个子进程就花费了极长的时间。
+
+片段二：上下文切换 (schedule)
+
+分析:
+
+这是问题的核心。当 YAT_CASCHED 调度器进行任务切换时，put_prev_task_yat_casched 函数被调用。
+在这个函数内部，发生了多次 kfree 和 kmalloc_trace (即 kmalloc) 调用。
+在调度器的核心路径（特别是上下文切换）中进行内存分配/释放是极其危险且低效的。这个路径应该尽可能快，因为它在持有运行队列锁（runqueue lock）的情况下执行，任何延迟都会导致整个CPU的调度停顿，并可能引发更复杂的问题（如死锁、优先级反转等）。
+结论与推测
+根本原因: 你的 YAT_CASCHED 调度器在任务切换（put_prev_task_yat_casched）和/或任务唤醒（wake_up_new_task -> select_task_rq_yat_casched）等热点路径中，执行了本不该有的动态内存分配和释放。
+
+代码推测:
+
+你可能在 struct task_struct 或 struct sched_entity 中添加了一些指针成员，用于存储调度器需要的额外数据。
+在任务被调度出CPU时 (put_prev_task_...)，你 kfree 了这些数据结构。
+在任务被调度入CPU时 (pick_next_task_... 或 set_next_entity_...)，你又 kmalloc 重新分配它们。
+或者，在任务创建/唤醒时，你为它分配了一些辅助数据结构。
+为什么这么慢:
+
+高昂的开销: kmalloc/kfree 相对于简单的指针操作和算术运算，是非常耗时的操作。它们需要查找合适的内存块，更新元数据，处理内存碎片等。
+高频调用: 每次上下文切换都会触发这些耗时的操作，系统中有成千上万次的上下文切换，开销被急剧放大。
+锁竞争: 内存分配器（SLUB/SLAB）自身有锁保护。在调度器这种高频、多核竞争的环境下，对内存分配器的频繁访问会引起严重的锁竞争，进一步拖慢系统。
+缓存污染: 频繁的内存分配/释放会严重污染CPU缓存，导致性能下降。
+修复建议
+避免在热点路径动态分配内存:
+
+调度器的核心数据结构应该在任务创建时（sched_fork）一次性分配好，并作为 task_struct 的一部分。
+如果需要为每个CPU的运行队列（rq）分配额外数据，应该在 sched_init 中完成，或者在CPU上线时完成。
+严禁在 enqueue_task, dequeue_task, pick_next_task, put_prev_task, task_tick 等函数中调用 kmalloc 或 kfree。
+优化数据结构:
+
+将你的调度器所需的数据结构直接嵌入到 struct task_struct 或 struct cfs_rq (如果你是基于CFS修改的) 中，而不是使用指针指向动态分配的内存。这样在任务创建时，内存会随 task_struct 一起被分配好。
+如果数据量很大，可以考虑使用 per-CPU 变量或者预先分配的对象池（mempool）来减少实时分配的开销。
+总之，请仔细检查你的 YAT_CASCHED 实现，特别是 put_prev_task_yat_casched 和其他调度器核心回调函数，移除其中的所有 kmalloc 和 kfree 调用，将所需的数据结构静态化或在任务初始化时一次性分配。
