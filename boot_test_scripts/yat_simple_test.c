@@ -54,7 +54,7 @@ void do_work(int task_id, int work_time_ms) {
 int set_yat_scheduler(pid_t pid, int priority) {
     struct sched_param param;
     // param.sched_priority = priority;
-    param.sched_priority = 0; // YAT_CASCHED 策略不使用该优先级，应设为0
+    param.sched_priority = priority; // YAT_CASCHED 策略不使用该优先级，应设为0
     // memset(&param, 0, sizeof(param));
     // 尝试设置YAT_CASCHED调度策略
     if (sched_setscheduler(pid, SCHED_YAT_CASCHED, &param) == 0) {
@@ -95,7 +95,7 @@ int main() {
     printf("当前内核版本测试，PID: %d\n", getpid());
     
     /* 设置父进程的调度策略为YAT_CASCHED */
-    if (set_yat_scheduler(0, 100) == 0) {  /* 父进程使用优先级10 */
+    if (set_yat_scheduler(0, 101) == 0) {  /* 父进程使用优先级10 */
         printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
     } else {
         printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());

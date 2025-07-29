@@ -108,7 +108,7 @@ static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
     struct history_record *tmp, *pos;
     struct cache_history_table *table_l1, *table_l2, *table_l3;
     int l2_cluster_id = cpu / CPU_NUM_PER_SET; // 简化假设
-    u64 now = ktime_get();
+    u64 now = rq_clock_task(cpu_rq(cpu));
 
     // 先删除L1历史表中同一PID的旧记录
     table_l1 = &L1_caches[cpu];
@@ -405,7 +405,7 @@ bool yat_casched_prio(struct task_struct *p)
 void update_curr_yat_casched(struct rq *rq)
 {
     struct task_struct *curr = rq->curr;
-    u64 now = ktime_get();
+    u64 now = rq_clock_task(rq);
     u64 delta_exec;
 
     if (curr->sched_class != &yat_casched_sched_class)
@@ -662,7 +662,7 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
  */
 void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 {
-    p->se.exec_start = ktime_get();
+    p->se.exec_start = rq_clock_task(rq);
 }
 
 /*
@@ -677,7 +677,7 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
  */
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
-    u64 now = ktime_get();
+    u64 now = rq_clock_task(rq);
     u64 delta_exec = now - p->se.exec_start;
 
     update_curr_yat_casched(rq);

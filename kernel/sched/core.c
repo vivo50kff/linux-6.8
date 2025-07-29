@@ -7760,8 +7760,8 @@ recheck:
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
 	 * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
 	 */
-	if (attr->sched_priority > MAX_RT_PRIO-1)
-		return -EINVAL;
+	// if (attr->sched_priority > MAX_RT_PRIO-1)
+	// 	return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
 	    (rt_policy(policy) && attr->sched_priority == 0) ||
 	    (!rt_policy(policy) && !dl_policy(policy) && !yat_casched_policy(policy) && attr->sched_priority != 0))
@@ -7770,8 +7770,6 @@ recheck:
 	/*
 	 * YAT_CASCHED policy allows priority range 0-19
 	 */
-	if (yat_casched_policy(policy) && (attr->sched_priority < 0 || attr->sched_priority > 19))
-		return -EINVAL;
 
 	if (user) {
 		retval = user_check_sched_setscheduler(p, attr, policy, reset_on_fork);
