@@ -24,8 +24,11 @@
 #include <linux/limits.h>
 #include <linux/random.h>
 #include <linux/rbtree.h> // <-- 关键修复：添加红黑树头文件
+#include <linux/hashtable.h> // <-- 关键优化：添加哈希表头文件
 
 #define CPU_NUM_PER_SET 2  // L2缓存集群的核心数
+#define HISTORY_HASHTABLE_BITS 8 // 为历史记录哈希表定义大小
+
 /* debugfs 导出接口声明，避免隐式声明和 static 冲突 */
 static void yat_debugfs_init(void);
 static void yat_debugfs_cleanup(void);
@@ -34,7 +37,8 @@ static void yat_debugfs_cleanup(void);
 
 // 历史记录: 使用双向链表，按时间戳顺序记录历史
 struct history_record {
-    struct list_head list;
+    struct hlist_node hash_node; // <-- 使用哈希链表节点
+    struct list_head time_list_node; // <-- 保留链表节点用于时间顺序淘汰
     int task_id;
     u64 timestamp;
     u64 exec_time;
@@ -42,7 +46,8 @@ struct history_record {
 
 // 历史表: 每个缓存一个，包含一个链表头和锁
 struct cache_history_table {
-    struct list_head time_list;
+    DECLARE_HASHTABLE(records, HISTORY_HASHTABLE_BITS); // <-- 使用哈希表
+    struct list_head time_list; // <-- 仍然需要链表来维护时间顺序
     spinlock_t lock;
 };
 
@@ -87,115 +92,72 @@ static u64 get_crp_ratio(u64 recency);
 
 /* --- 历史表操作函数 --- */
 
+// --- 优化：将重复逻辑封装为标准的 static inline 辅助函数 ---
+static inline void __update_cache_level(struct cache_history_table *table, int pid, u64 ts, u64 et)
+{
+    struct history_record *rec = NULL;
+    struct history_record *old_rec = NULL;
+
+    spin_lock(&table->lock);
+
+    // 1. O(1) 查找旧记录
+    hash_for_each_possible(table->records, old_rec, hash_node, pid) {
+        if (old_rec->task_id == pid) {
+            // 找到了，从哈希表和链表中删除
+            hash_del(&old_rec->hash_node);
+            list_del(&old_rec->time_list_node);
+            kfree(old_rec);
+            break; // 假设PID唯一，找到即可退出
+        }
+    }
+
+    // 2. 创建新记录
+    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
+    if (!rec) {
+        spin_unlock(&table->lock);
+        return;
+    }
+    rec->task_id = pid;
+    rec->timestamp = ts;
+    rec->exec_time = et;
+
+    // 3. O(1) 插入新记录
+    hash_add(table->records, &rec->hash_node, pid);
+    list_add_tail(&rec->time_list_node, &table->time_list);
+
+    spin_unlock(&table->lock);
+}
+
 // 初始化历史表
 static void init_history_tables(void) {
     int i;
     for_each_possible_cpu(i) {
+        hash_init(L1_caches[i].records); // <-- 初始化哈希表
         INIT_LIST_HEAD(&L1_caches[i].time_list);
         spin_lock_init(&L1_caches[i].lock);
     }
     for (i = 0; i < NR_CPUS / CPU_NUM_PER_SET; i++) {
+        hash_init(L2_caches[i].records); // <-- 初始化哈希表
         INIT_LIST_HEAD(&L2_caches[i].time_list);
         spin_lock_init(&L2_caches[i].lock);
     }
+    hash_init(L3_cache.records); // <-- 初始化哈希表
     INIT_LIST_HEAD(&L3_cache.time_list);
     spin_lock_init(&L3_cache.lock);
 }
 
 // 添加历史记录
 static void add_history_record(int cpu, struct task_struct *p, u64 exec_time) {
-    struct history_record *rec_l1, *rec_l2, *rec_l3;
-    struct history_record *tmp, *pos;
-    struct cache_history_table *table_l1, *table_l2, *table_l3;
-    int l2_cluster_id = cpu / CPU_NUM_PER_SET; // 简化假设
+    int l2_cluster_id = cpu / CPU_NUM_PER_SET;
     u64 now = rq_clock_task(cpu_rq(cpu));
 
-    // 先删除L1历史表中同一PID的旧记录
-    table_l1 = &L1_caches[cpu];
-    spin_lock(&table_l1->lock);
-    list_for_each_entry_safe(pos, tmp, &table_l1->time_list, list) {
-        if (pos->task_id == p->pid) {
-            list_del_init(&pos->list);
-            kfree(pos);
-            break;
-        }
-    }
-    spin_unlock(&table_l1->lock);
-
-    // 先删除L2历史表中同一PID的旧记录
-    table_l2 = &L2_caches[l2_cluster_id];
-    spin_lock(&table_l2->lock);
-    list_for_each_entry_safe(pos, tmp, &table_l2->time_list, list) {
-        if (pos->task_id == p->pid) {
-            list_del_init(&pos->list);
-            kfree(pos);
-            break;
-        }
-    }
-    spin_unlock(&table_l2->lock);
-
-    // 先删除L3历史表中同一PID的旧记录
-    table_l3 = &L3_cache;
-    spin_lock(&table_l3->lock);
-    list_for_each_entry_safe(pos, tmp, &table_l3->time_list, list) {
-        if (pos->task_id == p->pid) {
-            list_del_init(&pos->list);
-            kfree(pos);
-            break;
-        }
-    }
-    spin_unlock(&table_l3->lock);
-    
-    // 为 L1, L2, L3 分别创建记录
-    rec_l1 = kmalloc(sizeof(*rec_l1), GFP_ATOMIC);
-    rec_l2 = kmalloc(sizeof(*rec_l2), GFP_ATOMIC);
-    rec_l3 = kmalloc(sizeof(*rec_l3), GFP_ATOMIC);
-
-    if (!rec_l1 || !rec_l2 || !rec_l3) {
-        kfree(rec_l1);
-        kfree(rec_l2);
-        kfree(rec_l3);
-        return;
-    }
-
-    // 填充记录 (L1)
-    rec_l1->task_id = p->pid;
-    rec_l1->timestamp = now;
-    rec_l1->exec_time = exec_time;
-    INIT_LIST_HEAD(&rec_l1->list); // 初始化链表头
-
-    // 填充记录 (L2)
-    rec_l2->task_id = p->pid;
-    rec_l2->timestamp = now;
-    rec_l2->exec_time = exec_time;
-    INIT_LIST_HEAD(&rec_l2->list); // 初始化链表头
-
-    // 填充记录 (L3)
-    rec_l3->task_id = p->pid;
-    rec_l3->timestamp = now;
-    rec_l3->exec_time = exec_time;
-    INIT_LIST_HEAD(&rec_l3->list); // 初始化链表头
+    // 分别更新 L1, L2, L3
+    __update_cache_level(&L1_caches[cpu], p->pid, now, exec_time);
+    __update_cache_level(&L2_caches[l2_cluster_id], p->pid, now, exec_time);
+    __update_cache_level(&L3_cache, p->pid, now, exec_time);
 
     // 更新任务的 per-cpu 最近执行时间戳
     p->yat_casched.per_cpu_recency[cpu] = now;
-
-    // 添加到 L1 历史表
-    table_l1 = &L1_caches[cpu];
-    spin_lock(&table_l1->lock);
-    list_add_tail(&rec_l1->list, &table_l1->time_list);
-    spin_unlock(&table_l1->lock);
-
-    // 添加到 L2 历史表
-    table_l2 = &L2_caches[l2_cluster_id];
-    spin_lock(&table_l2->lock);
-    list_add_tail(&rec_l2->list, &table_l2->time_list);
-    spin_unlock(&table_l2->lock);
-
-    // 添加到 L3 历史表
-    table_l3 = &L3_cache;
-    spin_lock(&table_l3->lock);
-    list_add_tail(&rec_l3->list, &table_l3->time_list);
-    spin_unlock(&table_l3->lock);
 }
 
 static u64 calculate_and_prune_recency(struct cache_history_table *table, struct task_struct *p)
@@ -207,7 +169,8 @@ static u64 calculate_and_prune_recency(struct cache_history_table *table, struct
 
     spin_lock(&table->lock);
     // 从链表尾部向前安全遍历（因为要删除节点）
-    list_for_each_entry_safe_reverse(rec, tmp, &table->time_list, list) {
+    // --- 修复：使用正确的成员名 time_list_node ---
+    list_for_each_entry_safe_reverse(rec, tmp, &table->time_list, time_list_node) {
         if (rec->task_id == task_id) {
             // 找到了上一次的记录，停止累加，并删除该记录
             found = true;
@@ -939,7 +902,8 @@ static int yat_history_show(struct seq_file *m, void *v)
     seq_printf(m, "Yat_Casched History Table (L1 Caches):\nCPU | PID | Timestamp | ExecTime\n");
     for_each_possible_cpu(i) {
         spin_lock(&L1_caches[i].lock);
-        list_for_each_entry(rec, &L1_caches[i].time_list, list) {
+        // --- 修复：使用正确的成员名 time_list_node ---
+        list_for_each_entry(rec, &L1_caches[i].time_list, time_list_node) {
             seq_printf(m, "%3d | %5d | %10llu | %8llu\n", i, rec->task_id, rec->timestamp, rec->exec_time);
             count++;
         }
@@ -949,7 +913,8 @@ static int yat_history_show(struct seq_file *m, void *v)
     seq_printf(m, "\nYat_Casched History Table (L2 Caches):\nL2$ | PID | Timestamp | ExecTime\n");
     for (i = 0; i < NR_CPUS/CPU_NUM_PER_SET; i++) {
         spin_lock(&L2_caches[i].lock);
-        list_for_each_entry(rec, &L2_caches[i].time_list, list) {
+        // --- 修复：使用正确的成员名 time_list_node ---
+        list_for_each_entry(rec, &L2_caches[i].time_list, time_list_node) {
             seq_printf(m, "%3d | %5d | %10llu | %8llu\n", i, rec->task_id, rec->timestamp, rec->exec_time);
             count++;
         }
@@ -958,7 +923,8 @@ static int yat_history_show(struct seq_file *m, void *v)
 
     seq_printf(m, "\nYat_Casched History Table (L3 Cache):\nL3$ | PID | Timestamp | ExecTime\n");
     spin_lock(&L3_cache.lock);
-    list_for_each_entry(rec, &L3_cache.time_list, list) {
+    // --- 修复：使用正确的成员名 time_list_node ---
+    list_for_each_entry(rec, &L3_cache.time_list, time_list_node) {
         seq_printf(m, "%3d | %5d | %10llu | %8llu\n", 0, rec->task_id, rec->timestamp, rec->exec_time);
         count++;
     }
