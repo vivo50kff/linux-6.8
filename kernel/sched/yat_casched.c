@@ -25,6 +25,7 @@
 #include <linux/random.h>
 #include <linux/rbtree.h> // <-- 关键修复：添加红黑树头文件
 #include <linux/hashtable.h> // <-- 关键优化：添加哈希表头文件
+#include <linux/mempool.h>// <-- 关键修复：添加内存池头文件
 
 #define CPU_NUM_PER_SET 2  // L2缓存集群的核心数
 #define HISTORY_HASHTABLE_BITS 8 // 为历史记录哈希表定义大小
@@ -86,6 +87,17 @@ struct accelerator_entry {
 static DEFINE_HASHTABLE(accelerator_table, ACCELERATOR_BITS);
 static DEFINE_SPINLOCK(accelerator_lock);
 
+/* --- 静态分配优化：定义 Slab 缓存和内存池 --- */
+static struct kmem_cache *history_record_cache;
+static mempool_t *history_record_pool;
+
+static struct kmem_cache *accelerator_entry_cache;
+static mempool_t *accelerator_entry_pool;
+
+// 预分配池的大小，可以根据系统负载调整
+#define HISTORY_POOL_SIZE (NR_CPUS * 64) // 每个CPU预留64个历史记录
+#define ACCELERATOR_POOL_SIZE (NR_CPUS * 16) // 每个CPU预留16个加速条目
+
 
 /* --- 函数前向声明 --- */
 static u64 get_crp_ratio(u64 recency);
@@ -106,13 +118,15 @@ static inline void __update_cache_level(struct cache_history_table *table, int p
             // 找到了，从哈希表和链表中删除
             hash_del(&old_rec->hash_node);
             list_del(&old_rec->time_list_node);
-            kfree(old_rec);
+            /* --- 静态分配优化：归还对象到内存池 --- */
+            mempool_free(old_rec, history_record_pool);
             break; // 假设PID唯一，找到即可退出
         }
     }
 
     // 2. 创建新记录
-    rec = kmalloc(sizeof(*rec), GFP_ATOMIC);
+    /* --- 静态分配优化：从内存池分配对象 --- */
+    rec = mempool_alloc(history_record_pool, GFP_ATOMIC);
     if (!rec) {
         spin_unlock(&table->lock);
         return;
@@ -318,6 +332,8 @@ static u64 get_wcet(struct task_struct *p)
 /* 缓存热度阈值（jiffies）*/
 #define YAT_CACHE_HOT_TIME	(HZ / 100)	/* 10ms */
 #define YAT_MIN_GRANULARITY	(NSEC_PER_SEC / HZ)
+/* --- 关键修复：定义一个时间片，例如 4ms --- */
+#define YAT_TIME_SLICE (4 * NSEC_PER_MSEC)
 
 /*
  * 初始化Yat_Casched运行队列
@@ -329,11 +345,14 @@ void init_yat_casched_rq(struct yat_casched_rq *rq)
 
     // 只允许第一个调用者执行全局初始化
     if (atomic_cmpxchg(&global_init_done, 0, 1) == 0) {
-        // printk(KERN_INFO "======Yat_Casched: Global Init======\n");
         init_history_tables();
-        hash_init(accelerator_table); // 初始化哈希表
-        // 初始化全局锁
-        // spin_lock_init(&global_schedule_lock);
+        hash_init(accelerator_table);
+
+        /* --- 静态分配优化：创建 Slab 缓存和内存池 --- */
+        history_record_cache = kmem_cache_create("yat_history_record", sizeof(struct history_record), 0, SLAB_PANIC, NULL);
+        history_record_pool = mempool_create_slab_pool(HISTORY_POOL_SIZE,history_record_cache);
+        accelerator_entry_cache = kmem_cache_create("yat_accelerator_entry",sizeof(struct accelerator_entry),0, SLAB_PANIC, NULL);
+        accelerator_entry_pool = mempool_create_slab_pool(ACCELERATOR_POOL_SIZE,accelerator_entry_cache);
     }
     // printk(KERN_INFO "======init yat_casched rq for cpu %d======\n", main_rq->cpu);
 
@@ -378,6 +397,8 @@ void update_curr_yat_casched(struct rq *rq)
     if (unlikely((s64)delta_exec < 0))
         delta_exec = 0;
 
+    /* se.sum_exec_runtime 是内核通用的统计字段，我们可以借用它 */
+    curr->se.sum_exec_runtime += delta_exec;
     curr->se.exec_start = now;
     curr->yat_casched.vruntime += delta_exec;
 }
@@ -502,7 +523,8 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
             }
         }
         struct accelerator_entry *entry;
-        entry = kmalloc(sizeof(*entry), GFP_ATOMIC);
+        /* --- 静态分配优化：从内存池分配对象 --- */
+        entry = mempool_alloc(accelerator_entry_pool, GFP_ATOMIC);
         if (entry) {
             entry->p = p;
             entry->cpu = cpu_id;
@@ -626,6 +648,8 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 {
     p->se.exec_start = rq_clock_task(rq);
+    /* --- 关键修复：当任务被调度上CPU时，重置它的时间片计时器 --- */
+    p->se.prev_sum_exec_runtime = p->se.sum_exec_runtime;
 }
 
 /*
@@ -661,12 +685,24 @@ void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 }
 
 /*
- * 任务时钟节拍处理 - 仅做统计，不主动调度
+ * 任务时钟节拍处理 - 实现基于时间片的抢占
  */
 void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
 {
     update_curr_yat_casched(rq);
-    // 不主动触发调度请求
+
+    /*
+     * --- 关键修复：检查时间片 ---
+     * 1. 计算自上次检查以来，任务已经运行了多久。
+     *    我们借用 prev_sum_exec_runtime 来记录上次检查时的时间。
+     * 2. 如果运行时间超过了我们定义的时间片 YAT_TIME_SLICE，
+     *    就调用 resched_curr() 请求重新调度。
+     */
+    if (p->se.sum_exec_runtime - p->se.prev_sum_exec_runtime >= YAT_TIME_SLICE) {
+        resched_curr(rq);
+        /* 更新标记，以便下次重新计算 */
+        p->se.prev_sum_exec_runtime = p->se.sum_exec_runtime;
+    }
 }
 
 /*
@@ -1022,6 +1058,17 @@ static void yat_debugfs_cleanup(void)
     yat_ready_pool_file = NULL;
     yat_accelerator_file = NULL;
     yat_history_file = NULL;
+
+    /* --- 静态分配优化：销毁内存池和 Slab 缓存 --- */
+    if (accelerator_entry_pool)
+        mempool_destroy(accelerator_entry_pool);
+    if (accelerator_entry_cache)
+        kmem_cache_destroy(accelerator_entry_cache);
+    
+    if (history_record_pool)
+        mempool_destroy(history_record_pool);
+    if (history_record_cache)
+        kmem_cache_destroy(history_record_cache);
 }
 
 /*
