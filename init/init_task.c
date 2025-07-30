@@ -93,7 +93,8 @@ struct task_struct init_task __aligned(L1_CACHE_BYTES) = {
 	},
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 	.yat_casched	= {
-		.run_list	= LIST_HEAD_INIT(init_task.yat_casched.run_list),
+		// .run_list	= LIST_HEAD_INIT(init_task.yat_casched.run_list),
+        .rb_node	= {NULL, NULL, NULL}, // 红黑树节点初始化
 		.vruntime	= 0,
 		.slice		= 0,
 		.last_cpu	= -1,

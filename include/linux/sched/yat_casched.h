@@ -4,7 +4,10 @@
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 
 struct sched_yat_casched_entity {
-    struct list_head run_list;      /* 运行队列链表节点 */
+    // struct list_head run_list;      /* 运行队列链表节点 */
+
+    struct rb_node rb_node;
+
     u64 vruntime;                   /* 虚拟运行时间 */
     u64 slice;                      /* 时间片，与CFS保持一致 */
     u64 per_cpu_recency[NR_CPUS]; 
@@ -13,7 +16,10 @@ struct sched_yat_casched_entity {
 };
 
 struct yat_casched_rq {
-    struct list_head tasks;         /* 任务队列 */
+    // struct list_head tasks;         /* 任务队列 */
+
+    struct rb_root_cached tasks; // 红黑树根
+
     unsigned int nr_running;        /* 运行任务数量 */
     struct task_struct *agent;     /* 代理任务 */
     u64 cache_decay_jiffies;       /* 缓存衰减时间 */

@@ -4554,7 +4554,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 	/* Initialize Yat_Casched scheduling entity */
-	INIT_LIST_HEAD(&p->yat_casched.run_list);
+	// INIT_LIST_HEAD(&p->yat_casched.run_list);
+	RB_CLEAR_NODE(&p->yat_casched.rb_node);
 	p->yat_casched.vruntime = 0;
 	p->yat_casched.slice = 0;
 	p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化状态 */
@@ -4801,12 +4802,14 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 
     if (dl_prio(p->prio))
         return -EAGAIN;
-    else if (yat_casched_prio(p)){
+		
+	else if (yat_casched_prio(p)){
 		// printk(KERN_INFO "[yat] sched_fork: pid=%d policy=%d, set sched_class yat_casched\n", p->pid, p->policy);
 		p->sched_class = &yat_casched_sched_class;
-	}    
+	}  
 	else if (rt_prio(p->prio))
         p->sched_class = &rt_sched_class;
+      
     else{
         p->sched_class = &fair_sched_class;
 	}
@@ -7757,8 +7760,8 @@ recheck:
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
 	 * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
 	 */
-	if (attr->sched_priority > MAX_RT_PRIO-1)
-		return -EINVAL;
+	// if (attr->sched_priority > MAX_RT_PRIO-1)
+	// 	return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
 	    (rt_policy(policy) && attr->sched_priority == 0) ||
 	    (!rt_policy(policy) && !dl_policy(policy) && !yat_casched_policy(policy) && attr->sched_priority != 0))
@@ -7767,8 +7770,6 @@ recheck:
 	/*
 	 * YAT_CASCHED policy allows priority range 0-19
 	 */
-	if (yat_casched_policy(policy) && (attr->sched_priority < 0 || attr->sched_priority > 19))
-		return -EINVAL;
 
 	if (user) {
 		retval = user_check_sched_setscheduler(p, attr, policy, reset_on_fork);
@@ -10063,8 +10064,8 @@ void __init sched_init(void)
 		init_rt_rq(&rq->rt);
 		init_dl_rq(&rq->dl);
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-    printk("======init yat_casched rq======\n");
-    init_yat_casched_rq(&rq->yat_casched);
+    	printk("======init yat_casched rq======\n");
+    	init_yat_casched_rq(&rq->yat_casched);
 #endif
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
