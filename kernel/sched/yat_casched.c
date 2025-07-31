@@ -600,6 +600,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     rb_link_node(&p->yat_casched.rb_node, parent, link);
     rb_insert_color_cached(&p->yat_casched.rb_node, &yat_rq->tasks, leftmost);
     yat_rq->nr_running++;
+    rq->nr_running++;
     task_tick_yat_casched(rq,rq->curr, 0);
     // printk(KERN_INFO "[yat] enqueue_task_yat_casched: PID=%d,CPU=%d, prio=%d, wcet=%llu, key(PID)=%llu\n", p->pid,rq->cpu, p->prio, p->yat_casched.wcet, key);
 }
@@ -620,8 +621,11 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     if (!RB_EMPTY_NODE(&p->yat_casched.rb_node)) {
         rb_erase_cached(&p->yat_casched.rb_node, &yat_rq->tasks);
         RB_CLEAR_NODE(&p->yat_casched.rb_node); // 清除节点状态
-        if (yat_rq->nr_running > 0)
+        if (yat_rq->nr_running > 0){
             yat_rq->nr_running--;
+            rq->nr_running--;
+        }
+            
     }
 }
 
