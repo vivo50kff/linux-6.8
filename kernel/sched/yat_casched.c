@@ -527,7 +527,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
         entry = mempool_alloc(accelerator_entry_pool, GFP_ATOMIC);
         if (entry) {
             entry->p = p;
-            entry->cpu = cpu_id;
+            entry->cpu = best_cpu;
             entry->benefit = max_benefit;
             
             spin_lock(&accelerator_lock);
