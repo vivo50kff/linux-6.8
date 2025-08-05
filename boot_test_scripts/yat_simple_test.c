@@ -81,7 +81,7 @@ void child_task(int task_id, int priority, int work_cycles) {
         // printf("[Task %d] 周期 %d，当前CPU: %d\n", task_id, cycle + 1, current_cpu);
         
         // 执行工作
-        do_work(task_id, 50 + (task_id * 10));  // 不同任务有不同的工作时间
+        do_work(task_id, 100 - task_id );  // 不同任务有不同的工作时间
         
         // 短暂休眠，让其他任务有机会运行
         usleep(10000);  // 10ms
@@ -105,8 +105,8 @@ int main() {
     int num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
     // printf("系统CPU数量: %d\n", num_cpus);
     
-    const int num_tasks = 12;
-    const int work_cycles = 3;
+    const int num_tasks = 100;
+    const int work_cycles = 5;
     pid_t children[num_tasks];
     int i=0;
     // 创建多个子进程进行测试
