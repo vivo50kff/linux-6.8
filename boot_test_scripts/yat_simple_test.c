@@ -120,7 +120,7 @@ int main() {
             int priority = 0;  // 所有任务都使用相同的sched_priority
             int job_priority=(i+1)%19+1;  // 内部作业优先级
             
-            // 立即设置调度策略
+            //立即设置调度策略
             // if (set_yat_scheduler(0, job_priority) == 0) {
             //     printf("[Task %d] PID: %d, YAT调度器设置成功，sched_priority: %d\n", i+1, getpid(), job_priority);
             // } else {
