@@ -55,7 +55,7 @@ struct cache_history_table {
 // L1, L2, L3 缓存的历史表
 // L1 cache is per-cpu
 static struct cache_history_table L1_caches[NR_CPUS];
-// 假设每个L2缓存集群有4个核心，这是一个简化
+// 假设每个L2缓存集群有4个核心
 #define L2_CACHE_CLUSTERS (NR_CPUS / CPU_NUM_PER_SET)
 static struct cache_history_table L2_caches[NR_CPUS/CPU_NUM_PER_SET]; // 每个集群一个历史表
 // L3 cache is global
@@ -260,34 +260,6 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
     return ULLONG_MAX;
 }
 
-//计算将任务 p 放到 cpu_id 上对其他任务的 Impact
-// static u64 calculate_impact(struct task_struct *p, int cpu_id) {
-//     // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
-//     u64 total_impact = 0;
-//     struct task_struct *other_p;
-
-//     spin_lock(&yat_pool_lock);
-//     list_for_each_entry(other_p, &yat_ready_job_pool, yat_casched.run_list) {
-//         if (other_p == p) continue;
-
-//         // 原本 other_p 在 cpu_id 上的 benefit
-//         u64 old_recency = calculate_recency(other_p, cpu_id);
-//         u64 old_crp = get_crp_ratio(old_recency);
-//         u64 old_benefit = ((1000 - old_crp) * other_p->yat_casched.wcet) / 1000;
-
-//         // p 占用 cpu_id 后，other_p 的 recency 会增加 p 的执行时间
-//         u64 new_recency = old_recency + p->yat_casched.wcet;
-//         u64 new_crp = get_crp_ratio(new_recency);
-//         u64 new_benefit = ((1000 - new_crp) * other_p->yat_casched.wcet) / 1000;
-        
-//         if (old_benefit > new_benefit) {
-//             total_impact += (old_benefit - new_benefit);
-//         }
-//     }
-//     spin_unlock(&yat_pool_lock);
-
-//     return total_impact;
-// }
 
 
 /*
@@ -420,25 +392,33 @@ void update_curr_yat_casched(struct rq *rq)
 //     return has_idle;
 // }
 
-// 检查任务是否为全局池的队头
-// static bool is_head_task(struct task_struct *p)
-// {
-//     struct task_struct *head;
-//     bool is_head = false;
-//     spin_lock(&yat_pool_lock);
-//     if (!list_empty(&yat_ready_job_pool)) {
-//         head = list_first_entry(&yat_ready_job_pool, struct task_struct, yat_casched.run_list);
-//         if (head == p) {
-//             is_head = true;
-//         }
-//     }
-//     spin_unlock(&yat_pool_lock);
-//     return is_head;
-// }
 
-// 为任务寻找最佳CPU（v3.1 - 完整版）
-// 通过计算当前每个空闲核心对于任务的benefit选择最佳核心，
-// 如果出现两个相同benefit，则采用最小影响法，计算对其他的impact，选择impact最小的核心
+// 计算CPU核心的负载（基于队列中所有任务的WCET之和）
+static u64 calculate_cpu_load(int cpu)
+{
+    struct rq *rq = cpu_rq(cpu);
+    struct yat_casched_rq *yat_rq = &rq->yat_casched;
+    struct rb_node *node;
+    struct sched_yat_casched_entity *se;
+    struct task_struct *task;
+    u64 total_load = 0;
+
+    // 遍历红黑树中的所有任务，累加WCET
+    for (node = rb_first_cached(&yat_rq->tasks); node; node = rb_next(node)) {
+        se = rb_entry(node, struct sched_yat_casched_entity, rb_node);
+        task = container_of(se, struct task_struct, yat_casched);
+        total_load += task->yat_casched.wcet;
+    }
+
+    // 如果当前CPU正在运行YAT_CASCHED任务，也要计入负载
+    if (rq->curr && rq->curr->sched_class == &yat_casched_sched_class) {
+        total_load += rq->curr->yat_casched.wcet;
+    }
+
+    return total_load;
+}
+
+// 为任务寻找最佳CPU（4种情况处理）
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
     // int min_load_cpu = -1;
@@ -565,8 +545,7 @@ out:
 
 /*
  * 将任务加入本地运行队列 (v3.0)
- * 这个函数现在由内核在 select_task_rq 之后调用。
- * 它的职责是把任务真正放入目标CPU的本地队列。
+
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
@@ -639,10 +618,6 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     // add_history_record(rq->cpu, p, delta_exec);
 }
 
-/*
- * pick_next_task - 从本地运行队列取任务
- * 因为我们保证每个核心最多一个任务，所以逻辑很简单
- */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
@@ -663,16 +638,7 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
     return p;
 }
 
-/*
- * 设置下一个任务 (set_next_task)
- *
- * 当调度器决定将任务 `p` 放到CPU上运行时，在实际上下文切换之前，会调用此函数。
- * 它的核心作用是记录任务即将开始执行的时间点。
- * - `p->se.exec_start = rq_clock_task(rq);` 这一行将当前运行队列的时钟 (`rq_clock_task`)
- *   赋值给任务的 `exec_start` 字段。
- * 这个时间戳将在任务被换下CPU时（在 `put_prev_task_yat_casched` 中）被用来计算
- * 该任务本次在CPU上实际运行了多长时间。
- */
+
 void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 {
     p->se.exec_start = rq_clock_task(rq);
@@ -680,16 +646,7 @@ void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
     p->se.prev_sum_exec_runtime = p->se.sum_exec_runtime;
 }
 
-/*
- * 放置前一个任务 (put_prev_task)
- *
- * 当一个任务停止在CPU上运行时（例如被抢占、执行完毕或主动放弃CPU），内核会调用此函数。
- * 它的主要职责是：
- * 1. 调用 update_curr_yat_casched 更新该任务的累计执行时间统计。
- * 2. 计算本次执行的持续时间 (delta_exec)。
- * 3. 调用 add_history_record，将本次执行记录（任务PID，CPU，执行时长）添加到该CPU的历史表中。
- *    这个历史记录是后续进行缓存感知调度决策（计算Recency）的关键数据。
- */
+
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
     u64 now = rq_clock_task(rq);

@@ -1,0 +1,235 @@
+TACLeBench CFS基准测试报告
+==========================
+测试时间: 2025年 07月 30日 星期三 15:02:27 CST
+内核版本: 6.8.0-1031-raspi
+调度器: 系统默认 (CFS)
+测试机器: yat-desktop
+CPU信息: 
+CPU核心数: 4
+总程序数: 54
+
+程序列表:
+  bench/app/lift/lift.host
+  bench/app/powerwindow/powerwindow.host
+  bench/kernel/binarysearch/binarysearch.host
+  bench/kernel/bitcount/bitcount.host
+  bench/kernel/bitonic/bitonic.host
+  bench/kernel/bsort/bsort.host
+  bench/kernel/complex_updates/complex_updates.host
+  bench/kernel/cosf/cosf.host
+  bench/kernel/countnegative/countnegative.host
+  bench/kernel/cubic/cubic.host
+  bench/kernel/deg2rad/deg2rad.host
+  bench/kernel/fac/fac.host
+  bench/kernel/fft/fft.host
+  bench/kernel/filterbank/filterbank.host
+  bench/kernel/fir2dim/fir2dim.host
+  bench/kernel/iir/iir.host
+  bench/kernel/insertsort/insertsort.host
+  bench/kernel/isqrt/isqrt.host
+  bench/kernel/jfdctint/jfdctint.host
+  bench/kernel/lms/lms.host
+  bench/kernel/ludcmp/ludcmp.host
+  bench/kernel/matrix1/matrix1.host
+  bench/kernel/md5/md5.host
+  bench/kernel/minver/minver.host
+  bench/kernel/pm/pm.host
+  bench/kernel/prime/prime.host
+  bench/kernel/quicksort/quicksort.host
+  bench/kernel/rad2deg/rad2deg.host
+  bench/kernel/recursion/recursion.host
+  bench/kernel/sha/sha.host
+  bench/kernel/st/st.host
+  bench/sequential/adpcm_dec/adpcm_dec.host
+  bench/sequential/adpcm_enc/adpcm_enc.host
+  bench/sequential/ammunition/ammunition.host
+  bench/sequential/anagram/anagram.host
+  bench/sequential/audiobeam/audiobeam.host
+  bench/sequential/cjpeg_transupp/cjpeg_transupp.host
+  bench/sequential/cjpeg_wrbmp/cjpeg_wrbmp.host
+  bench/sequential/dijkstra/dijkstra.host
+  bench/sequential/epic/epic.host
+  bench/sequential/fmref/fmref.host
+  bench/sequential/g723_enc/g723_enc.host
+  bench/sequential/gsm_dec/gsm_dec.host
+  bench/sequential/gsm_enc/gsm_enc.host
+  bench/sequential/h264_dec/h264_dec.host
+  bench/sequential/huff_dec/huff_dec.host
+  bench/sequential/huff_enc/huff_enc.host
+  bench/sequential/mpeg2/mpeg2.host
+  bench/sequential/ndes/ndes.host
+  bench/sequential/petrinet/petrinet.host
+  bench/sequential/rijndael_dec/rijndael_dec.host
+  bench/sequential/rijndael_enc/rijndael_enc.host
+  bench/sequential/statemate/statemate.host
+  bench/sequential/susan/susan.host
+
+[1] lift (app)
+  执行时间: 0.005135 秒
+
+[2] powerwindow (app)
+  执行时间: 0.005371 秒
+
+[3] binarysearch (kernel)
+  执行时间: 0.005192 秒
+
+[4] bitcount (kernel)
+  执行时间: 0.005136 秒
+
+[5] bitonic (kernel)
+  执行时间: 0.005155 秒
+
+[6] bsort (kernel)
+  执行时间: 0.005129 秒
+
+[7] complex_updates (kernel)
+  执行时间: 0.005144 秒
+
+[8] cosf (kernel)
+  执行时间: 0.004446 秒
+
+[9] countnegative (kernel)
+  执行时间: 0.005218 秒
+
+[10] cubic (kernel)
+  执行时间: 0.005457 秒
+
+[11] deg2rad (kernel)
+  执行时间: 0.004928 秒
+
+[12] fac (kernel)
+  执行时间: 0.004831 秒
+
+[13] fft (kernel)
+  执行时间: 0.005052 秒
+
+[14] filterbank (kernel)
+  执行时间: 0.005411 秒
+
+[15] fir2dim (kernel)
+  执行时间: 0.004939 秒
+
+[16] iir (kernel)
+  执行时间: 0.005106 秒
+
+[17] insertsort (kernel)
+  执行时间: 0.005187 秒
+
+[18] isqrt (kernel)
+  执行时间: 0.005340 秒
+
+[19] jfdctint (kernel)
+  执行时间: 0.005247 秒
+
+[20] lms (kernel)
+  执行时间: 0.005144 秒
+
+[21] ludcmp (kernel)
+  执行时间: 0.005118 秒
+
+[22] matrix1 (kernel)
+  执行时间: 0.005178 秒
+
+[23] md5 (kernel)
+  执行时间: 0.006279 秒
+
+[24] minver (kernel)
+  执行时间: 0.005275 秒
+
+[25] pm (kernel)
+  执行时间: 0.006164 秒
+
+[26] prime (kernel)
+  执行时间: 0.005041 秒
+
+[27] quicksort (kernel)
+  执行时间: 0.005865 秒
+
+[28] rad2deg (kernel)
+  执行时间: 0.004998 秒
+
+[29] recursion (kernel)
+  执行时间: 0.004914 秒
+
+[30] sha (kernel)
+  执行时间: 0.005416 秒
+
+[31] st (kernel)
+  执行时间: 0.004986 秒
+
+[32] adpcm_dec (sequential)
+  执行时间: 0.005286 秒
+
+[33] adpcm_enc (sequential)
+  执行时间: 0.005311 秒
+
+[34] ammunition (sequential)
+  执行时间: 0.018216 秒
+
+[35] anagram (sequential)
+  执行时间: 0.005088 秒
+
+[36] audiobeam (sequential)
+  执行时间: 0.005364 秒
+
+[37] cjpeg_transupp (sequential)
+  执行时间: 0.005647 秒
+
+[38] cjpeg_wrbmp (sequential)
+  执行时间: 0.005225 秒
+
+[39] dijkstra (sequential)
+  执行时间: 0.010964 秒
+
+[40] epic (sequential)
+  执行时间: 0.005430 秒
+
+[41] fmref (sequential)
+  执行时间: 0.005006 秒
+
+[42] g723_enc (sequential)
+  执行时间: 0.004923 秒
+
+[43] gsm_dec (sequential)
+  执行时间: 0.005167 秒
+
+[44] gsm_enc (sequential)
+  执行时间: 0.005333 秒
+
+[45] h264_dec (sequential)
+  执行时间: 0.005252 秒
+
+[46] huff_dec (sequential)
+  执行时间: 0.005036 秒
+
+[47] huff_enc (sequential)
+  执行时间: 0.005188 秒
+
+[48] mpeg2 (sequential)
+  执行时间: 0.024703 秒
+
+[49] ndes (sequential)
+  执行时间: 0.005045 秒
+
+[50] petrinet (sequential)
+  执行时间: 0.005125 秒
+
+[51] rijndael_dec (sequential)
+  执行时间: 0.005568 秒
+
+[52] rijndael_enc (sequential)
+  执行时间: 0.005615 秒
+
+[53] statemate (sequential)
+  执行时间: 0.005133 秒
+
+[54] susan (sequential)
+  执行时间: 0.008477 秒
+
+=== 测试总结 ===
+测试完成时间: 2025年 07月 30日 星期三 15:02:32 CST
+成功测试: 54 个
+失败测试: 0 个
+总执行时间: 0.324 秒
+平均执行时间: 0.005998 秒
+成功率: 100.0%

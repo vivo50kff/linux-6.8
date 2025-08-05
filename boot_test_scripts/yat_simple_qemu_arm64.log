@@ -1,0 +1,255 @@
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x411fd070]
+[    0.000000] Linux version 6.8.0+ (yat@yat-desktop) (gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #6 SMP PREEMPT_DYNAMIC Mon Aug  4 15:41:51 CST 2025
+[    0.000000] KASLR enabled
+[    0.000000] random: crng init done
+[    0.000000] Machine model: linux,dummy-virt
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000040000000-0x00000000bfffffff]
+[    0.000000]   DMA32    empty
+[    0.000000]   Normal   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000040000000-0x00000000bfffffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000040000000-0x00000000bfffffff]
+[    0.000000] cma: Reserved 6 MiB at 0x00000000bd400000 on node -1
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.1 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: Trusted OS migration not required
+[    0.000000] psci: SMC Calling Convention v1.0
+[    0.000000] percpu: Embedded 53 pages/cpu s90344 r8192 d118552 u217088
+[    0.000000] Detected PIPT I-cache on CPU0
+[    0.000000] CPU features: detected: Spectre-v2
+[    0.000000] CPU features: detected: Spectre-v3a
+[    0.000000] CPU features: detected: Spectre-v4
+[    0.000000] CPU features: detected: Spectre-BHB
+[    0.000000] CPU features: kernel page table isolation forced ON by KASLR
+[    0.000000] CPU features: detected: Kernel page table isolation (KPTI)
+[    0.000000] CPU features: detected: ARM erratum 1742098
+[    0.000000] CPU features: detected: ARM erratum 832075
+[    0.000000] CPU features: detected: ARM errata 1165522, 1319367, or 1530923
+[    0.000000] alternatives: applying boot alternatives
+[    0.000000] Kernel command line: console=ttyAMA0 root=/dev/ram0 rdinit=/init loglevel=7
+[    0.000000] Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 516096
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] software IO TLB: SWIOTLB bounce buffer size adjusted to 2MB
+[    0.000000] software IO TLB: area num 4.
+[    0.000000] software IO TLB: mapped [mem 0x00000000bd000000-0x00000000bd200000] (2MB)
+[    0.000000] Memory: 2015564K/2097152K available (14656K kernel code, 2692K rwdata, 4568K rodata, 6400K init, 1639K bss, 75444K reserved, 6144K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] ftrace: allocating 42183 entries in 165 pages
+[    0.000000] ftrace: allocated 165 pages with 4 groups
+[    0.000000] trace event string verifier disabled
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] Dynamic Preempt: full
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=4.
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Rude variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+[    0.000000] NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+[    0.000000] Root IRQ handler: gic_handle_irq
+[    0.000000] GICv2m: range[mem 0x08020000-0x08020fff], SPI[80:143]
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] arch_timer: cp15 timer(s) running at 62.50MHz (virt).
+[    0.000000] clocksource: arch_sys_counter: mask: 0x1ffffffffffffff max_cycles: 0x1cd42e208c, max_idle_ns: 881590405314 ns
+[    0.000121] sched_clock: 57 bits at 63MHz, resolution 16ns, wraps every 4398046511096ns
+[    0.015860] Console: colour dummy device 80x25
+[    0.018462] Calibrating delay loop (skipped), value calculated using timer frequency.. 125.00 BogoMIPS (lpj=62500)
+[    0.018866] pid_max: default: 32768 minimum: 301
+[    0.023455] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
+[    0.026178] landlock: Up and running.
+[    0.026232] Yama: becoming mindful.
+[    0.030794] AppArmor: AppArmor initialized
+[    0.036390] Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.036560] Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.097643] cacheinfo: Unable to detect cache hierarchy for CPU 0
+[    0.116917] RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.120175] RCU Tasks Rude: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.121014] RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.125038] rcu: Hierarchical SRCU implementation.
+[    0.125633] rcu: 	Max phase no-delay instances is 400.
+[    0.144262] smp: Bringing up secondary CPUs ...
+[    0.151624] Detected PIPT I-cache on CPU1
+[    0.153588] CPU1: Booted secondary processor 0x0000000001 [0x411fd070]
+[    0.163819] Detected PIPT I-cache on CPU2
+[    0.164863] CPU2: Booted secondary processor 0x0000000002 [0x411fd070]
+[    0.170419] Detected PIPT I-cache on CPU3
+[    0.171058] CPU3: Booted secondary processor 0x0000000003 [0x411fd070]
+[    0.172984] smp: Brought up 1 node, 4 CPUs
+[    0.173092] SMP: Total of 4 processors activated.
+[    0.173175] CPU: All CPU(s) started at EL1
+[    0.173694] CPU features: detected: 32-bit EL0 Support
+[    0.173758] CPU features: detected: 32-bit EL1 Support
+[    0.173941] CPU features: detected: CRC32 instructions
+[    0.195625] alternatives: applying system-wide alternatives
+[    0.210089] CPU features: emulated: Privileged Access Never (PAN) using TTBR0_EL1 switching
+[    0.285366] devtmpfs: initialized
+[    0.325096] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.326484] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.337147] pinctrl core: initialized pinctrl subsystem
+[    0.371758] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.399387] DMA: preallocated 256 KiB GFP_KERNEL pool for atomic allocations
+[    0.404908] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.409038] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.409808] audit: initializing netlink subsys (disabled)
+[    0.414439] audit: type=2000 audit(0.325:1): state=initialized audit_enabled=0 res=1
+[    0.425807] thermal_sys: Registered thermal governor 'fair_share'
+[    0.425977] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.426047] thermal_sys: Registered thermal governor 'step_wise'
+[    0.426219] thermal_sys: Registered thermal governor 'user_space'
+[    0.427464] cpuidle: using governor ladder
+[    0.428067] cpuidle: using governor menu
+[    0.429825] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.431975] ASID allocator initialised with 32768 entries
+[    0.436718] Serial: AMBA PL011 UART driver
+[    0.527372] 9000000.pl011: ttyAMA0 at MMIO 0x9000000 (irq = 13, base_baud = 0) is a PL011 rev1
+[    0.530515] printk: legacy console [ttyAMA0] enabled
+[    0.635858] Modules: 2G module region forced by RANDOMIZE_MODULE_REGION_FULL
+[    0.636947] Modules: 0 pages in range for non-PLT usage
+[    0.637049] Modules: 516736 pages in range for PLT usage
+[    0.655826] HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+[    0.657736] HugeTLB: 0 KiB vmemmap can be freed for a 1.00 GiB page
+[    0.658779] HugeTLB: registered 32.0 MiB page size, pre-allocated 0 pages
+[    0.659609] HugeTLB: 0 KiB vmemmap can be freed for a 32.0 MiB page
+[    0.660677] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.661747] HugeTLB: 0 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.662424] HugeTLB: registered 64.0 KiB page size, pre-allocated 0 pages
+[    0.663925] HugeTLB: 0 KiB vmemmap can be freed for a 64.0 KiB page
+[    0.692777] iommu: Default domain type: Translated
+[    0.693384] iommu: DMA domain TLB invalidation policy: strict mode
+[    0.703267] SCSI subsystem initialized
+[    0.707747] usbcore: registered new interface driver usbfs
+[    0.710257] usbcore: registered new interface driver hub
+[    0.711857] usbcore: registered new device driver usb
+[    0.714044] pps_core: LinuxPPS API ver. 1 registered
+[    0.714635] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.716771] PTP clock support registered
+[    0.718209] EDAC MC: Ver: 3.0.0
+[    0.753936] NetLabel: Initializing
+[    0.754763] NetLabel:  domain hash size = 128
+[    0.755225] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    0.758254] NetLabel:  unlabeled traffic allowed by default
+[    0.767190] clocksource: Switched to clocksource arch_sys_counter
+[    0.788760] VFS: Disk quotas dquot_6.6.0
+[    0.790644] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.804718] AppArmor: AppArmor Filesystem Enabled
+[    0.910817] NET: Registered PF_INET protocol family
+[    0.915730] IP idents hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.937270] tcp_listen_portaddr_hash hash table entries: 1024 (order: 2, 16384 bytes, linear)
+[    0.938504] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.939852] TCP established hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.941716] TCP bind hash table entries: 16384 (order: 7, 524288 bytes, linear)
+[    0.943665] TCP: Hash tables configured (established 16384 bind 16384)
+[    0.951431] MPTCP token hash table entries: 2048 (order: 3, 49152 bytes, linear)
+[    0.954117] UDP hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    0.955728] UDP-Lite hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    0.962146] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.964238] NET: Registered PF_XDP protocol family
+[    0.965462] PCI: CLS 0 bytes, default 64
+[    0.970752] kvm [1]: HYP mode not available
+[    0.979127] Trying to unpack rootfs image as initramfs...
+[    0.984526] Initialise system trusted keyrings
+[    0.990262] Key type blacklist registered
+[    0.996802] workingset: timestamp_bits=46 max_order=19 bucket_order=0
+[    0.999385] zbud: loaded
+[    1.017451] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.124287] Freeing initrd memory: 1276K
+[    1.129369] Key type asymmetric registered
+[    1.130245] Asymmetric key parser 'x509' registered
+[    1.131832] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+[    1.136131] io scheduler mq-deadline registered
+[    1.783010] loop: module loaded
+[    1.806510] usbcore: registered new interface driver lan78xx
+[    1.807596] usbcore: registered new interface driver smsc95xx
+[    1.812117] mousedev: PS/2 mouse device common for all mice
+[    1.813019] i2c_dev: i2c /dev entries driver
+[    1.821395] sdhci: Secure Digital Host Controller Interface driver
+[    1.822265] sdhci: Copyright(c) Pierre Ossman
+[    1.822757] sdhci-pltfm: SDHCI platform and OF driver helper
+[    1.828284] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.831254] hid: raw HID events driver (C) Jiri Kosina
+[    1.846804] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 counters available
+[    1.851205] watchdog: Delayed init of the lockup detector failed: -19
+[    1.852325] watchdog: Hard watchdog permanently disabled
+[    1.857812] NET: Registered PF_INET6 protocol family
+[    1.918800] Segment Routing with IPv6
+[    1.920694] In-situ OAM (IOAM) with IPv6
+[    1.924305] NET: Registered PF_PACKET protocol family
+[    1.928460] Key type dns_resolver registered
+[    1.971754] [yat] late debugfs init called
+[    1.972494] [yat] debugfs init called
+[    1.973344] [yat] debugfs dir created successfully: 000000005bdfab5d
+[    1.974724] [yat] debugfs accelerator_table file created: 00000000342fd27c
+[    1.976468] [yat] debugfs history_table file created: 000000000c83fca0
+[    1.983112] registered taskstats version 1
+[    1.988595] Loading compiled-in X.509 certificates
+[    2.087510] Key type .fscrypt registered
+[    2.088272] Key type fscrypt-provisioning registered
+[    2.122819] Key type encrypted registered
+[    2.123777] AppArmor: AppArmor sha256 policy hashing enabled
+[    2.126611] ima: No TPM chip found, activating TPM-bypass!
+[    2.128617] ima: Allocated hash algorithm: sha1
+[    2.134817] ima: No architecture policies found
+[    2.137812] evm: Initialising EVM extended attributes:
+[    2.138663] evm: security.selinux
+[    2.140326] evm: security.SMACK64
+[    2.140793] evm: security.SMACK64EXEC
+[    2.141514] evm: security.SMACK64TRANSMUTE
+[    2.142208] evm: security.SMACK64MMAP
+[    2.143340] evm: security.apparmor
+[    2.143752] evm: security.ima
+[    2.144458] evm: security.capability
+[    2.144934] evm: HMAC attrs: 0x1
+[    2.164013] clk: Disabling unused clocks
+[    2.318116] Freeing unused kernel memory: 6400K
+[    2.427840] Checked W+X mappings: passed, no W+X pages found
+[    2.429101] Run /init as init process
+=== YAT_CASCHED 简化测试环境启动 ===
+系统信息:
+内核版本: 6.8.0+
+CPU信息: 
+CPU核心数: 4
+
+debugfs已挂载到 /sys/kernel/debug
+您现在可以使用ftrace进行内核跟踪
+例如: cd /sys/kernel/debug/tracing && echo sched_switch > current_tracer
+输入 'exit' 或按 Ctrl+C 结束
+
+
+BusyBox v1.36.1 (Ubuntu 1:1.36.1-6ubuntu3.1) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+/bin/sh: can't access tty; job control turned off
+~ # [6n/bin/yat_simple_test
+=== YAT_CASCHED 调度器简化测试 ===
+当前内核版本测试，PID: 92
+父进程PID=92 成功设置为YAT_CASCHED调度策略
+
+开始创建测试任务...
+创建子任务 1，PID: 93
+创建子任务 2，PID: 94
+创建子任务 3，PID: 95
+创建子任务 4，PID: 96
+创建子任务 5，PID: 97
+创建子任务 6，PID: 98
+创建子任务 7，PID: 99
+创建子任务 8，PID: 100
+创建子任务 9，PID: 101
+创建子任务 10，PID: 102
+创建子任务 11，PID: 103
+创建子任务 12，PID: 104
+
+等待所有任务完成...
+
+=== 所有测试任务完成 ===
+~ # [6n/bin/bash "/home/yat/Desktop/linux-6.8/yat_test/build_yat_simple_test.sh"
+/bin/sh: /bin/bash: not found
+~ # [6n

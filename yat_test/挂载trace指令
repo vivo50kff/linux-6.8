@@ -1,0 +1,45 @@
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo 0 >  /sys/kernel/debug/tracing/options/latency-format
+echo funcgraph-abstime > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-proc > /sys/kernel/debug/tracing/trace_options
+ 
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+ 
+
+/bin/yat_simple_test
+ 
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace 
+
+
+#CFS测试
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo 0 >  /sys/kernel/debug/tracing/options/latency-format
+echo funcgraph-abstime > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-proc > /sys/kernel/debug/tracing/trace_options
+ 
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+ 
+
+/bin/CFS_test
+ 
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace 
+
+
+
+#任务过滤后
+echo 'sched_yat_casched:*' > /sys/kernel/debug/tracing/set_ftrace_filter
+echo function > /sys/kernel/debug/tracing/current_tracer
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+/bin/yat_simple_test
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace
+
+#CFS任务过滤后
+echo 'sched_cfs_test:*' > /sys/kernel/debug/tracing/set_ftrace_filter
+echo function > /sys/kernel/debug/tracing/current_tracer    
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+/bin/CFS_test
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace
