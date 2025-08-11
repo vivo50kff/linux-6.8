@@ -6,9 +6,14 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <sys/syscall.h>
+
+// FIXME: 请根据内核中的定义，修改为正确的系统调用号
+#define __NR_sched_set_wcet 462
+#define WCET_NS (10 * 1000 * 1000) // 默认WCET: 10ms
 
 #define NUM_TASKS 12
-#define NUM_COPIES 3  // 每个任务启动3个副本
+#define NUM_COPIES  50 //每个任务启动500个副本
 #define SCHED_YAT_CASCHED 8  // YAT_CASCHED调度策略
 #define PERIOD_MS 400
 #define RUN_TIMES 10
@@ -45,10 +50,25 @@ long timeval_diff_ms(struct timeval *start, struct timeval *end) {
 }
 
 int main() {
+    int wcet[NUM_TASKS] = {
+        529, // binarysearch
+        444,  // bitcount
+        478, // bitonic
+        467, // bsort
+        426, // complex_updates
+        446,  // cosf
+        438, // countnegative
+        580, // cubic
+        419,  // deg2rad
+        489,  // fac
+        464,  // fft
+        620  // filterbank
+    };
     printf("=== TacleBench Kernel 12任务集周期测试（每任务%d副本）===\n", NUM_COPIES);
     struct timeval total_start, total_end;
-    // 父进程设置YAT_CASCHED调度策略
-    // if (set_yat_scheduler(0, 0) == 0) {
+    long total_exec_time = 0;
+    // // 父进程设置YAT_CASCHED调度策略
+    // if (set_yat_scheduler(0, 101) == 0) {
     //     printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
     // } else {
     //     printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());
@@ -61,10 +81,17 @@ int main() {
         struct timeval round_start, round_end;
         gettimeofday(&round_start, NULL);
         int idx = 0;
+        int f_pid = getpid(); // 父进程PID
         for (int i = 0; i < NUM_TASKS; i++) {
+   
             for (int j = 0; j < NUM_COPIES; j++) {
-                gettimeofday(&start_times[idx], NULL);
                 pid_t pid = fork();
+                // // 为子进程设置WCET
+                if (syscall(__NR_sched_set_wcet, f_pid, wcet[i]) != 0) {
+                    fprintf(stderr, "为PID %d 设置WCET失败: %s\n", f_pid, strerror(errno));
+
+                }
+                gettimeofday(&start_times[idx], NULL);
                 if (pid == 0) {
                     char path[64];
                     snprintf(path, sizeof(path), "/bin/%s", task_names[i]);
@@ -83,6 +110,8 @@ int main() {
         for (int k = 0; k < NUM_TASKS * NUM_COPIES; k++) {
             int status;
             waitpid(children[k], &status, 0);
+            gettimeofday(&end_times[k], NULL);
+            total_exec_time += timeval_diff_ms(&start_times[k], &end_times[k]);
         }
         gettimeofday(&round_end, NULL);
         long round_elapsed = timeval_diff_ms(&round_start, &round_end);
@@ -90,8 +119,10 @@ int main() {
     }
     gettimeofday(&total_end, NULL);
     long total_elapsed = timeval_diff_ms(&total_start, &total_end);
+    
     printf("=== 所有TacleBench Kernel任务完成 ===\n");
-    printf("总运行时间: %ld ms\n", total_elapsed);
+    // printf("总运行时间: %ld ms\n", total_elapsed);
+    // printf("任务实际执行总时间: %ld ms\n", total_exec_time);
     printf("平均每轮用时: %.1f ms\n", (double)total_elapsed/RUN_TIMES);
     printf("总进程数: %d 个\n", NUM_TASKS * NUM_COPIES * RUN_TIMES);
     return 0;

@@ -1,4 +1,6 @@
 #!/bin/bash
+# chmod +x /bin/yat_simple_test
+# chmod +x /bin/CFS_test
 
 # TACLEBENCH kernel任务集自动化测试环境构建脚本
 set -e
@@ -58,7 +60,6 @@ fi
 
 # 8. 生成cpio镜像
 cd "$INITRAMFS_DIR"
-find . | cpio -o -H newc | gzip > "$YAT_TEST_DIR/yat_simple_test.cpio.gz"
-
+find . | cpio -o -H newc | gzip | sudo tee "$YAT_TEST_DIR/yat_simple_test.cpio.gz" > /dev/null
 echo "=== 构建完成 ==="
 echo "测试镜像: $YAT_TEST_DIR/yat_simple_test.cpio.gz"

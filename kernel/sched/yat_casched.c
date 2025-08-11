@@ -229,7 +229,32 @@ static u64 calculate_and_prune_recency(struct cache_history_table *table, struct
 //     }
 //     return max_ts;
 // }
-
+/*
+ * Sigmoid 函数实现
+ * 输入: wcet (纳秒)
+ * 输出: sigmoid变换后的值 (0-1000范围)
+ * 
+ * 使用近似公式: sigmoid(x) ≈ x / (1 + |x|) 的变种
+ * 为了避免浮点运算，我们使用整数运算
+ */
+static u64 sigmoid_transform_wcet(u64 wcet)
+{
+    u64 normalized_wcet;
+    u64 sigmoid_val;
+    
+    // 将 wcet 标准化到合理范围 (例如: 除以 1000000 将纳秒转为毫秒)
+    normalized_wcet = wcet / 1000000; // 转换为毫秒
+    
+    // 使用整数版本的 sigmoid: f(x) = 1000 * x / (10 + x)
+    // 这样可以将结果映射到 0-1000 范围内
+    if (normalized_wcet == 0) {
+        sigmoid_val = 0;
+    } else {
+        sigmoid_val = (1000 * normalized_wcet) / (10 + normalized_wcet);
+    }
+    
+    return sigmoid_val;
+}
 
 /* --- Recency 和 Impact 计算 (v2.1) --- */
 
@@ -297,7 +322,7 @@ static u64 get_wcet(struct task_struct *p)
     // 返回 1~10ms 的随机值（单位：纳秒）
     // u32 rand_ms = (get_random_u32() % 100000)+1; // 1~100000
     // return (u64)rand_ms  ;   // 1~100ms
-    u64 test_wcet=50-p->pid+113; // 测试用，假设WCET为10ms
+    u64 test_wcet=50+p->pid+113; // 测试用，假设WCET为10ms
     return test_wcet;
 }
 
@@ -305,7 +330,7 @@ static u64 get_wcet(struct task_struct *p)
 #define YAT_CACHE_HOT_TIME	(HZ / 100)	/* 10ms */
 #define YAT_MIN_GRANULARITY	(NSEC_PER_SEC / HZ)
 /* --- 关键修复：定义一个时间片，例如 4ms --- */
-#define YAT_TIME_SLICE (4 * NSEC_PER_MSEC)
+#define YAT_TIME_SLICE (40 * NSEC_PER_MSEC)
 
 /*
  * 初始化Yat_Casched运行队列
@@ -440,12 +465,12 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 
     int best_cpu = -1;
     int idle_count = 0;
-    int *idle_cpus = NULL;
+    int idle_cpus[4] ;
     int i;
     int last_cpu;
     bool last_cpu_is_idle = false;
 
-    if(p->yat_casched.last_cpu < 0) {
+    if(p->yat_casched.last_cpu < 0 ||  !cpu_online(p->yat_casched.last_cpu)) {
         // 这是一个新任务或其上次运行的CPU已下线。
         goto find_min_load_cpu;
     }
@@ -453,11 +478,6 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
         last_cpu = p->yat_casched.last_cpu;
     }
 
-    idle_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
-    if (!idle_cpus) {
-        // 内存分配失败，回退到上次的CPU
-        return cpu_online(last_cpu) ? last_cpu : task_cpu;
-    }
 
     // --- 优化后的单次遍历逻辑 ---
     for_each_online_cpu(i) {
@@ -490,6 +510,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
     } else if (idle_count == 1) {
         // 只有一个空闲核心可供选择。
         best_cpu = idle_cpus[0];
+        goto out;
     } else {
         // 有多个空闲核心，计算 benefit 来选择最佳的一个。
         u64 max_benefit = 0;
@@ -505,6 +526,7 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
                 best_cpu = cpu_id;
             }
         }
+        goto out;
     }
         // struct accelerator_entry *entry;
         // /* --- 静态分配优化：从内存池分配对象 --- */
@@ -538,7 +560,6 @@ find_min_load_cpu:
 
 
 out:
-    kfree(idle_cpus);
     // 确保返回一个有效的在线CPU
     return cpu_online(best_cpu) ? best_cpu : cpumask_any(cpu_online_mask);
 }
@@ -551,29 +572,48 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
     struct rb_node **link = &yat_rq->tasks.rb_root.rb_node, *parent = NULL;
-    struct sched_yat_casched_entity *se_entry; // <-- 使用正确的类型
+    struct sched_yat_casched_entity *se_entry;
     struct task_struct *task_entry;
     u64 key;
+    u64 sigmoid_wcet;
     int leftmost = 1;
 
     /* --- 关键修复 #1：在入队前，彻底清除节点的旧状态 --- */
     RB_CLEAR_NODE(&p->yat_casched.rb_node);
 
-    /* --- 关键修复 #2：确保 wcet 被初始化 (仍然保留以备后用) --- */
+    /* --- 关键修复 #2：确保 wcet 被初始化 --- */
     if (unlikely(p->yat_casched.wcet == 0)) {
         p->yat_casched.wcet = get_wcet(p);
     }
 
-    key = (u64)p->pid;
+    /* --- 新的 key 计算逻辑：sigmoid(WCET) + 优先级 --- */
+    sigmoid_wcet = sigmoid_transform_wcet(p->yat_casched.wcet);
+    
+    /*
+     * 组合 key 值：
+     * 1. sigmoid_wcet: 经过 sigmoid 变换的 WCET (0-1000)
+     * 2. p->prio: 任务优先级 (数值越小优先级越高)
+     * 
+     * 为了确保优先级占主导地位，我们将优先级左移足够的位数
+     * 使其权重远大于 sigmoid_wcet
+     */
+    key = ((u64)p->prio << 16) + sigmoid_wcet;
+    
+    /* 
+     * 可选的调试信息 - 可以在测试时启用
+     * printk(KERN_DEBUG "[yat] PID=%d, WCET=%llu, sigmoid_wcet=%llu, prio=%d, key=%llu\n",
+     *        p->pid, p->yat_casched.wcet, sigmoid_wcet, p->prio, key);
+     */
 
     while (*link) {
         parent = *link;
-        // --- 关键修复：第一步，找到 sched_yat_casched_entity ---
         se_entry = rb_entry(parent, struct sched_yat_casched_entity, rb_node);
-        // --- 关键修复：第二步，从 entity 找到 task_struct ---
         task_entry = container_of(se_entry, struct task_struct, yat_casched);
 
-        u64 entry_key = (u64)task_entry->pid; // 使用正确的 task_entry
+        /* 计算对比任务的 key 值 */
+        u64 entry_sigmoid_wcet = sigmoid_transform_wcet(task_entry->yat_casched.wcet);
+        u64 entry_key = ((u64)task_entry->prio << 16) + entry_sigmoid_wcet;
+        
         if (key < entry_key) {
             link = &parent->rb_left;
         } else {
@@ -587,10 +627,11 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     yat_rq->nr_running++;
     rq->nr_running++;
     yat_rq->load += p->yat_casched.wcet;
-    task_tick_yat_casched(rq,rq->curr, 0);
-    // printk(KERN_INFO "[yat] enqueue_task_yat_casched: PID=%d,CPU=%d, prio=%d, wcet=%llu, key(PID)=%llu\n", p->pid,rq->cpu, p->prio, p->yat_casched.wcet, key);
+    task_tick_yat_casched(rq, rq->curr, 0);
+    
+    // printk(KERN_INFO "[yat] enqueue_task_yat_casched: PID=%d, CPU=%d, prio=%d, wcet=%llu, sigmoid_wcet=%llu, key=%llu\n", 
+    //        p->pid, rq->cpu, p->prio, p->yat_casched.wcet, sigmoid_wcet, key);
 }
-
 
 /*
  * 将任务从本地运行队列移除 (v3.0)
@@ -1092,3 +1133,4 @@ DEFINE_SCHED_CLASS(yat_casched) = {
     .prio_changed       = prio_changed_yat_casched,
     .update_curr        = update_curr_yat_casched,
 };
+

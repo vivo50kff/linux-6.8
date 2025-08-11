@@ -4779,6 +4779,13 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 	uclamp_fork(p);
 
+#ifdef CONFIG_SCHED_YAT_CASCHED
+    /* YAT_CASCHED: Inherit WCET from parent */
+    if (p->sched_class == &yat_casched_sched_class) {
+        p->yat_casched.wcet = current->yat_casched.wcet;
+    }
+#endif
+
 	/*
 	 * Revert to default priority/policy on fork if requested.
 	 */
@@ -12139,3 +12146,64 @@ void sched_mm_cid_fork(struct task_struct *t)
 	t->mm_cid_active = 1;
 }
 #endif
+
+#include <linux/syscalls.h>
+#include <linux/uaccess.h>
+
+/**
+ * sched_set_wcet - set the worst-case execution time for a task
+ * @pid: the pid of the task.
+ * @wcet: the worst-case execution time in nanoseconds.
+ *
+ * This function sets the wcet for a task with a given pid.
+ * The task must be scheduled under the YAT_CASCHED policy.
+ */
+// 确保这个函数不是 static 的，这样它就可以被内核的其他部分链接。
+// 我们将 SYSCALL_DEFINE 宏的实现移到这里。
+long do_sched_set_wcet(pid_t pid, u64 wcet)
+{
+    struct task_struct *p;
+    int retval;
+
+    // rcu_read_lock();
+    p = find_task_by_vpid(pid);
+    if (!p) {
+        rcu_read_unlock();
+		printk(KERN_ERR "sched_set_wcet: No such process with pid %d\n", pid);
+        return -ESRCH;
+    }
+
+    get_task_struct(p);
+    // rcu_read_unlock();
+
+    // task_lock(p);
+
+    // 检查任务是否属于 YAT_CASCHED 调度类
+    // if (p->sched_class != &yat_casched_sched_class) {
+	// 	printk(KERN_ERR "sched_class err", pid);
+    //     retval = -EINVAL;
+    //     goto out_unlock;
+    // }
+
+    p->yat_casched.wcet = wcet;
+    retval = 0;
+
+out_unlock:
+    // task_unlock(p);
+    put_task_struct(p);
+    return retval;
+}
+
+
+/**
+ * sys_sched_set_wcet - set the worst-case execution time for a task
+ * @pid: the pid of the task.
+ * @wcet: the worst-case execution time in nanoseconds.
+ *
+ * This function sets the wcet for a task with a given pid.
+ * The task must be scheduled under the YAT_CASCHED policy.
+ */
+SYSCALL_DEFINE2(sched_set_wcet, pid_t, pid, u64, wcet)
+{
+    return do_sched_set_wcet(pid, wcet);
+}
