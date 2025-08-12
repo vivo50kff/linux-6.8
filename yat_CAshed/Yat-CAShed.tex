@@ -1,0 +1,132 @@
+\documentclass[a4paper]{article}
+\makeatletter
+
+\makeatother
+\usepackage{graphicx}
+\usepackage[UTF8]{ctex}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyvrb}           % 支持中文代码块
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}  % 去除超链接边框
+% \usepackage[super,square,comma,numbers]{natbib}
+% \usepackage[backend=bibtex,style=numeric,sorting=none]{biblatex}
+% \addbibresource{ref_all.bib} % references.bib 为你的 bib 文件名
+% hyperref设置 - 去除边框
+\hypersetup{
+    colorlinks=false,      % 不显示彩色链接
+    pdfborder={0 0 0},     % 去除PDF链接边框
+    bookmarks=true,        % 启用书签
+    unicode=true          % 支持Unicode
+}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{indentfirst}        % 首段缩进
+\setlength{\parindent}{2em}     % 缩进2字符
+\usepackage{zhnumber}           % 中文编号
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[ruled]{algorithm2e}       % 支持algorithm[H]参数
+\usepackage{tcolorbox}          % 彩色文本框
+\tcbuselibrary{most}            % 加载所有tcolorbox库
+\usepackage{tikz}               % 支持绘图
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric,fit}  % tikz图形库
+\usepackage{listings}           % 代码高亮
+\usepackage{inconsolata}        % 现代等宽字体
+% listings配置 - 更美观的代码字体
+\lstset{
+    basicstyle=\footnotesize\fontfamily{zi4}\selectfont,  % 使用Inconsolata字体
+    showstringspaces=false,
+    inputencoding=ascii,
+    breaklines=true,
+    frame=none,
+    numbers=none,
+    numberstyle=\tiny\color{gray},
+    commentstyle=\color{gray},
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    tabsize=4,
+    columns=flexible
+}
+
+% algorithm2e配置
+\SetAlgorithmName{算法}{算法}{算法列表}
+\SetKwComment{Comment}{$\triangleright$\ }{}
+\SetAlgoLined
+
+% 定义简单的代码环境支持中文
+\newenvironment{code}
+{\verbatim}
+{\endverbatim}
+
+%\newcommand{\college}{中山大学计算机学院}
+\newcommand{\projname}{Proj 59 -- Linux 内核低时延调度器}
+\newcommand{\reporttitle}{Yat-CASched：面向多核实时系统的轻量化缓存感知型调度方法及实现}
+\newcommand{\teamno}{T202510558995172}
+\newcommand{\teamname}{从容应队}
+\newcommand{\projid}{Proj59}
+\newcommand{\members}{林炜东、马福泉、刘昊}
+\newcommand{\schooladvisor}{赵帅}
+\newcommand{\projadvisor}{谢秀奇（华为）、成坚（华为）}
+\newcommand{\school}{中山大学}
+
+\pagestyle{fancy} % 使用 fancyhdr 风格
+\fancyhf{}      % 清空默认的页眉页脚
+
+% 设置页眉
+\fancyhead[L]{\kaishu \projid}      % 左侧页眉显示项目编号
+\fancyhead[C]{\kaishu \reporttitle}    % 中间页眉显示报告标题
+\fancyhead[R]{\kaishu \teamname} % 右侧页眉显示队伍名称
+
+% 设置页脚
+\fancyfoot[C]{第 \thepage 页，共 \pageref{LastPage} 页} % 中间页脚显示页码
+
+% 去除页眉页脚与正文之间的分隔线
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% 设置文档背景颜色
+\definecolor{mybgcolor}{RGB}{0, 0, 0} % 定义背景颜色
+\definecolor{NavyBlue}{RGB}{0,0,128} % 添加颜色定义
+\definecolor{lightblue}{RGB}{173,216,230} % 定义浅蓝色
+\definecolor{lightgreen}{RGB}{144,238,144} % 定义浅绿色
+% \pagecolor{mybgcolor} % 设置背景颜色
+
+\begin{document}
+% \def\@cite#1#2{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
+% 封面
+\input{chapters/cover.tex}
+
+% 摘要
+\input{chapters/abstract.tex}
+
+\newpage
+
+% 目录
+{
+\hypersetup{linkcolor=black}  % 目录链接使用黑色
+\tableofcontents
+}
+
+% 添加一级目录链接
+\input{chapters/navigation.tex}
+
+\newpage
+
+% 各章节内容
+\input{chapters/chapter1-intro.tex}
+\input{chapters/chapter2-realtime.tex}
+\input{chapters/chapter3-design.tex}
+\input{chapters/chapter4-theory.tex}
+\input{chapters/chapter5-kernel.tex}
+\input{chapters/chapter6-test.tex}
+\input{chapters/chapter7-difficulties-and-future.tex}
+\input{chapters/chapter8-conclusion.tex}
+\input{chapters/references.tex}
+
+\end{document}

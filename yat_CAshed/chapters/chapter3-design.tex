@@ -1,0 +1,269 @@
+% 第三章：整体框架
+
+\section{调度器整体结构设计} \label{sec:design}
+
+本章从设计的角度阐述 Yat-CASched 项目的整体情况，包括其核心设计理念、设计演化历程，以及最终的系统架构设计。
+
+\subsection{设计理念}
+
+Yat-CASched 的核心设计目标是成为一款面向多核实时系统的、基于 Linux 内核的轻量化缓存感知型调度器。我们的设计不寻求完全替代或颠覆现有的 Linux 调度框架，而是作为一种新的调度类（\texttt{sched\_class}）无缝集成到内核中，为特定类型的实时应用提供优化。
+
+其关键设计理念包括：
+\begin{itemize}
+    \item \textbf{缓存亲和性优先}: 将 CPU 缓存的利用率作为调度决策的核心指标之一。通过减少跨核任务迁移，维持任务数据的缓存热度，从而降低平均执行延迟和抖动。我们引入了创新的 \texttt{per\_cpu\_recency} 机制来精确追踪任务在每个 CPU 上的缓存状态。
+    
+    \item \textbf{轻量化实现}: 避免引入过重的全局锁和复杂的跨核同步机制，确保调度器本身带来的开销足够低。通过使用红黑树替代链表、内存池优化等技术手段，将调度决策的时间复杂度控制在 O(log n) 级别。
+    
+    \item \textbf{模块化与可扩展性}: 调度器以独立的内核模块形式存在，通过 \texttt{CONFIG\_SCHED\_CLASS\_YAT\_CASCHED} 配置项控制编译。其设计便于未来扩展，预留了支持异构架构感知、NUMA 优化等高级特性的接口。
+    
+    \item \textbf{兼容性与稳定性}: 基于 Linux 6.8 内核版本进行开发，严格遵循内核编码规范。通过完善的错误处理和降级机制，确保在极端情况下系统仍能稳定运行。
+\end{itemize}
+
+\subsection{设计演化历程}
+
+Yat-CASched 的设计经历了多次迭代优化，每次迭代都基于实际测试反馈和性能分析结果：
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=2cm,
+        phase/.style={rectangle, draw, fill=lightblue!30, text width=10em, text centered, rounded corners, minimum height=3em},
+        arrow/.style={->, >=stealth, thick}
+    ]
+    
+    % 设计阶段
+    \node[phase] (v1) {第一版：理论模型\\基于 DAG 的复杂算法};
+    \node[phase, right=of v1] (v2) {第二版：简化实现\\链表 + 全局锁};
+    \node[phase, right=of v2] (v3) {第三版：性能优化\\红黑树 + 细粒度锁};
+    \node[phase, below=of v2] (final) {最终版：生产就绪\\内存池 + 自适应阈值};
+    
+    % 连接
+    \draw[arrow] (v1) -- (v2);
+    \draw[arrow] (v2) -- (v3);
+    \draw[arrow] (v3) -- (final);
+    
+    % 标注
+    \node[above=0.3cm of v1, text=gray] {初赛阶段};
+    \node[above=0.3cm of v3, text=gray] {决赛阶段};
+    
+    \end{tikzpicture}
+    \caption{Yat-CASched 设计演化历程}
+    \label{fig:evolution}
+\end{figure}
+
+关键的设计决策包括：
+\begin{itemize}
+    \item 从复杂的 DAG 建模简化为基于 recency 的轻量级方案
+    \item 采用红黑树替代链表，将任务查找复杂度从 O(n) 降至 O(log n)
+    \item 引入 Slab 缓存和内存池，减少频繁的内存分配开销
+    \item 实现自适应的缓存衰减机制，动态调整 \texttt{cache\_decay\_jiffies}
+\end{itemize}
+
+\subsection{项目架构介绍}
+
+Yat-CASched 的整体架构可以划分为三个核心部分：内核态的调度器实现、用户态的测试框架，以及性能分析工具链。
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.5cm and 2cm,
+        block/.style={rectangle, draw, fill=blue!20, text width=8em, text centered, rounded corners, minimum height=3em},
+        kernel_block/.style={rectangle, draw, fill=lightgreen!30, text width=9em, text centered, rounded corners, minimum height=3em},
+        group/.style={rectangle, draw, text=black, dashed, inner sep=0.5cm, rounded corners},
+        line/.style={draw, -{Latex[length=2mm]}}
+    ]
+    
+    % 内核空间
+    \node[kernel_block] (sched_class) {调度类接口\\(\texttt{sched\_class})};
+    \node[kernel_block, below=of sched_class] (core_algo) {核心调度算法};
+    \node[kernel_block, left=of core_algo] (data_struct) {数据结构\\(RB-tree, Cache)};
+    \node[kernel_block, right=of core_algo] (cache_model) {缓存建模\\(Recency)};
+    \node[kernel_block, below=of core_algo] (debug) {调试接口\\(debugfs)};
+    
+    \node[group, label={[yshift=0.2cm]above:\textbf{内核空间}}, fit=(sched_class) (data_struct) (core_algo) (cache_model) (debug)] (kernel_group) {};
+    
+    % 用户空间
+    \node[block, below=of kernel_group, node distance=4cm] (test_suite) {测试套件\\(TACLEBench)};
+    \node[block, left=of test_suite] (monitor) {性能监控\\(perf, ftrace)};
+    \node[block, right=of test_suite] (analysis) {数据分析\\(Python脚本)};
+    
+    \node[group, label={[yshift=0.2cm]above:\textbf{用户空间}}, fit=(test_suite) (monitor) (analysis)] (user_group) {};
+    
+    % 硬件层
+    \node[block, below=of user_group, node distance=3cm] (cpu) {多核 CPU};
+    \node[block, left=of cpu] (l2cache) {L2 缓存};
+    \node[block, right=of cpu] (l3cache) {L3 缓存};
+    
+    \node[group, label={[yshift=0.2cm]above:\textbf{硬件层}}, fit=(cpu) (l2cache) (l3cache)] (hw_group) {};
+    
+    % 连接
+    \path [line] (sched_class) -- (core_algo);
+    \path [line] (data_struct) -- (core_algo);
+    \path [line] (cache_model) -- (core_algo);
+    \path [line] (core_algo) -- (debug);
+    
+    \path [line, <->, thick] (kernel_group) -- node[midway, right] {系统调用} (user_group);
+    \path [line, <->, thick] (user_group) -- node[midway, right] {硬件事件} (hw_group);
+    
+    \end{tikzpicture}
+    \caption{Yat-CASched 三层架构设计}
+    \label{fig:three-tier-architecture}
+\end{figure}
+
+\subsection{核心组件详解}
+
+\subsubsection{调度实体管理}
+
+Yat-CASched 引入了增强的调度实体结构 \texttt{sched\_yat\_casched\_entity}：
+
+\begin{lstlisting}[language=C, caption=调度实体结构定义]
+struct sched_yat_casched_entity {
+    struct rb_node run_node;        // 红黑树节点
+    u64 vruntime;                   // 虚拟运行时间
+    u64 slice;                      // 时间片
+    u64 per_cpu_recency[NR_CPUS];  // 每CPU缓存新鲜度
+    u64 wcet;                       // 最坏执行时间
+    int last_cpu;                   // 上次运行的CPU
+};
+\end{lstlisting}
+
+其中 \texttt{per\_cpu\_recency} 是我们的核心创新，它精确记录了任务在每个 CPU 上的缓存状态，为调度决策提供了细粒度的信息。
+
+\subsubsection{运行队列组织}
+
+每个 CPU 都有独立的运行队列 \texttt{yat\_casched\_rq}：
+
+\begin{lstlisting}[language=C, caption=运行队列结构]
+struct yat_casched_rq {
+    struct rb_root_cached tasks;    // 红黑树根节点
+    unsigned int nr_running;        // 运行任务数
+    struct task_struct *curr;       // 当前任务
+    u64 cache_decay_jiffies;       // 缓存衰减参数
+    spinlock_t lock;               // 队列锁
+};
+\end{lstlisting}
+
+使用红黑树组织任务带来了以下优势：
+\begin{itemize}
+    \item 任务插入、删除、查找的时间复杂度均为 O(log n)
+    \item 自动维护任务按 vruntime 排序，便于实现公平性
+    \item 内存局部性好，减少缓存失效
+\end{itemize}
+
+\subsubsection{缓存历史追踪}
+
+为了准确建模缓存行为，我们实现了多级缓存历史表：
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        cache/.style={rectangle, draw, fill=orange!20, text width=6em, text centered, minimum height=2em},
+        history/.style={rectangle, draw, fill=yellow!20, text width=8em, text centered, minimum height=2em},
+        arrow/.style={->, >=stealth}
+    ]
+    
+    % L1 缓存
+    \node[cache] (l1_0) {L1 Cache\\CPU 0};
+    \node[cache, right=of l1_0] (l1_1) {L1 Cache\\CPU 1};
+    \node[cache, right=of l1_1] (l1_2) {L1 Cache\\CPU 2};
+    \node[cache, right=of l1_2] (l1_3) {L1 Cache\\CPU 3};
+    
+    % L2 缓存
+    \node[cache, below=of l1_0, xshift=2cm] (l2_0) {L2 Cache\\CPU 0-1};
+    \node[cache, below=of l1_2, xshift=2cm] (l2_1) {L2 Cache\\CPU 2-3};
+    
+    % L3 缓存
+    \node[cache, below=of l2_0, xshift=2cm] (l3) {L3 Cache\\All CPUs};
+    
+    % 历史表
+    \node[history, right=of l3, xshift=2cm] (history) {缓存历史表\\Hash Table};
+    
+    % 连接
+    \draw[arrow] (l1_0) -- (l2_0);
+    \draw[arrow] (l1_1) -- (l2_0);
+    \draw[arrow] (l1_2) -- (l2_1);
+    \draw[arrow] (l1_3) -- (l2_1);
+    \draw[arrow] (l2_0) -- (l3);
+    \draw[arrow] (l2_1) -- (l3);
+    \draw[arrow, dashed] (l3) -- (history);
+    
+    \end{tikzpicture}
+    \caption{多级缓存拓扑与历史追踪}
+    \label{fig:cache-topology}
+\end{figure}
+
+\subsection{调度决策流程}
+
+Yat-CASched 的核心调度决策流程如下：
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        start/.style={ellipse, draw, fill=green!20, text width=6em, text centered},
+        process/.style={rectangle, draw, fill=blue!20, text width=8em, text centered, rounded corners},
+        decision/.style={diamond, draw, fill=yellow!20, text width=6em, text centered, aspect=1.5},
+        end/.style={ellipse, draw, fill=red!20, text width=6em, text centered},
+        arrow/.style={->, >=stealth, thick}
+    ]
+    
+    % 流程节点
+    \node[start] (start) {任务唤醒};
+    \node[process, below=of start] (recency) {计算 Recency};
+    \node[decision, below=of recency] (threshold) {Recency > 阈值?};
+    \node[process, below left=of threshold] (stay) {保持原 CPU};
+    \node[process, below right=of threshold] (migrate) {选择新 CPU};
+    \node[process, below=of threshold, yshift=-2cm] (enqueue) {入队操作};
+    \node[end, below=of enqueue] (end) {调度完成};
+    
+    % 连接
+    \draw[arrow] (start) -- (recency);
+    \draw[arrow] (recency) -- (threshold);
+    \draw[arrow] (threshold) -- node[left] {是} (stay);
+    \draw[arrow] (threshold) -- node[right] {否} (migrate);
+    \draw[arrow] (stay) |- (enqueue);
+    \draw[arrow] (migrate) |- (enqueue);
+    \draw[arrow] (enqueue) -- (end);
+    
+    \end{tikzpicture}
+    \caption{Yat-CASched 调度决策流程}
+    \label{fig:scheduling-flow}
+\end{figure}
+
+\subsection{性能优化技术}
+
+\subsubsection{内存管理优化}
+
+我们采用了多种内存优化技术：
+
+\begin{itemize}
+    \item \textbf{Slab 缓存}: 为频繁分配的小对象创建专用缓存池
+    \item \textbf{Per-CPU 变量}: 减少跨核访问和缓存一致性开销
+    \item \textbf{RCU 机制}: 在读多写少的场景下避免锁竞争
+\end{itemize}
+
+\subsubsection{锁优化策略}
+
+\begin{itemize}
+    \item \textbf{细粒度锁}: 每个运行队列独立加锁，减少锁竞争
+    \item \textbf{自旋锁}: 在关键路径上使用自旋锁而非互斥锁
+    \item \textbf{无锁算法}: 在可能的情况下采用原子操作替代锁
+\end{itemize}
+
+\subsection{调试与监控接口}
+
+为了便于开发和性能分析，我们实现了完善的调试接口：
+
+\begin{lstlisting}[language=bash, caption=debugfs 接口示例]
+# 查看调度器统计信息
+cat /sys/kernel/debug/yat_casched/stats
+
+# 查看缓存命中率
+cat /sys/kernel/debug/yat_casched/cache_stats
+
+# 动态调整参数
+echo 100 > /sys/kernel/debug/yat_casched/cache_decay_ms
+\end{lstlisting}
+
+\subsection{小结}
+
+Yat-CASched 的整体设计充分考虑了实际部署的需求，在保证性能的同时确保了系统的稳定性和可维护性。通过模块化的架构设计和渐进式的优化策略，我们成功地将理论算法转化为可在生产环境中部署的实用系统。下一章将详细介绍支撑这一设计的理论基础。

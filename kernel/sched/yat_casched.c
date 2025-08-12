@@ -38,7 +38,20 @@ struct cpu_history_table {
     struct list_head time_list;
     spinlock_t lock;
 };
+<<<<<<< Updated upstream
 static struct cpu_history_table history_tables[NR_CPUS];
+=======
+
+// L1, L2, L3 缓存的历史表
+// L1 cache is per-cpu
+static struct cache_history_table L1_caches[NR_CPUS];
+// 假设每个L2缓存集群有4个核心
+#define L2_CACHE_CLUSTERS (NR_CPUS / CPU_NUM_PER_SET)
+static struct cache_history_table L2_caches[NR_CPUS/CPU_NUM_PER_SET]; // 每个集群一个历史表
+// L3 cache is global
+static struct cache_history_table L3_cache;
+
+>>>>>>> Stashed changes
 
 // 就绪作业池: 存放所有待调度的Yat_Casched任务
 static LIST_HEAD(yat_ready_job_pool);
@@ -170,6 +183,7 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
     return l1_sum + l2_sum + l3_sum;
 }
 
+<<<<<<< Updated upstream
 // 计算将任务 p 放到 cpu_id 上对其他任务的 Impact
 static u64 calculate_impact(struct task_struct *p, int cpu_id) {
     // 简化实现：计算该决策对所有其他待调度任务的 benefit 损失之和
@@ -198,6 +212,8 @@ static u64 calculate_impact(struct task_struct *p, int cpu_id) {
 
     return total_impact;
 }
+=======
+>>>>>>> Stashed changes
 
 
 /*
@@ -297,6 +313,7 @@ void update_curr_yat_casched(struct rq *rq)
     curr->yat_casched.vruntime += delta_exec;
 }
 
+<<<<<<< Updated upstream
 /*
  * select_task_rq - 职责减弱
  * 在我们的新模型中，决策由全局调度器做出。
@@ -310,6 +327,236 @@ int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 
 /*
  * 将任务加入全局任务池，并保持有序
+=======
+/* --- 新模型辅助函数 (v3.0) --- */
+
+// 检查是否有空闲核心
+// static bool has_idle_cores(void)
+// {
+//     int i;
+//     bool has_idle = false;
+//     // 这个函数必须在 global_schedule_lock 保护下调用
+//     for_each_online_cpu(i) {
+//         if (idle_cores[i]) {
+//             has_idle = true;
+//             break;
+//         }
+//     }
+//     return has_idle;
+// }
+
+
+// 计算CPU核心的负载（基于队列中所有任务的WCET之和）
+static u64 calculate_cpu_load(int cpu)
+{
+    struct rq *rq = cpu_rq(cpu);
+    struct yat_casched_rq *yat_rq = &rq->yat_casched;
+    struct rb_node *node;
+    struct sched_yat_casched_entity *se;
+    struct task_struct *task;
+    u64 total_load = 0;
+
+    // 遍历红黑树中的所有任务，累加WCET
+    for (node = rb_first_cached(&yat_rq->tasks); node; node = rb_next(node)) {
+        se = rb_entry(node, struct sched_yat_casched_entity, rb_node);
+        task = container_of(se, struct task_struct, yat_casched);
+        total_load += task->yat_casched.wcet;
+    }
+
+    // 如果当前CPU正在运行YAT_CASCHED任务，也要计入负载
+    if (rq->curr && rq->curr->sched_class == &yat_casched_sched_class) {
+        total_load += rq->curr->yat_casched.wcet;
+    }
+
+    return total_load;
+}
+
+// 为任务寻找最佳CPU（4种情况处理）
+int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
+{
+    int best_cpu = -1;
+    int last_cpu = p->yat_casched.last_cpu;
+    int idle_cpus[4];  // 静态分配，最多4核
+    int idle_count = 0;
+    u64 min_load = ULLONG_MAX;
+    int i;
+    bool last_cpu_is_idle = false;
+
+    // printk(KERN_INFO "[yat] select_task_rq: PID=%d, last_cpu=%d\n", p->pid, last_cpu);
+
+    // 情况1：第一次运行的任务（last_cpu < 0 或无效）
+    if (last_cpu < 0 || !cpu_online(last_cpu)) {
+        // printk(KERN_INFO "[yat] Case 1: First-time task, finding min load CPU\n");
+        for_each_online_cpu(i) {
+            u64 load = calculate_cpu_load(i);
+            if (load < min_load) {
+                min_load = load;
+                best_cpu = i;
+            }
+        }
+        return best_cpu;
+    }
+
+    // 统计空闲核心（队列为空且当前不在运行YAT任务）
+    for_each_online_cpu(i) {
+        struct rq *rq = cpu_rq(i);
+        bool is_idle = (rq->yat_casched.nr_running == 0) && 
+                       (rq->curr->sched_class != &yat_casched_sched_class || is_idle_task(rq->curr));
+        if (is_idle) {
+            if (i == last_cpu) {
+                last_cpu_is_idle = true;
+            } else {
+                if (idle_count < 4) {  // 防止数组越界
+                    idle_cpus[idle_count++] = i;
+                }
+            }
+        }
+    }
+
+    // 情况2：上次运行的CPU此时空闲
+    if (last_cpu_is_idle) {
+        // printk(KERN_INFO "[yat] Case 2: Last CPU %d is idle, reusing\n", last_cpu);
+        return last_cpu;
+    }
+
+    // 情况3：只有一个空闲核心
+    if (idle_count == 1) {
+        // printk(KERN_INFO "[yat] Case 3: Only one idle CPU %d\n", idle_cpus[0]);
+        return idle_cpus[0];
+    }
+
+    // 情况4：有多个空闲核心，选择负载最小的
+    if (idle_count > 1) {
+        // printk(KERN_INFO "[yat] Case 4: Multiple idle CPUs, finding min load\n");
+        for (i = 0; i < idle_count; i++) {
+            u64 load = calculate_cpu_load(idle_cpus[i]);
+            if (load < min_load) {
+                min_load = load;
+                best_cpu = idle_cpus[i];
+            }
+        }
+        return best_cpu;
+    }
+
+    // 所有核心都忙，选择负载最小的核心
+    // printk(KERN_INFO "[yat] All CPUs busy, finding min load CPU\n");
+    min_load = ULLONG_MAX;
+    for_each_online_cpu(i) {
+        u64 load = calculate_cpu_load(i);
+        if (load < min_load) {
+            min_load = load;
+            best_cpu = i;
+        }
+    }
+
+    return best_cpu;
+    // printk(KERN_INFO "[yat] select_task_rq_yat_casched: PID=%d, task_cpu=%d\n", p->pid, task_cpu);
+//     int best_cpu = -1;
+//     int idle_count = 0;
+//     int *idle_cpus = NULL;
+//     int i;
+//     int last_cpu;
+//     bool last_cpu_is_idle = false;
+
+//     if(p->yat_casched.last_cpu < 0) {
+//         // 如果没有上次运行的CPU，直接返回当前任务所在的CPU
+//         // 这是一个新任务或其上次运行的CPU已下线。
+//         // 为其寻找一个负载最低的CPU进行初始放置。
+//         int min_load_cpu = -1;
+//         unsigned long min_load = ULONG_MAX;
+
+//         for_each_online_cpu(i) {
+//             struct rq *rq = cpu_rq(i);
+//             // 使用YAT_CASCHED调度类自己的运行队列任务数作为负载衡量标准
+//             if (rq->yat_casched.nr_running < min_load) {
+//                 min_load = rq->yat_casched.nr_running;
+//                 min_load_cpu = i;
+//             }
+//         }
+
+//         return min_load_cpu;
+//     }
+//     else{
+//         last_cpu = p->yat_casched.last_cpu;
+//     }
+
+//     idle_cpus = kmalloc_array(NR_CPUS, sizeof(int), GFP_ATOMIC);
+//     if (!idle_cpus) {
+//         // 内存分配失败，回退到上次的CPU
+//         return cpu_online(last_cpu) ? last_cpu : task_cpu;
+//     }
+
+//     // --- 优化后的单次遍历逻辑 ---
+//     for_each_online_cpu(i) {
+//         if (cpu_rq(i)->yat_casched.nr_running == 0) {
+//             // 发现一个空闲核心
+//             if (i == last_cpu) {
+//                 // 这个空闲核心就是上次运行的核心，这是最佳情况。
+//                 // 直接选定并跳出循环。
+//                 best_cpu = last_cpu;
+//                 last_cpu_is_idle = true;
+//                 break;
+//             }
+//             // 记录其他空闲核心
+//             idle_cpus[idle_count] = i;
+//             idle_count++;
+//         }
+//     }
+
+//     if (last_cpu_is_idle) {
+//         // 已经在循环中找到了最佳选择 (last_cpu)，直接跳转到末尾。
+//         goto out;
+//     }
+
+    
+//     // --- 根据遍历结果进行决策 ---
+//     if (idle_count == 0) {
+//         // 没有任何空闲核心，只能选择 last_cpu (即使它很忙)。
+//         best_cpu = last_cpu;
+//     } else if (idle_count == 1) {
+//         // 只有一个空闲核心可供选择。
+//         best_cpu = idle_cpus[0];
+//     } else {
+//         // 有多个空闲核心，计算 benefit 来选择最佳的一个。
+//         u64 max_benefit = 0;
+//         best_cpu = idle_cpus[0]; // 默认选第一个作为保底
+//         int cpu_id;
+//         for (i = 0; i < idle_count; i++) {
+//             cpu_id = idle_cpus[i];
+//             u64 recency = calculate_recency(p, cpu_id);
+//             u64 crp_ratio = get_crp_ratio(recency);
+//             u64 benefit = ((1000 - crp_ratio) * p->yat_casched.wcet) / 1000;
+//             if (benefit > max_benefit) {
+//                 max_benefit = benefit;
+//                 best_cpu = cpu_id;
+//             }
+//         }
+//         // struct accelerator_entry *entry;
+//         // /* --- 静态分配优化：从内存池分配对象 --- */
+//         // entry = mempool_alloc(accelerator_entry_pool, GFP_ATOMIC);
+//         // if (entry) {
+//         //     entry->p = p;
+//         //     entry->cpu = cpu_id;
+//         //     entry->benefit = max_benefit;
+            
+//         //     spin_lock(&accelerator_lock);
+//         //     // 使用任务和CPU的地址组合作为唯一的key。
+//         //     // 注意：在实际生产环境中，加入前最好先检查并删除旧条目以避免重复。
+//         //     hash_add(accelerator_table, &entry->node, (unsigned long)p + cpu_id);
+//         //     spin_unlock(&accelerator_lock);
+//         // }
+//     }
+
+// out:
+//     kfree(idle_cpus);
+//     // 确保返回一个有效的在线CPU
+//     return cpu_online(best_cpu) ? best_cpu : cpumask_any(cpu_online_mask);
+}
+
+/*
+ * 将任务加入本地运行队列 (v3.0)
+
+>>>>>>> Stashed changes
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
@@ -349,10 +596,6 @@ void dequeue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
     spin_unlock(&yat_pool_lock);
 }
 
-/*
- * pick_next_task - 从本地运行队列取任务
- * 因为我们保证每个核心最多一个任务，所以逻辑很简单
- */
 struct task_struct *pick_next_task_yat_casched(struct rq *rq)
 {
     struct yat_casched_rq *yat_rq = &rq->yat_casched;
@@ -364,17 +607,25 @@ struct task_struct *pick_next_task_yat_casched(struct rq *rq)
     return list_first_entry_or_null(&yat_rq->tasks, struct task_struct, yat_casched.run_list);
 }
 
+<<<<<<< Updated upstream
 /*
  * 设置下一个任务
  */
+=======
+
+>>>>>>> Stashed changes
 void set_next_task_yat_casched(struct rq *rq, struct task_struct *p, bool first)
 {
     p->se.exec_start = rq_clock_task(rq);
 }
 
+<<<<<<< Updated upstream
 /*
  * 放置前一个任务
  */
+=======
+
+>>>>>>> Stashed changes
 void put_prev_task_yat_casched(struct rq *rq, struct task_struct *p)
 {
     u64 delta_exec;

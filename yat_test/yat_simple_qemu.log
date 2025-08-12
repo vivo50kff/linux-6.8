@@ -1,0 +1,3297 @@
+c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+
+
+iPXE (https://ipxe.org) 00:03.0 CA00 PCI2.10 PnP PMM+3EFCAE00+3EF0AE00 CA00
+Press Ctrl-B to configure iPXE (PCI 00:03.0)...                                                                               
+
+
+Booting from ROM..[    0.000000] Linux version 6.8.0+ (lwd@lwd-VMware-Virtual-Platform) (gcc (Ubuntu 11.4.0-9ubuntu1) 11.4.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #51 SMP PREEMPT_DYNAMIC Mon Aug  4 14:33:43 CST 2025
+[    0.000000] Command line: console=ttyS0,115200 noapic
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Hygon HygonGenuine
+[    0.000000]   Centaur CentaurHauls
+[    0.000000]   zhaoxin   Shanghai  
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000003ffdffff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003ffe0000-0x000000003fffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] APIC: Static calls initialized
+[    0.000000] SMBIOS 3.0.0 present.
+[    0.000000] DMI: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    0.000000] tsc: Fast TSC calibration failed
+[    0.000000] AGP: No AGP bridge found
+[    0.000000] last_pfn = 0x3ffe0 max_arch_pfn = 0x400000000
+[    0.000000] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+[    0.000000] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.000000] found SMP MP-table at [mem 0x000f5480-0x000f548f]
+[    0.000000] RAMDISK: [mem 0x3fa8f000-0x3ffd7fff]
+[    0.000000] ACPI: Early table checksum verification disabled
+[    0.000000] ACPI: RSDP 0x00000000000F52A0 000014 (v00 BOCHS )
+[    0.000000] ACPI: RSDT 0x000000003FFE1D57 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: FACP 0x000000003FFE1BF3 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: DSDT 0x000000003FFE0040 001BB3 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: FACS 0x000000003FFE0000 000040
+[    0.000000] ACPI: APIC 0x000000003FFE1C67 000090 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: HPET 0x000000003FFE1CF7 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: WAET 0x000000003FFE1D2F 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.000000] ACPI: Reserving FACP table memory at [mem 0x3ffe1bf3-0x3ffe1c66]
+[    0.000000] ACPI: Reserving DSDT table memory at [mem 0x3ffe0040-0x3ffe1bf2]
+[    0.000000] ACPI: Reserving FACS table memory at [mem 0x3ffe0000-0x3ffe003f]
+[    0.000000] ACPI: Reserving APIC table memory at [mem 0x3ffe1c67-0x3ffe1cf6]
+[    0.000000] ACPI: Reserving HPET table memory at [mem 0x3ffe1cf7-0x3ffe1d2e]
+[    0.000000] ACPI: Reserving WAET table memory at [mem 0x3ffe1d2f-0x3ffe1d56]
+[    0.000000] No NUMA configuration found
+[    0.000000] Faking a node at [mem 0x0000000000000000-0x000000003ffdffff]
+[    0.000000] NODE_DATA(0) allocated [mem 0x3fa64000-0x3fa8efff]
+[    0.000000] Zone ranges:
+[    0.000000]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.000000]   DMA32    [mem 0x0000000001000000-0x000000003ffdffff]
+[    0.000000]   Normal   empty
+[    0.000000]   Device   empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.000000]   node   0: [mem 0x0000000000100000-0x000000003ffdffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000000001000-0x000000003ffdffff]
+[    0.000000] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA: 97 pages in unavailable ranges
+[    0.000000] On node 0, zone DMA32: 32 pages in unavailable ranges
+[    0.000000] ACPI: PM-Timer IO Port: 0x608
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.000000] ACPI: Skipping IOAPIC probe due to 'noapic' option.
+[    0.000000] ACPI: Using ACPI for processor (LAPIC) configuration information
+[    0.000000] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.000000] Intel MultiProcessor Specification v1.4
+[    0.000000] MPTABLE: OEM ID: BOCHSCPU
+[    0.000000] MPTABLE: Product ID: 0.1         
+[    0.000000] MPTABLE: APIC at: 0xFEE00000
+[    0.000000] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.000000] Processors: 4
+[    0.000000] smpboot: Allowing 4 CPUs, 0 hotplug CPUs
+[    0.000000] [mem 0x40000000-0xfffbffff] available for PCI devices
+[    0.000000] Booting paravirtualized kernel on bare hardware
+[    0.000000] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.000000] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:4 nr_cpu_ids:4 nr_node_ids:1
+[    0.000000] percpu: Embedded 100 pages/cpu s286720 r8192 d114688 u524288
+[    0.000000] Kernel command line: console=ttyS0,115200 noapic
+[    0.000000] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.000000] Fallback order for Node 0: 0 
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 257760
+[    0.000000] Policy zone: DMA32
+[    0.000000] mem auto-init: stack:off, heap alloc:on, heap free:off
+[    0.000000] AGP: Checking aperture...
+[    0.000000] AGP: No AGP bridge found
+[    0.000000] Memory: 954360K/1048056K available (20480K kernel code, 4435K rwdata, 7516K rodata, 4852K init, 29452K bss, 93440K reserved, 0K cma-reserved)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] ftrace: allocating 53924 entries in 211 pages
+[    0.000000] ftrace: allocated 211 pages with 5 groups
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] ======init yat_casched rq======
+[    0.000000] Dynamic Preempt: full
+[    0.000000] rcu: Preemptible hierarchical RCU implementation.
+[    0.000000] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=4.
+[    0.000000] 	Trampoline variant of Tasks RCU enabled.
+[    0.000000] 	Rude variant of Tasks RCU enabled.
+[    0.000000] 	Tracing variant of Tasks RCU enabled.
+[    0.000000] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.000000] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+[    0.000000] NR_IRQS: 524544, nr_irqs: 456, preallocated irqs: 16
+[    0.000000] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.000000] Console: colour dummy device 80x25
+[    0.000000] printk: legacy console [ttyS0] enabled
+[    0.000000] ACPI: Core revision 20230628
+[    0.000000] ACPI: setting ELCR to 0200 (from 0c00)
+[    0.000000] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    0.001000] APIC: Switch to symmetric I/O mode setup
+[    0.001000] Not enabling interrupt remapping due to skipped IO-APIC setup
+[    0.006000] tsc: Unable to calibrate against PIT
+[    0.007000] tsc: using HPET reference calibration
+[    0.008000] tsc: Detected 2926.811 MHz processor
+[    0.002025] tsc: Marking TSC unstable due to TSCs unsynchronized
+[    0.003835] Calibrating delay loop (skipped), value calculated using timer frequency.. 5853.62 BogoMIPS (lpj=2926811)
+[    0.006105] process: using AMD E400 aware idle routine
+[    0.006105] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.006105] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.006105] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.006105] Spectre V2 : Mitigation: Retpolines
+[    0.006105] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+[    0.006105] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
+[    0.006105] x86/fpu: x87 FPU will use FXSAVE
+[    0.059105] Freeing SMP alternatives memory: 44K
+[    0.059105] pid_max: default: 32768 minimum: 301
+[    0.065105] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
+[    0.072105] landlock: Up and running.
+[    0.072105] Yama: becoming mindful.
+[    0.075105] AppArmor: AppArmor initialized
+[    0.088483] Mount-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.089353] Mountpoint-cache hash table entries: 2048 (order: 2, 16384 bytes, linear)
+[    0.161105] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.170105] RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.170105] RCU Tasks Rude: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.177259] RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1.
+[    0.193581] Performance Events: PMU not available due to virtualization, using software events only.
+[    0.194532] Initializing real mode trampoline at (____ptrval____)
+[    0.200293] signal: max sigframe size: 1440
+[    0.209105] rcu: Hierarchical SRCU implementation.
+[    0.209354] rcu: 	Max phase no-delay instances is 400.
+[    0.218736] NMI watchdog: Perf NMI watchdog permanently disabled
+[    0.220105] smp: Bringing up secondary CPUs ...
+[    0.222105] smpboot: x86: Booting SMP configuration:
+[    0.222827] .... node  #0, CPUs:      #1 #2 #3
+[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 4 = 7948504
+[    0.000000] calibrate_delay_direct() dropping max bogoMips estimate 1 = 45534317
+[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 2 = 23318491
+[    0.000000] calibrate_delay_direct() dropping min bogoMips estimate 1 = 40230078
+[    0.409105] smp: Brought up 1 node, 4 CPUs
+[    0.409105] smpboot: Max logical packages: 1
+[    0.409105] smpboot: Total of 4 processors activated (247387.49 BogoMIPS)
+[    0.418105] devtmpfs: initialized
+[    0.419282] x86/mm: Memory block size: 128MB
+[    0.425105] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.426105] futex hash table entries: 1024 (order: 4, 65536 bytes, linear)
+[    0.430105] pinctrl core: initialized pinctrl subsystem
+[    0.433105] PM: RTC time: 07:28:31, date: 2025-08-04
+[    0.441105] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.442105] DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+[    0.442105] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.442105] DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.442105] audit: initializing netlink subsys (disabled)
+[    0.443105] audit: type=2000 audit(1754292507.447:1): state=initialized audit_enabled=0 res=1
+[    0.444105] thermal_sys: Registered thermal governor 'fair_share'
+[    0.444105] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.444105] thermal_sys: Registered thermal governor 'step_wise'
+[    0.444865] thermal_sys: Registered thermal governor 'user_space'
+[    0.445105] EISA bus registered
+[    0.445105] cpuidle: using governor ladder
+[    0.447105] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.451105] PCI: Using configuration type 1 for base access
+[    0.451754] mtrr: your CPUs had inconsistent fixed MTRR settings
+[    0.452089] mtrr: your CPUs had inconsistent variable MTRR settings
+[    0.452205] mtrr: your CPUs had inconsistent MTRRdefType settings
+[    0.452683] mtrr: probably your BIOS does not setup all CPUs.
+[    0.453180] mtrr: corrected configuration.
+[    0.456105] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+[    0.459105] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.459105] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.463105] ACPI: Added _OSI(Module Device)
+[    0.463105] ACPI: Added _OSI(Processor Device)
+[    0.463158] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.463402] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.473105] ACPI: 1 ACPI AML tables successfully acquired and loaded
+[    0.480105] ACPI: _OSC evaluation for CPUs failed, trying _PDC
+[    0.481105] ACPI: Interpreter enabled
+[    0.482105] ACPI: PM: (supports S0 S5)
+[    0.482105] ACPI: Using PIC for interrupt routing
+[    0.485105] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.488336] PCI: Using E820 reservations for host bridge windows
+[    0.490105] ACPI: Enabled 2 GPEs in block 00 to 0F
+[    0.508105] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.510105] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
+[    0.510105] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
+[    0.511105] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
+[    0.523105] acpiphp: Slot [3] registered
+[    0.523748] acpiphp: Slot [4] registered
+[    0.526685] acpiphp: Slot [5] registered
+[    0.527542] acpiphp: Slot [6] registered
+[    0.528105] acpiphp: Slot [7] registered
+[    0.528499] acpiphp: Slot [8] registered
+[    0.529105] acpiphp: Slot [9] registered
+[    0.529105] acpiphp: Slot [10] registered
+[    0.529105] acpiphp: Slot [11] registered
+[    0.529456] acpiphp: Slot [12] registered
+[    0.529532] acpiphp: Slot [13] registered
+[    0.531105] acpiphp: Slot [14] registered
+[    0.531105] acpiphp: Slot [15] registered
+[    0.531105] acpiphp: Slot [16] registered
+[    0.533653] acpiphp: Slot [17] registered
+[    0.534532] acpiphp: Slot [18] registered
+[    0.535105] acpiphp: Slot [19] registered
+[    0.535105] acpiphp: Slot [20] registered
+[    0.536301] acpiphp: Slot [21] registered
+[    0.538547] acpiphp: Slot [22] registered
+[    0.539547] acpiphp: Slot [23] registered
+[    0.540105] acpiphp: Slot [24] registered
+[    0.540105] acpiphp: Slot [25] registered
+[    0.540105] acpiphp: Slot [26] registered
+[    0.541379] acpiphp: Slot [27] registered
+[    0.542105] acpiphp: Slot [28] registered
+[    0.542105] acpiphp: Slot [29] registered
+[    0.542105] acpiphp: Slot [30] registered
+[    0.542105] acpiphp: Slot [31] registered
+[    0.542896] PCI host bridge to bus 0000:00
+[    0.543105] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.543105] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.544198] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.545105] pci_bus 0000:00: root bus resource [mem 0x40000000-0xfebfffff window]
+[    0.545105] pci_bus 0000:00: root bus resource [mem 0x100000000-0x17fffffff window]
+[    0.545105] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.547105] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
+[    0.549105] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
+[    0.550105] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
+[    0.555105] pci 0000:00:01.1: BAR 4 [io  0xc040-0xc04f]
+[    0.560300] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
+[    0.560300] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
+[    0.561105] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
+[    0.563472] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
+[    0.566105] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
+[    0.566105] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
+[    0.567150] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
+[    0.568105] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
+[    0.569105] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
+[    0.576105] pci 0000:00:02.0: BAR 2 [mem 0xfebb0000-0xfebb0fff]
+[    0.582189] pci 0000:00:02.0: ROM [mem 0xfeba0000-0xfebaffff pref]
+[    0.583105] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+[    0.583105] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000 conventional PCI endpoint
+[    0.583105] pci 0000:00:03.0: BAR 0 [mem 0xfeb80000-0xfeb9ffff]
+[    0.585951] pci 0000:00:03.0: BAR 1 [io  0xc000-0xc03f]
+[    0.598199] pci 0000:00:03.0: ROM [mem 0xfeb00000-0xfeb7ffff pref]
+[    0.603105] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+[    0.606105] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+[    0.607105] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+[    0.610105] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+[    0.610105] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
+[    0.616882] iommu: Default domain type: Translated
+[    0.617105] iommu: DMA domain TLB invalidation policy: lazy mode
+[    0.617105] SCSI subsystem initialized
+[    0.623105] ACPI: bus type USB registered
+[    0.623804] usbcore: registered new interface driver usbfs
+[    0.625758] usbcore: registered new interface driver hub
+[    0.626105] usbcore: registered new device driver usb
+[    0.627105] pps_core: LinuxPPS API ver. 1 registered
+[    0.628180] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.629105] PTP clock support registered
+[    0.630105] EDAC MC: Ver: 3.0.0
+[    0.636105] NetLabel: Initializing
+[    0.637232] NetLabel:  domain hash size = 128
+[    0.637597] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    0.639105] NetLabel:  unlabeled traffic allowed by default
+[    0.641105] mctp: management component transport protocol core
+[    0.642218] NET: Registered PF_MCTP protocol family
+[    0.643335] PCI: Using ACPI for IRQ routing
+[    0.648543] pci 0000:00:02.0: vgaarb: setting as boot VGA device
+[    0.649105] pci 0000:00:02.0: vgaarb: bridge control possible
+[    0.649105] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+[    0.649220] vgaarb: loaded
+[    0.651105] hpet: 3 channels of 0 reserved for per-cpu timers
+[    0.651105] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[    0.651105] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
+[    0.651105] clocksource: Switched to clocksource hpet
+[    0.673472] VFS: Disk quotas dquot_6.6.0
+[    0.673472] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.688236] AppArmor: AppArmor Filesystem Enabled
+[    0.695109] pnp: PnP ACPI init
+[    0.704941] pnp: PnP ACPI: found 6 devices
+[    0.814878] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    0.830252] NET: Registered PF_INET protocol family
+[    0.838263] IP idents hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    0.860526] tcp_listen_portaddr_hash hash table entries: 512 (order: 1, 8192 bytes, linear)
+[    0.868008] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.870601] TCP established hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.870938] TCP bind hash table entries: 8192 (order: 6, 262144 bytes, linear)
+[    0.877218] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.877218] MPTCP token hash table entries: 1024 (order: 2, 24576 bytes, linear)
+[    0.877218] UDP hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.888440] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes, linear)
+[    0.891750] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.898325] NET: Registered PF_XDP protocol family
+[    0.901274] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    0.901274] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    0.901274] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    0.907036] pci_bus 0000:00: resource 7 [mem 0x40000000-0xfebfffff window]
+[    0.907776] pci_bus 0000:00: resource 8 [mem 0x100000000-0x17fffffff window]
+[    0.907927] pci 0000:00:01.0: PIIX3: Enabling Passive Release
+[    0.907927] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
+[    0.915420] PCI: CLS 0 bytes, default 64
+[    0.924219] Trying to unpack rootfs image as initramfs...
+[    0.930511] Initialise system trusted keyrings
+[    0.937265] Key type blacklist registered
+[    0.945379] workingset: timestamp_bits=36 max_order=18 bucket_order=0
+[    0.949078] zbud: loaded
+[    0.969145] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.999004] fuse: init (API version 7.39)
+[    1.015481] integrity: Platform Keyring initialized
+[    1.020304] integrity: Machine keyring initialized
+[    1.231689] Key type asymmetric registered
+[    1.231689] Asymmetric key parser 'x509' registered
+[    1.236772] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+[    1.241336] io scheduler mq-deadline registered
+[    1.251190] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    1.262611] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[    1.297625] ACPI: button: Power Button [PWRF]
+[    1.308333] Warning: Processor Platform Limit event detected, but not handled.
+[    1.310832] Consider compiling CPUfreq support into your kernel.
+[    1.323450] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.419746] 00:04: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    1.528942] Linux agpgart interface v0.103
+[    1.546002] ACPI: bus type drm_connector registered
+[    1.559158] Freeing initrd memory: 5412K
+[    1.642684] loop: module loaded
+[    1.683256] scsi host0: ata_piix
+[    1.702203] scsi host1: ata_piix
+[    1.702558] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xc040 irq 14 lpm-pol 0
+[    1.702558] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xc048 irq 15 lpm-pol 0
+[    1.716593] tun: Universal TUN/TAP device driver, 1.6
+[    1.722777] PPP generic driver version 2.4.2
+[    1.731342] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    1.747845] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.750611] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.762186] mousedev: PS/2 mouse device common for all mice
+[    1.765481] rtc_cmos 00:05: RTC can wake from S4
+[    1.780201] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
+[    1.780201] rtc_cmos 00:05: registered as rtc0
+[    1.780201] rtc_cmos 00:05: setting system clock to 2025-08-04T07:28:33 UTC (1754292513)
+[    1.797123] rtc_cmos 00:05: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
+[    1.798589] i2c_dev: i2c /dev entries driver
+[    1.800979] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+[    1.803974] device-mapper: uevent: version 1.0.3
+[    1.804641] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
+[    1.810653] platform eisa.0: Probing EISA bus 0
+[    1.812525] platform eisa.0: EISA: Cannot allocate resource for mainboard
+[    1.813076] platform eisa.0: Cannot allocate resource for EISA slot 1
+[    1.814661] platform eisa.0: Cannot allocate resource for EISA slot 2
+[    1.815069] platform eisa.0: Cannot allocate resource for EISA slot 3
+[    1.815381] platform eisa.0: Cannot allocate resource for EISA slot 4
+[    1.815568] platform eisa.0: Cannot allocate resource for EISA slot 5
+[    1.815568] platform eisa.0: Cannot allocate resource for EISA slot 6
+[    1.815568] platform eisa.0: Cannot allocate resource for EISA slot 7
+[    1.815568] platform eisa.0: Cannot allocate resource for EISA slot 8
+[    1.815568] platform eisa.0: EISA: Detected 0 cards
+[    1.820649] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.823579] drop_monitor: Initializing network drop monitor service
+[    1.823579] NET: Registered PF_INET6 protocol family
+[    1.888493] Segment Routing with IPv6
+[    1.888493] In-situ OAM (IOAM) with IPv6
+[    1.888493] NET: Registered PF_PACKET protocol family
+[    1.902580] ata2: found unknown device (class 0)
+[    1.903300] Key type dns_resolver registered
+[    1.903488] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    1.918135] IPI shorthand broadcast: enabled
+[    1.949430] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    1.965185] [yat] late debugfs init called
+[    1.965185] [yat] debugfs init called
+[    1.965185] [yat] debugfs dir created successfully: (____ptrval____)
+[    1.965185] [yat] debugfs accelerator_table file created: (____ptrval____)
+[    1.965185] [yat] debugfs history_table file created: (____ptrval____)
+[    1.982647] registered taskstats version 1
+[    1.996393] Loading compiled-in X.509 certificates
+[    2.058542] sr 1:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
+[    2.067543] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    2.090307] Key type .fscrypt registered
+[    2.100431] Key type fscrypt-provisioning registered
+[    2.117679] sr 1:0:0:0: Attached scsi generic sg0 type 5
+[    2.143179] Key type encrypted registered
+[    2.146076] AppArmor: AppArmor sha256 policy hashing enabled
+[    2.153131] ima: No TPM chip found, activating TPM-bypass!
+[    2.157111] Loading compiled-in module X.509 certificates
+[    2.157618] ima: Allocated hash algorithm: sha256
+[    2.168819] ima: No architecture policies found
+[    2.178154] evm: Initialising EVM extended attributes:
+[    2.179979] evm: security.selinux
+[    2.180141] evm: security.SMACK64
+[    2.180235] evm: security.SMACK64EXEC
+[    2.181514] evm: security.SMACK64TRANSMUTE
+[    2.181883] evm: security.SMACK64MMAP
+[    2.182789] evm: security.apparmor
+[    2.184305] evm: security.ima
+[    2.185911] evm: security.capability
+[    2.186832] evm: HMAC attrs: 0x1
+[    2.201737] PM:   Magic number: 5:977:469
+[    2.275549] hid_bpf: error while preloading HID BPF dispatcher: -22
+[    2.275549] RAS: Correctable Errors collector initialized.
+[    2.283546] Unstable clock detected, switching default tracing clock to "global"
+[    2.283546] If you want to keep using the local clock, then add:
+[    2.283546]   "trace_clock=local"
+[    2.283546] on the kernel command line
+[    2.298689] clk: Disabling unused clocks
+[    2.339752] Freeing unused decrypted memory: 2028K
+[    2.819514] Freeing unused kernel image (initmem) memory: 4852K
+[    2.819514] Write protecting the kernel read-only data: 28672k
+[    2.825573] Freeing unused kernel image (rodata/data gap) memory: 676K
+[    2.855422] hrtimer: interrupt took 3050950 ns
+[    3.356310] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+[    3.367818] Run /init as init process
+=== 启动TACLEBENCH kernel任务集测试 ===
+=== TacleBench Kernel 12任务集周期测试 ===
+[    3.854426] ------------[ cut here ]------------
+[    3.854426] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3837:25
+[    3.854426] index -100 is out of range for type 'int [40]'
+[    3.854426] CPU: 0 PID: 101 Comm: tacle_kernel_te Not tainted 6.8.0+ #51
+[    3.854426] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    3.854426] Call Trace:
+[    3.854426]  <TASK>
+[    3.854426]  dump_stack_lvl+0x48/0x70
+[    3.854426]  dump_stack+0x10/0x20
+[    3.854426]  __ubsan_handle_out_of_bounds+0xa2/0x100
+[    3.854426]  ? dequeue_task_fair+0x2b2/0x5c0
+[    3.854426]  reweight_task+0x33f/0x370
+[    3.854426]  __sched_setscheduler+0xac3/0xbf0
+[    3.854426]  do_sched_setscheduler+0xef/0x1b0
+[    3.854426]  __x64_sys_sched_setscheduler+0x1f/0x40
+[    3.854426]  do_syscall_64+0x87/0x180
+[    3.854426]  ? do_syscall_64+0x93/0x180
+[    3.854426]  ? count_memcg_events.constprop.0+0x2a/0x50
+[    3.854426]  ? handle_mm_fault+0x20b/0x360
+[    3.854426]  ? do_user_addr_fault+0x35b/0x6e0
+[    3.854426]  ? irqentry_exit_to_user_mode+0x70/0x1e0
+[    3.854426]  ? irqentry_exit+0x43/0x50
+[    3.854426]  ? exc_page_fault+0x95/0x1b0
+[    3.854426]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+[    3.854426] RIP: 0033:0x41b86b
+[    3.854426] Code: 8b 5d f8 48 8d 3d f5 d0 09 00 c9 e9 8f 10 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+[    3.854426] RSP: 002b:00007ffc1d6b9a68 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
+[    3.854426] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 000000000041b86b
+[    3.854426] RDX: 00007ffc1d6b9a74 RSI: 0000000000000008 RDI: 0000000000000000
+[    3.854426] RBP: 00007ffc1d6b9e30 R08: 00000000004b2880 R09: 0000000000000000
+[    3.854426] R10: 0000000000000001 R11: 0000000000000246 R12: 00007ffc1d6b9ea8
+[    3.854426] R13: 00007ffc1d6b9eb8 R14: 00000000004ad830 R15: 0000000000000001
+[    3.854426]  </TASK>
+[    3.854426] ---[ end trace ]---
+[    3.854426] ------------[ cut here ]------------
+[    3.854426] UBSAN: array-index-out-of-bounds in kernel/sched/fair.c:3840:40
+[    3.854426] index -100 is out of range for type 'u32 [40]'
+[    3.854426] CPU: 0 PID: 101 Comm: tacle_kernel_te Not tainted 6.8.0+ #51
+[    3.854426] Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    3.854426] Call Trace:
+[    3.854426]  <TASK>
+[    3.854426]  dump_stack_lvl+0x48/0x70
+[    3.854426]  dump_stack+0x10/0x20
+[    3.854426]  __ubsan_handle_out_of_bounds+0xa2/0x100
+[    3.854426]  ? dequeue_task_fair+0x2b2/0x5c0
+[    3.854426]  reweight_task+0x323/0x370
+[    3.854426]  __sched_setscheduler+0xac3/0xbf0
+[    3.854426]  do_sched_setscheduler+0xef/0x1b0
+[    3.854426]  __x64_sys_sched_setscheduler+0x1f/0x40
+[    3.854426]  do_syscall_64+0x87/0x180
+[    3.854426]  ? do_syscall_64+0x93/0x180
+[    3.854426]  ? count_memcg_events.constprop.0+0x2a/0x50
+[    3.854426]  ? handle_mm_fault+0x20b/0x360
+[    3.854426]  ? do_user_addr_fault+0x35b/0x6e0
+[    3.854426]  ? irqentry_exit_to_user_mode+0x70/0x1e0
+[    3.854426]  ? irqentry_exit+0x43/0x50
+[    3.854426]  ? exc_page_fault+0x95/0x1b0
+[    3.854426]  entry_SYSCALL_64_after_hwframe+0x6e/0x76
+[    3.854426] RIP: 0033:0x41b86b
+[    3.854426] Code: 8b 5d f8 48 8d 3d f5 d0 09 00 c9 e9 8f 10 ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 f3 0f 1e fa b8 90 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+[    3.854426] RSP: 002b:00007ffc1d6b9a68 EFLAGS: 00000246 ORIG_RAX: 0000000000000090
+[    3.854426] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 000000000041b86b
+[    3.854426] RDX: 00007ffc1d6b9a74 RSI: 0000000000000008 RDI: 0000000000000000
+[    3.854426] RBP: 00007ffc1d6b9e30 R08: 00000000004b2880 R09: 0000000000000000
+[    3.854426] R10: 0000000000000001 R11: 0000000000000246 R12: 00007ffc1d6b9ea8
+[    3.854426] R13: 00007ffc1d6b9eb8 R14: 00000000004ad830 R15: 0000000000000001
+[    3.854426]  </TASK>
+[    3.854426] ---[ end trace ]---
+父进程PID=101 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=102, 执行时间=72 ms
+[Task 2结束] 名字=bitcount, PID=103, 执行时间=103 ms
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=104, 执行时间=101 ms
+[Task 4结束] 名字=bsort, PID=105, 执行时间=104 ms
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=106, 执行时间=100 ms
+[Task 6结束] 名字=cosf, PID=107, 执行时间=102 ms
+[Task 7结束] 名字=countnegative, PID=108, 执行时间=101 ms
+[Task 8结束] 名字=cubic, PID=109, 执行时间=140 ms
+[Task 9结束] 名字=deg2rad, PID=110, 执行时间=141 ms
+[Task 10结束] 名字=fac, PID=111, 执行时间=136 ms
+[Task 11结束] 名字=fft, PID=112, 执行时间=139 ms
+[Task 12结束] 名字=filterbank, PID=113, 执行时间=179 ms
+本轮实际用时: 213 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=114, 执行时间=33 ms
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=115, 执行时间=33 ms
+[Task 5] 启动: complex_updates
+[Task 3结束] 名字=bitonic, PID=116, 执行时间=46 ms
+[Task 6] 启动: cosf
+[Task 4结束] 名字=bsort, PID=117, 执行时间=49 ms
+[Task 5结束] 名字=complex_updates, PID=118, 执行时间=57 ms
+[Task 6结束] 名字=cosf, PID=119, 执行时间=59 ms
+[Task 7结束] 名字=countnegative, PID=120, 执行时间=57 ms
+[Task 8结束] 名字=cubic, PID=121, 执行时间=59 ms
+[Task 9结束] 名字=deg2rad, PID=122, 执行时间=54 ms
+[Task 10结束] 名字=fac, PID=123, 执行时间=53 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 11结束] 名字=fft, PID=124, 执行时间=72 ms
+[Task 12结束] 名字=filterbank, PID=125, 执行时间=94 ms
+本轮实际用时: 127 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=126, 执行时间=34 ms
+[Task 2结束] 名字=bitcount, PID=127, 执行时间=36 ms
+[Task 3结束] 名字=bitonic, PID=128, 执行时间=34 ms
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 4结束] 名字=bsort, PID=129, 执行时间=41 ms
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 5结束] 名字=complex_updates, PID=130, 执行时间=49 ms
+[Task 9] 启动: deg2rad
+[Task 6结束] 名字=cosf, PID=131, 执行时间=53 ms
+[Task 11] 启动: fft
+[Task 7结束] 名字=countnegative, PID=132, 执行时间=64 ms
+[Task 8结束] 名字=cubic, PID=133, 执行时间=63 ms
+[Task 9结束] 名字=deg2rad, PID=134, 执行时间=62 ms
+[Task 10结束] 名字=fac, PID=135, 执行时间=61 ms
+[Task 11结束] 名字=fft, PID=136, 执行时间=59 ms
+[Task 12结束] 名字=filterbank, PID=137, 执行时间=65 ms
+本轮实际用时: 102 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=138, 执行时间=70 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=139, 执行时间=80 ms
+[Task 3结束] 名字=bitonic, PID=140, 执行时间=71 ms
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=141, 执行时间=54 ms
+[Task 5结束] 名字=complex_updates, PID=142, 执行时间=46 ms
+[Task 6结束] 名字=cosf, PID=143, 执行时间=43 ms
+[Task 7结束] 名字=countnegative, PID=144, 执行时间=49 ms
+[Task 8结束] 名字=cubic, PID=145, 执行时间=47 ms
+[Task 9结束] 名字=deg2rad, PID=146, 执行时间=47 ms
+[Task 10结束] 名字=fac, PID=147, 执行时间=44 ms
+[Task 11结束] 名字=fft, PID=148, 执行时间=41 ms
+[Task 12结束] 名字=filterbank, PID=149, 执行时间=61 ms
+本轮实际用时: 126 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=150, 执行时间=45 ms
+[Task 2结束] 名字=bitcount, PID=151, 执行时间=45 ms
+[Task 6] 启动: cosf
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 8] 启动: cubic
+[Task 3结束] 名字=bitonic, PID=152, 执行时间=67 ms
+[Task 4] 启动: bsort
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=153, 执行时间=75 ms
+[Task 5结束] 名字=complex_updates, PID=154, 执行时间=73 ms
+[Task 6结束] 名字=cosf, PID=155, 执行时间=78 ms
+[Task 7结束] 名字=countnegative, PID=156, 执行时间=77 ms
+[Task 8结束] 名字=cubic, PID=157, 执行时间=79 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=158, 执行时间=85 ms
+[Task 10结束] 名字=fac, PID=159, 执行时间=87 ms
+[Task 11结束] 名字=fft, PID=160, 执行时间=88 ms
+[Task 12结束] 名字=filterbank, PID=161, 执行时间=105 ms
+本轮实际用时: 141 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=162, 执行时间=104 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=163, 执行时间=105 ms
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=164, 执行时间=103 ms
+[Task 4结束] 名字=bsort, PID=165, 执行时间=102 ms
+[Task 5结束] 名字=complex_updates, PID=166, 执行时间=97 ms
+[Task 6结束] 名字=cosf, PID=167, 执行时间=79 ms
+[Task 7结束] 名字=countnegative, PID=168, 执行时间=78 ms
+[Task 8结束] 名字=cubic, PID=169, 执行时间=76 ms
+[Task 9结束] 名字=deg2rad, PID=170, 执行时间=68 ms
+[Task 10结束] 名字=fac, PID=171, 执行时间=59 ms
+[Task 11结束] 名字=fft, PID=172, 执行时间=55 ms
+[Task 12结束] 名字=filterbank, PID=173, 执行时间=66 ms
+本轮实际用时: 159 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=174, 执行时间=43 ms
+[Task 2结束] 名字=bitcount, PID=175, 执行时间=38 ms
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=176, 执行时间=63 ms
+[Task 4结束] 名字=bsort, PID=177, 执行时间=61 ms
+[Task 5结束] 名字=complex_updates, PID=178, 执行时间=62 ms
+[Task 6结束] 名字=cosf, PID=179, 执行时间=64 ms
+[Task 11] 启动: fft
+[Task 7结束] 名字=countnegative, PID=180, 执行时间=75 ms
+[Task 8] 启动: cubic
+[Task 8结束] 名字=cubic, PID=181, 执行时间=87 ms
+[Task 9结束] 名字=deg2rad, PID=182, 执行时间=87 ms
+[Task 10结束] 名字=fac, PID=183, 执行时间=84 ms
+[Task 11结束] 名字=fft, PID=184, 执行时间=81 ms
+[Task 12结束] 名字=filterbank, PID=185, 执行时间=75 ms
+本轮实际用时: 115 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 10] 启动: fac
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=186, 执行时间=50 ms
+[Task 9] 启动: deg2rad
+[Task 2结束] 名字=bitcount, PID=187, 执行时间=57 ms
+[Task 4] 启动: bsort
+[Task 3结束] 名字=bitonic, PID=188, 执行时间=89 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=189, 执行时间=106 ms
+[Task 5结束] 名字=complex_updates, PID=190, 执行时间=103 ms
+[Task 6结束] 名字=cosf, PID=191, 执行时间=101 ms
+[Task 7结束] 名字=countnegative, PID=192, 执行时间=98 ms
+[Task 8结束] 名字=cubic, PID=193, 执行时间=97 ms
+[Task 9结束] 名字=deg2rad, PID=194, 执行时间=99 ms
+[Task 10结束] 名字=fac, PID=195, 执行时间=97 ms
+[Task 11结束] 名字=fft, PID=196, 执行时间=99 ms
+[Task 12结束] 名字=filterbank, PID=197, 执行时间=89 ms
+本轮实际用时: 136 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=198, 执行时间=64 ms
+[Task 2结束] 名字=bitcount, PID=199, 执行时间=60 ms
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 6] 启动: cosf
+[Task 3结束] 名字=bitonic, PID=200, 执行时间=74 ms
+[Task 4结束] 名字=bsort, PID=201, 执行时间=75 ms
+[Task 5结束] 名字=complex_updates, PID=202, 执行时间=75 ms
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=203, 执行时间=81 ms
+[Task 7结束] 名字=countnegative, PID=204, 执行时间=72 ms
+[Task 8结束] 名字=cubic, PID=205, 执行时间=69 ms
+[Task 9结束] 名字=deg2rad, PID=206, 执行时间=62 ms
+[Task 11] 启动: fft
+[Task 10结束] 名字=fac, PID=207, 执行时间=66 ms
+[Task 11结束] 名字=fft, PID=208, 执行时间=71 ms
+[Task 12结束] 名字=filterbank, PID=209, 执行时间=67 ms
+本轮实际用时: 124 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=210, 执行时间=83 ms
+[Task 2结束] 名字=bitcount, PID=211, 执行时间=87 ms
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=212, 执行时间=99 ms
+[Task 4结束] 名字=bsort, PID=213, 执行时间=94 ms
+[Task 5结束] 名字=complex_updates, PID=214, 执行时间=90 ms
+[Task 6结束] 名字=cosf, PID=215, 执行时间=60 ms
+[Task 7结束] 名字=countnegative, PID=216, 执行时间=51 ms
+[Task 8结束] 名字=cubic, PID=217, 执行时间=47 ms
+[Task 9结束] 名字=deg2rad, PID=218, 执行时间=45 ms
+[Task 10结束] 名字=fac, PID=219, 执行时间=50 ms
+[Task 11结束] 名字=fft, PID=220, 执行时间=48 ms
+[Task 12] 启动: filterbank
+[Task 12结束] 名字=filterbank, PID=221, 执行时间=74 ms
+本轮实际用时: 154 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4080 ms
+CPU利用率估算: 216.25%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=598 ms, 平均每轮=59 ms
+[Task 2] 名字=bitcount, 总时间=644 ms, 平均每轮=64 ms
+[Task 3] 名字=bitonic, 总时间=747 ms, 平均每轮=74 ms
+[Task 4] 名字=bsort, 总时间=761 ms, 平均每轮=76 ms
+[Task 5] 名字=complex_updates, 总时间=752 ms, 平均每轮=75 ms
+[Task 6] 名字=cosf, 总时间=720 ms, 平均每轮=72 ms
+[Task 7] 名字=countnegative, 总时间=722 ms, 平均每轮=72 ms
+[Task 8] 名字=cubic, 总时间=764 ms, 平均每轮=76 ms
+[Task 9] 名字=deg2rad, 总时间=750 ms, 平均每轮=75 ms
+[Task 10] 名字=fac, 总时间=737 ms, 平均每轮=73 ms
+[Task 11] 名字=fft, 总时间=753 ms, 平均每轮=75 ms
+[Task 12] 名字=filterbank, 总时间=875 ms, 平均每轮=87 ms
+=== 所有测试任务完成，进入shell ===
+
+
+BusyBox v1.36.1 (Ubuntu 1:1.36.1-6ubuntu3.1) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+/bin/sh: can't access tty; job control turned off
+~ # [6n/bin/tacle_kernel_test
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=222 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=223, 执行时间=23 ms
+[Task 2结束] 名字=bitcount, PID=224, 执行时间=22 ms
+[Task 9] 启动: deg2rad
+[Task 5] 启动: complex_updates
+[Task 3结束] 名字=bitonic, PID=225, 执行时间=35 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=226, 执行时间=36 ms
+[Task 5结束] 名字=complex_updates, PID=227, 执行时间=35 ms
+[Task 6结束] 名字=cosf, PID=228, 执行时间=36 ms
+[Task 10] 启动: fac
+[Task 7结束] 名字=countnegative, PID=229, 执行时间=38 ms
+[Task 8结束] 名字=cubic, PID=230, 执行时间=41 ms
+[Task 9结束] 名字=deg2rad, PID=231, 执行时间=42 ms
+[Task 12] 启动: filterbank
+[Task 10结束] 名字=fac, PID=232, 执行时间=51 ms
+[Task 11结束] 名字=fft, PID=233, 执行时间=54 ms
+[Task 12结束] 名字=filterbank, PID=234, 执行时间=61 ms
+本轮实际用时: 86 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=235, 执行时间=54 ms
+[Task 2结束] 名字=bitcount, PID=236, 执行时间=52 ms
+[Task 3结束] 名字=bitonic, PID=237, 执行时间=49 ms
+[Task 9] 启动: deg2rad
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=238, 执行时间=72 ms
+[Task 5结束] 名字=complex_updates, PID=239, 执行时间=69 ms
+[Task 6结束] 名字=cosf, PID=240, 执行时间=66 ms
+[Task 7结束] 名字=countnegative, PID=241, 执行时间=65 ms
+[Task 8结束] 名字=cubic, PID=242, 执行时间=64 ms
+[Task 9结束] 名字=deg2rad, PID=243, 执行时间=62 ms
+[Task 10结束] 名字=fac, PID=244, 执行时间=57 ms
+[Task 11结束] 名字=fft, PID=245, 执行时间=57 ms
+[Task 12结束] 名字=filterbank, PID=246, 执行时间=63 ms
+本轮实际用时: 115 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=247, 执行时间=21 ms
+[Task 2结束] 名字=bitcount, PID=248, 执行时间=20 ms
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=249, 执行时间=30 ms
+[Task 4结束] 名字=bsort, PID=250, 执行时间=37 ms
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 5结束] 名字=complex_updates, PID=251, 执行时间=38 ms
+[Task 6结束] 名字=cosf, PID=252, 执行时间=45 ms
+[Task 7结束] 名字=countnegative, PID=253, 执行时间=43 ms
+[Task 8结束] 名字=cubic, PID=254, 执行时间=52 ms
+[Task 9结束] 名字=deg2rad, PID=255, 执行时间=50 ms
+[Task 10结束] 名字=fac, PID=256, 执行时间=54 ms
+[Task 11结束] 名字=fft, PID=257, 执行时间=55 ms
+[Task 12结束] 名字=filterbank, PID=258, 执行时间=57 ms
+本轮实际用时: 80 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=259, 执行时间=31 ms
+[Task 2结束] 名字=bitcount, PID=260, 执行时间=33 ms
+[Task 12] 启动: filterbank
+[Task 6] 启动: cosf
+[Task 3结束] 名字=bitonic, PID=261, 执行时间=39 ms
+[Task 4结束] 名字=bsort, PID=262, 执行时间=46 ms
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=263, 执行时间=45 ms
+[Task 6结束] 名字=cosf, PID=264, 执行时间=45 ms
+[Task 7结束] 名字=countnegative, PID=265, 执行时间=46 ms
+[Task 10] 启动: fac
+[Task 8结束] 名字=cubic, PID=266, 执行时间=56 ms
+[Task 9结束] 名字=deg2rad, PID=267, 执行时间=56 ms
+[Task 10结束] 名字=fac, PID=268, 执行时间=54 ms
+[Task 11结束] 名字=fft, PID=269, 执行时间=53 ms
+[Task 12结束] 名字=filterbank, PID=270, 执行时间=52 ms
+本轮实际用时: 83 ms
+=== 第5轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=271, 执行时间=44 ms
+[Task 2结束] 名字=bitcount, PID=272, 执行时间=43 ms
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=273, 执行时间=45 ms
+[Task 4] 启动: bsort
+[Task 4结束] 名字=bsort, PID=274, 执行时间=52 ms
+[Task 5结束] 名字=complex_updates, PID=275, 执行时间=53 ms
+[Task 6结束] 名字=cosf, PID=276, 执行时间=48 ms
+[Task 7结束] 名字=countnegative, PID=277, 执行时间=47 ms
+[Task 8结束] 名字=cubic, PID=278, 执行时间=46 ms
+[Task 9结束] 名字=deg2rad, PID=279, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=280, 执行时间=42 ms
+[Task 11结束] 名字=fft, PID=281, 执行时间=38 ms
+[Task 12结束] 名字=filterbank, PID=282, 执行时间=50 ms
+本轮实际用时: 95 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 5] 启动: complex_updates
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=283, 执行时间=90 ms
+[Task 2结束] 名字=bitcount, PID=284, 执行时间=89 ms
+[Task 3结束] 名字=bitonic, PID=285, 执行时间=87 ms
+[Task 4结束] 名字=bsort, PID=286, 执行时间=84 ms
+[Task 5结束] 名字=complex_updates, PID=287, 执行时间=84 ms
+[Task 6结束] 名字=cosf, PID=288, 执行时间=82 ms
+[Task 12] 启动: filterbank
+[Task 7结束] 名字=countnegative, PID=289, 执行时间=75 ms
+[Task 8结束] 名字=cubic, PID=290, 执行时间=56 ms
+[Task 9结束] 名字=deg2rad, PID=291, 执行时间=58 ms
+[Task 10结束] 名字=fac, PID=292, 执行时间=52 ms
+[Task 11] 启动: fft
+[Task 11结束] 名字=fft, PID=293, 执行时间=66 ms
+[Task 12结束] 名字=filterbank, PID=294, 执行时间=62 ms
+本轮实际用时: 132 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 4] 启动: bsort
+[Task 1结束] 名字=binarysearch, PID=295, 执行时间=86 ms
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=296, 执行时间=92 ms
+[Task 3结束] 名字=bitonic, PID=297, 执行时间=89 ms
+[Task 10] 启动: fac
+[Task 4结束] 名字=bsort, PID=298, 执行时间=95 ms
+[Task 5结束] 名字=complex_updates, PID=299, 执行时间=90 ms
+[Task 6结束] 名字=cosf, PID=300, 执行时间=90 ms
+[Task 7结束] 名字=countnegative, PID=301, 执行时间=82 ms
+[Task 8结束] 名字=cubic, PID=302, 执行时间=81 ms
+[Task 9结束] 名字=deg2rad, PID=303, 执行时间=81 ms
+[Task 10结束] 名字=fac, PID=304, 执行时间=52 ms
+[Task 11结束] 名字=fft, PID=305, 执行时间=52 ms
+[Task 12结束] 名字=filterbank, PID=306, 执行时间=49 ms
+本轮实际用时: 135 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=307, 执行时间=97 ms
+[Task 2结束] 名字=bitcount, PID=308, 执行时间=79 ms
+[Task 3结束] 名字=bitonic, PID=309, 执行时间=58 ms
+[Task 4结束] 名字=bsort, PID=310, 执行时间=55 ms
+[Task 10] 启动: fac
+[Task 5结束] 名字=complex_updates, PID=311, 执行时间=62 ms
+[Task 6结束] 名字=cosf, PID=312, 执行时间=60 ms
+[Task 9] 启动: deg2rad
+[Task 7结束] 名字=countnegative, PID=313, 执行时间=62 ms
+[Task 12] 启动: filterbank
+[Task 8结束] 名字=cubic, PID=314, 执行时间=65 ms
+[Task 9结束] 名字=deg2rad, PID=315, 执行时间=67 ms
+[Task 10结束] 名字=fac, PID=316, 执行时间=69 ms
+[Task 11结束] 名字=fft, PID=317, 执行时间=59 ms
+[Task 12结束] 名字=filterbank, PID=318, 执行时间=56 ms
+本轮实际用时: 145 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=319, 执行时间=62 ms
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=320, 执行时间=77 ms
+[Task 3结束] 名字=bitonic, PID=321, 执行时间=76 ms
+[Task 4结束] 名字=bsort, PID=322, 执行时间=72 ms
+[Task 5结束] 名字=complex_updates, PID=323, 执行时间=69 ms
+[Task 6结束] 名字=cosf, PID=324, 执行时间=62 ms
+[Task 7结束] 名字=countnegative, PID=325, 执行时间=48 ms
+[Task 8结束] 名字=cubic, PID=326, 执行时间=44 ms
+[Task 11] 启动: fft
+[Task 9结束] 名字=deg2rad, PID=327, 执行时间=43 ms
+[Task 10结束] 名字=fac, PID=328, 执行时间=47 ms
+[Task 11结束] 名字=fft, PID=329, 执行时间=46 ms
+[Task 12结束] 名字=filterbank, PID=330, 执行时间=44 ms
+本轮实际用时: 102 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=331, 执行时间=114 ms
+[Task 2结束] 名字=bitcount, PID=332, 执行时间=112 ms
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 3结束] 名字=bitonic, PID=333, 执行时间=115 ms
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=334, 执行时间=118 ms
+[Task 5结束] 名字=complex_updates, PID=335, 执行时间=116 ms
+[Task 6结束] 名字=cosf, PID=336, 执行时间=56 ms
+[Task 9] 启动: deg2rad
+[Task 7结束] 名字=countnegative, PID=337, 执行时间=47 ms
+[Task 8结束] 名字=cubic, PID=338, 执行时间=47 ms
+[Task 9结束] 名字=deg2rad, PID=339, 执行时间=52 ms
+[Task 10结束] 名字=fac, PID=340, 执行时间=50 ms
+[Task 11结束] 名字=fft, PID=341, 执行时间=51 ms
+[Task 12结束] 名字=filterbank, PID=342, 执行时间=62 ms
+本轮实际用时: 174 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4093 ms
+CPU利用率估算: 172.47%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=622 ms, 平均每轮=62 ms
+[Task 2] 名字=bitcount, 总时间=619 ms, 平均每轮=61 ms
+[Task 3] 名字=bitonic, 总时间=623 ms, 平均每轮=62 ms
+[Task 4] 名字=bsort, 总时间=667 ms, 平均每轮=66 ms
+[Task 5] 名字=complex_updates, 总时间=661 ms, 平均每轮=66 ms
+[Task 6] 名字=cosf, 总时间=590 ms, 平均每轮=59 ms
+[Task 7] 名字=countnegative, 总时间=553 ms, 平均每轮=55 ms
+[Task 8] 名字=cubic, 总时间=552 ms, 平均每轮=55 ms
+[Task 9] 名字=deg2rad, 总时间=557 ms, 平均每轮=55 ms
+[Task 10] 名字=fac, 总时间=528 ms, 平均每轮=52 ms
+[Task 11] 名字=fft, 总时间=531 ms, 平均每轮=53 ms
+[Task 12] 名字=filterbank, 总时间=556 ms, 平均每轮=55 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=343 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=344, 执行时间=55 ms
+[Task 2结束] 名字=bitcount, PID=345, 执行时间=50 ms
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=346, 执行时间=61 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=347, 执行时间=57 ms
+[Task 5结束] 名字=complex_updates, PID=348, 执行时间=52 ms
+[Task 6结束] 名字=cosf, PID=349, 执行时间=48 ms
+[Task 7结束] 名字=countnegative, PID=350, 执行时间=50 ms
+[Task 8结束] 名字=cubic, PID=351, 执行时间=48 ms
+[Task 9结束] 名字=deg2rad, PID=352, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=353, 执行时间=55 ms
+[Task 11结束] 名字=fft, PID=354, 执行时间=63 ms
+[Task 12结束] 名字=filterbank, PID=355, 执行时间=63 ms
+本轮实际用时: 121 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=356, 执行时间=69 ms
+[Task 2结束] 名字=bitcount, PID=357, 执行时间=64 ms
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=358, 执行时间=74 ms
+[Task 4结束] 名字=bsort, PID=359, 执行时间=72 ms
+[Task 5结束] 名字=complex_updates, PID=360, 执行时间=72 ms
+[Task 6结束] 名字=cosf, PID=361, 执行时间=72 ms
+[Task 7结束] 名字=countnegative, PID=362, 执行时间=60 ms
+[Task 8结束] 名字=cubic, PID=363, 执行时间=55 ms
+[Task 9] 启动: deg2rad
+[Task 9结束] 名字=deg2rad, PID=364, 执行时间=53 ms
+[Task 10结束] 名字=fac, PID=365, 执行时间=50 ms
+[Task 11结束] 名字=fft, PID=366, 执行时间=48 ms
+[Task 12结束] 名字=filterbank, PID=367, 执行时间=53 ms
+本轮实际用时: 117 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=368, 执行时间=37 ms
+[Task 2结束] 名字=bitcount, PID=369, 执行时间=36 ms
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=370, 执行时间=55 ms
+[Task 4结束] 名字=bsort, PID=371, 执行时间=53 ms
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=372, 执行时间=52 ms
+[Task 6结束] 名字=cosf, PID=373, 执行时间=62 ms
+[Task 11] 启动: fft
+[Task 7结束] 名字=countnegative, PID=374, 执行时间=75 ms
+[Task 8结束] 名字=cubic, PID=375, 执行时间=75 ms
+[Task 9结束] 名字=deg2rad, PID=376, 执行时间=74 ms
+[Task 10结束] 名字=fac, PID=377, 执行时间=72 ms
+[Task 11结束] 名字=fft, PID=378, 执行时间=78 ms
+[Task 12结束] 名字=filterbank, PID=379, 执行时间=85 ms
+本轮实际用时: 122 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=380, 执行时间=37 ms
+[Task 2结束] 名字=bitcount, PID=381, 执行时间=39 ms
+[Task 5] 启动: complex_updates
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=382, 执行时间=63 ms
+[Task 4结束] 名字=bsort, PID=383, 执行时间=62 ms
+[Task 5结束] 名字=complex_updates, PID=384, 执行时间=58 ms
+[Task 6结束] 名字=cosf, PID=385, 执行时间=50 ms
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 7结束] 名字=countnegative, PID=386, 执行时间=58 ms
+[Task 8结束] 名字=cubic, PID=387, 执行时间=62 ms
+[Task 9结束] 名字=deg2rad, PID=388, 执行时间=70 ms
+[Task 10结束] 名字=fac, PID=389, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=390, 执行时间=68 ms
+[Task 12结束] 名字=filterbank, PID=391, 执行时间=84 ms
+本轮实际用时: 121 ms
+=== 第5轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=392, 执行时间=86 ms
+[Task 2结束] 名字=bitcount, PID=393, 执行时间=87 ms
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=394, 执行时间=100 ms
+[Task 7] 启动: countnegative
+[Task 4结束] 名字=bsort, PID=395, 执行时间=101 ms
+[Task 5结束] 名字=complex_updates, PID=396, 执行时间=76 ms
+[Task 6结束] 名字=cosf, PID=397, 执行时间=71 ms
+[Task 12] 启动: filterbank
+[Task 7结束] 名字=countnegative, PID=398, 执行时间=76 ms
+[Task 8结束] 名字=cubic, PID=399, 执行时间=72 ms
+[Task 9结束] 名字=deg2rad, PID=400, 执行时间=64 ms
+[Task 10结束] 名字=fac, PID=401, 执行时间=63 ms
+[Task 11结束] 名字=fft, PID=402, 执行时间=59 ms
+[Task 12结束] 名字=filterbank, PID=403, 执行时间=75 ms
+本轮实际用时: 157 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=404, 执行时间=99 ms
+[Task 2结束] 名字=bitcount, PID=405, 执行时间=94 ms
+[Task 6] 启动: cosf
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=406, 执行时间=92 ms
+[Task 4结束] 名字=bsort, PID=407, 执行时间=84 ms
+[Task 5结束] 名字=complex_updates, PID=408, 执行时间=85 ms
+[Task 6结束] 名字=cosf, PID=409, 执行时间=88 ms
+[Task 10] 启动: fac
+[Task 7结束] 名字=countnegative, PID=410, 执行时间=79 ms
+[Task 8结束] 名字=cubic, PID=411, 执行时间=77 ms
+[Task 9结束] 名字=deg2rad, PID=412, 执行时间=70 ms
+[Task 10结束] 名字=fac, PID=413, 执行时间=76 ms
+[Task 11结束] 名字=fft, PID=414, 执行时间=73 ms
+[Task 12结束] 名字=filterbank, PID=415, 执行时间=69 ms
+本轮实际用时: 148 ms
+=== 第7轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 4] 启动: bsort
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=416, 执行时间=61 ms
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 2结束] 名字=bitcount, PID=417, 执行时间=57 ms
+[Task 3结束] 名字=bitonic, PID=418, 执行时间=62 ms
+[Task 4结束] 名字=bsort, PID=419, 执行时间=58 ms
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=420, 执行时间=64 ms
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 6结束] 名字=cosf, PID=421, 执行时间=82 ms
+[Task 7结束] 名字=countnegative, PID=422, 执行时间=70 ms
+[Task 8结束] 名字=cubic, PID=423, 执行时间=72 ms
+[Task 9结束] 名字=deg2rad, PID=424, 执行时间=87 ms
+[Task 10] 启动: fac
+[Task 10结束] 名字=fac, PID=425, 执行时间=99 ms
+[Task 11结束] 名字=fft, PID=426, 执行时间=96 ms
+[Task 12结束] 名字=filterbank, PID=427, 执行时间=89 ms
+本轮实际用时: 149 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 1结束] 名字=binarysearch, PID=428, 执行时间=75 ms
+[Task 2结束] 名字=bitcount, PID=429, 执行时间=79 ms
+[Task 7] 启动: countnegative
+[Task 3结束] 名字=bitonic, PID=430, 执行时间=78 ms
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 6] 启动: cosf
+[Task 4结束] 名字=bsort, PID=431, 执行时间=108 ms
+[Task 5结束] 名字=complex_updates, PID=432, 执行时间=103 ms
+[Task 6结束] 名字=cosf, PID=433, 执行时间=114 ms
+[Task 7结束] 名字=countnegative, PID=434, 执行时间=115 ms
+[Task 8结束] 名字=cubic, PID=435, 执行时间=110 ms
+[Task 9结束] 名字=deg2rad, PID=436, 执行时间=98 ms
+[Task 10结束] 名字=fac, PID=437, 执行时间=89 ms
+[Task 11结束] 名字=fft, PID=438, 执行时间=82 ms
+[Task 12结束] 名字=filterbank, PID=439, 执行时间=87 ms
+本轮实际用时: 155 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=440, 执行时间=92 ms
+[Task 2结束] 名字=bitcount, PID=441, 执行时间=91 ms
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=442, 执行时间=134 ms
+[Task 9] 启动: deg2rad
+[Task 4结束] 名字=bsort, PID=443, 执行时间=137 ms
+[Task 5结束] 名字=complex_updates, PID=444, 执行时间=134 ms
+[Task 6结束] 名字=cosf, PID=445, 执行时间=132 ms
+[Task 10] 启动: fac
+[Task 7结束] 名字=countnegative, PID=446, 执行时间=148 ms
+[Task 12] 启动: filterbank
+[Task 8结束] 名字=cubic, PID=447, 执行时间=143 ms
+[Task 9结束] 名字=deg2rad, PID=448, 执行时间=127 ms
+[Task 10结束] 名字=fac, PID=449, 执行时间=123 ms
+[Task 11结束] 名字=fft, PID=450, 执行时间=120 ms
+[Task 12结束] 名字=filterbank, PID=451, 执行时间=120 ms
+本轮实际用时: 207 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=452, 执行时间=94 ms
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=453, 执行时间=113 ms
+[Task 3结束] 名字=bitonic, PID=454, 执行时间=107 ms
+[Task 4结束] 名字=bsort, PID=455, 执行时间=104 ms
+[Task 5结束] 名字=complex_updates, PID=456, 执行时间=98 ms
+[Task 6结束] 名字=cosf, PID=457, 执行时间=84 ms
+[Task 7结束] 名字=countnegative, PID=458, 执行时间=81 ms
+[Task 8结束] 名字=cubic, PID=459, 执行时间=72 ms
+[Task 9结束] 名字=deg2rad, PID=460, 执行时间=68 ms
+[Task 11] 启动: fft
+[Task 10结束] 名字=fac, PID=461, 执行时间=52 ms
+[Task 11结束] 名字=fft, PID=462, 执行时间=60 ms
+[Task 12结束] 名字=filterbank, PID=463, 执行时间=58 ms
+本轮实际用时: 148 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4121 ms
+CPU利用率估算: 225.82%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=705 ms, 平均每轮=70 ms
+[Task 2] 名字=bitcount, 总时间=710 ms, 平均每轮=71 ms
+[Task 3] 名字=bitonic, 总时间=826 ms, 平均每轮=82 ms
+[Task 4] 名字=bsort, 总时间=836 ms, 平均每轮=83 ms
+[Task 5] 名字=complex_updates, 总时间=794 ms, 平均每轮=79 ms
+[Task 6] 名字=cosf, 总时间=803 ms, 平均每轮=80 ms
+[Task 7] 名字=countnegative, 总时间=812 ms, 平均每轮=81 ms
+[Task 8] 名字=cubic, 总时间=786 ms, 平均每轮=78 ms
+[Task 9] 名字=deg2rad, 总时间=757 ms, 平均每轮=75 ms
+[Task 10] 名字=fac, 总时间=747 ms, 平均每轮=74 ms
+[Task 11] 名字=fft, 总时间=747 ms, 平均每轮=74 ms
+[Task 12] 名字=filterbank, 总时间=783 ms, 平均每轮=78 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=464 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=465, 执行时间=52 ms
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=466, 执行时间=77 ms
+[Task 3结束] 名字=bitonic, PID=467, 执行时间=77 ms
+[Task 4结束] 名字=bsort, PID=468, 执行时间=73 ms
+[Task 5结束] 名字=complex_updates, PID=469, 执行时间=78 ms
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=470, 执行时间=78 ms
+[Task 7结束] 名字=countnegative, PID=471, 执行时间=82 ms
+[Task 8结束] 名字=cubic, PID=472, 执行时间=80 ms
+[Task 9结束] 名字=deg2rad, PID=473, 执行时间=79 ms
+[Task 10结束] 名字=fac, PID=474, 执行时间=88 ms
+[Task 11结束] 名字=fft, PID=475, 执行时间=81 ms
+[Task 12] 启动: filterbank
+[Task 12结束] 名字=filterbank, PID=476, 执行时间=91 ms
+本轮实际用时: 138 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=477, 执行时间=48 ms
+[Task 5] 启动: complex_updates
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 4] 启动: bsort
+[Task 2结束] 名字=bitcount, PID=478, 执行时间=68 ms
+[Task 6] 启动: cosf
+[Task 3结束] 名字=bitonic, PID=479, 执行时间=71 ms
+[Task 7] 启动: countnegative
+[Task 4结束] 名字=bsort, PID=480, 执行时间=84 ms
+[Task 5结束] 名字=complex_updates, PID=481, 执行时间=72 ms
+[Task 6结束] 名字=cosf, PID=482, 执行时间=75 ms
+[Task 7结束] 名字=countnegative, PID=483, 执行时间=81 ms
+[Task 8结束] 名字=cubic, PID=484, 执行时间=77 ms
+[Task 9结束] 名字=deg2rad, PID=485, 执行时间=74 ms
+[Task 10结束] 名字=fac, PID=486, 执行时间=74 ms
+[Task 11结束] 名字=fft, PID=487, 执行时间=71 ms
+[Task 12结束] 名字=filterbank, PID=488, 执行时间=72 ms
+本轮实际用时: 117 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=489, 执行时间=57 ms
+[Task 2结束] 名字=bitcount, PID=490, 执行时间=57 ms
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=491, 执行时间=65 ms
+[Task 9] 启动: deg2rad
+[Task 4结束] 名字=bsort, PID=492, 执行时间=68 ms
+[Task 5结束] 名字=complex_updates, PID=493, 执行时间=65 ms
+[Task 6结束] 名字=cosf, PID=494, 执行时间=60 ms
+[Task 7结束] 名字=countnegative, PID=495, 执行时间=60 ms
+[Task 8结束] 名字=cubic, PID=496, 执行时间=58 ms
+[Task 9结束] 名字=deg2rad, PID=497, 执行时间=68 ms
+[Task 10结束] 名字=fac, PID=498, 执行时间=63 ms
+[Task 11结束] 名字=fft, PID=499, 执行时间=62 ms
+[Task 12结束] 名字=filterbank, PID=500, 执行时间=70 ms
+本轮实际用时: 125 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=501, 执行时间=96 ms
+[Task 2结束] 名字=bitcount, PID=502, 执行时间=90 ms
+[Task 5] 启动: complex_updates
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=503, 执行时间=99 ms
+[Task 4结束] 名字=bsort, PID=504, 执行时间=112 ms
+[Task 5结束] 名字=complex_updates, PID=505, 执行时间=107 ms
+[Task 6结束] 名字=cosf, PID=506, 执行时间=95 ms
+[Task 7结束] 名字=countnegative, PID=507, 执行时间=90 ms
+[Task 8结束] 名字=cubic, PID=508, 执行时间=79 ms
+[Task 9结束] 名字=deg2rad, PID=509, 执行时间=82 ms
+[Task 10结束] 名字=fac, PID=510, 执行时间=79 ms
+[Task 11结束] 名字=fft, PID=511, 执行时间=77 ms
+[Task 12结束] 名字=filterbank, PID=512, 执行时间=69 ms
+本轮实际用时: 162 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=513, 执行时间=49 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=514, 执行时间=67 ms
+[Task 3结束] 名字=bitonic, PID=515, 执行时间=67 ms
+[Task 4] 启动: bsort
+[Task 4结束] 名字=bsort, PID=516, 执行时间=71 ms
+[Task 5结束] 名字=complex_updates, PID=517, 执行时间=69 ms
+[Task 6结束] 名字=cosf, PID=518, 执行时间=62 ms
+[Task 7结束] 名字=countnegative, PID=519, 执行时间=60 ms
+[Task 8结束] 名字=cubic, PID=520, 执行时间=57 ms
+[Task 9结束] 名字=deg2rad, PID=521, 执行时间=56 ms
+[Task 10结束] 名字=fac, PID=522, 执行时间=53 ms
+[Task 11结束] 名字=fft, PID=523, 执行时间=52 ms
+[Task 12结束] 名字=filterbank, PID=524, 执行时间=51 ms
+本轮实际用时: 98 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=525, 执行时间=90 ms
+[Task 2结束] 名字=bitcount, PID=526, 执行时间=89 ms
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=527, 执行时间=86 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=528, 执行时间=90 ms
+[Task 5结束] 名字=complex_updates, PID=529, 执行时间=83 ms
+[Task 6结束] 名字=cosf, PID=530, 执行时间=79 ms
+[Task 7结束] 名字=countnegative, PID=531, 执行时间=71 ms
+[Task 8结束] 名字=cubic, PID=532, 执行时间=70 ms
+[Task 9结束] 名字=deg2rad, PID=533, 执行时间=69 ms
+[Task 10结束] 名字=fac, PID=534, 执行时间=66 ms
+[Task 11结束] 名字=fft, PID=535, 执行时间=61 ms
+[Task 12结束] 名字=filterbank, PID=536, 执行时间=58 ms
+本轮实际用时: 145 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=537, 执行时间=64 ms
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=538, 执行时间=45 ms
+[Task 11] 启动: fft
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=539, 执行时间=70 ms
+[Task 4结束] 名字=bsort, PID=540, 执行时间=69 ms
+[Task 5结束] 名字=complex_updates, PID=541, 执行时间=68 ms
+[Task 6结束] 名字=cosf, PID=542, 执行时间=68 ms
+[Task 7结束] 名字=countnegative, PID=543, 执行时间=64 ms
+[Task 8结束] 名字=cubic, PID=544, 执行时间=64 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=545, 执行时间=67 ms
+[Task 10结束] 名字=fac, PID=546, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=547, 执行时间=67 ms
+[Task 12结束] 名字=filterbank, PID=548, 执行时间=74 ms
+本轮实际用时: 134 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=549, 执行时间=58 ms
+[Task 2结束] 名字=bitcount, PID=550, 执行时间=61 ms
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=551, 执行时间=45 ms
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=552, 执行时间=61 ms
+[Task 5结束] 名字=complex_updates, PID=553, 执行时间=60 ms
+[Task 6结束] 名字=cosf, PID=554, 执行时间=60 ms
+[Task 7结束] 名字=countnegative, PID=555, 执行时间=55 ms
+[Task 8结束] 名字=cubic, PID=556, 执行时间=48 ms
+[Task 9结束] 名字=deg2rad, PID=557, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=558, 执行时间=43 ms
+[Task 11结束] 名字=fft, PID=559, 执行时间=41 ms
+[Task 12结束] 名字=filterbank, PID=560, 执行时间=62 ms
+本轮实际用时: 118 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=561, 执行时间=33 ms
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 5] 启动: complex_updates
+[Task 2结束] 名字=bitcount, PID=562, 执行时间=46 ms
+[Task 3结束] 名字=bitonic, PID=563, 执行时间=44 ms
+[Task 4结束] 名字=bsort, PID=564, 执行时间=41 ms
+[Task 5结束] 名字=complex_updates, PID=565, 执行时间=41 ms
+[Task 6结束] 名字=cosf, PID=566, 执行时间=42 ms
+[Task 12] 启动: filterbank
+[Task 7结束] 名字=countnegative, PID=567, 执行时间=49 ms
+[Task 8结束] 名字=cubic, PID=568, 执行时间=49 ms
+[Task 9结束] 名字=deg2rad, PID=569, 执行时间=49 ms
+[Task 10结束] 名字=fac, PID=570, 执行时间=48 ms
+[Task 11结束] 名字=fft, PID=571, 执行时间=46 ms
+[Task 12结束] 名字=filterbank, PID=572, 执行时间=60 ms
+本轮实际用时: 89 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=573, 执行时间=33 ms
+[Task 2结束] 名字=bitcount, PID=574, 执行时间=31 ms
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=575, 执行时间=28 ms
+[Task 8] 启动: cubic
+[Task 7] 启动: countnegative
+[Task 4结束] 名字=bsort, PID=576, 执行时间=22 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 5] 启动: complex_updates
+[Task 5结束] 名字=complex_updates, PID=577, 执行时间=34 ms
+[Task 6结束] 名字=cosf, PID=578, 执行时间=33 ms
+[Task 7结束] 名字=countnegative, PID=579, 执行时间=33 ms
+[Task 8结束] 名字=cubic, PID=580, 执行时间=37 ms
+[Task 9结束] 名字=deg2rad, PID=581, 执行时间=39 ms
+[Task 10] 启动: fac
+[Task 10结束] 名字=fac, PID=582, 执行时间=47 ms
+[Task 11结束] 名字=fft, PID=583, 执行时间=46 ms
+[Task 12结束] 名字=filterbank, PID=584, 执行时间=47 ms
+本轮实际用时: 80 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4091 ms
+CPU利用率估算: 187.31%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=580 ms, 平均每轮=58 ms
+[Task 2] 名字=bitcount, 总时间=631 ms, 平均每轮=63 ms
+[Task 3] 名字=bitonic, 总时间=652 ms, 平均每轮=65 ms
+[Task 4] 名字=bsort, 总时间=691 ms, 平均每轮=69 ms
+[Task 5] 名字=complex_updates, 总时间=677 ms, 平均每轮=67 ms
+[Task 6] 名字=cosf, 总时间=652 ms, 平均每轮=65 ms
+[Task 7] 名字=countnegative, 总时间=645 ms, 平均每轮=64 ms
+[Task 8] 名字=cubic, 总时间=619 ms, 平均每轮=61 ms
+[Task 9] 名字=deg2rad, 总时间=629 ms, 平均每轮=62 ms
+[Task 10] 名字=fac, 总时间=629 ms, 平均每轮=62 ms
+[Task 11] 名字=fft, 总时间=604 ms, 平均每轮=60 ms
+[Task 12] 名字=filterbank, 总时间=654 ms, 平均每轮=65 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=585 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 7] 启动: countnegative
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=586, 执行时间=57 ms
+[Task 2结束] 名字=bitcount, PID=587, 执行时间=54 ms
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=588, 执行时间=66 ms
+[Task 4结束] 名字=bsort, PID=589, 执行时间=62 ms
+[Task 5结束] 名字=complex_updates, PID=590, 执行时间=58 ms
+[Task 6结束] 名字=cosf, PID=591, 执行时间=60 ms
+[Task 7结束] 名字=countnegative, PID=592, 执行时间=52 ms
+[Task 8结束] 名字=cubic, PID=593, 执行时间=55 ms
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 9结束] 名字=deg2rad, PID=594, 执行时间=63 ms
+[Task 10结束] 名字=fac, PID=595, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=596, 执行时间=64 ms
+[Task 12结束] 名字=filterbank, PID=597, 执行时间=60 ms
+本轮实际用时: 116 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=598, 执行时间=51 ms
+[Task 2结束] 名字=bitcount, PID=599, 执行时间=53 ms
+[Task 3结束] 名字=bitonic, PID=600, 执行时间=54 ms
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 4] 启动: bsort
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=601, 执行时间=68 ms
+[Task 5结束] 名字=complex_updates, PID=602, 执行时间=67 ms
+[Task 6结束] 名字=cosf, PID=603, 执行时间=64 ms
+[Task 7结束] 名字=countnegative, PID=604, 执行时间=52 ms
+[Task 8结束] 名字=cubic, PID=605, 执行时间=55 ms
+[Task 9] 启动: deg2rad
+[Task 9结束] 名字=deg2rad, PID=606, 执行时间=63 ms
+[Task 10结束] 名字=fac, PID=607, 执行时间=59 ms
+[Task 11结束] 名字=fft, PID=608, 执行时间=56 ms
+[Task 12结束] 名字=filterbank, PID=609, 执行时间=55 ms
+本轮实际用时: 103 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 6] 启动: cosf
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=610, 执行时间=75 ms
+[Task 2结束] 名字=bitcount, PID=611, 执行时间=73 ms
+[Task 3结束] 名字=bitonic, PID=612, 执行时间=73 ms
+[Task 4结束] 名字=bsort, PID=613, 执行时间=69 ms
+[Task 5结束] 名字=complex_updates, PID=614, 执行时间=61 ms
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 6结束] 名字=cosf, PID=615, 执行时间=67 ms
+[Task 7结束] 名字=countnegative, PID=616, 执行时间=62 ms
+[Task 8结束] 名字=cubic, PID=617, 执行时间=53 ms
+[Task 9结束] 名字=deg2rad, PID=618, 执行时间=53 ms
+[Task 10结束] 名字=fac, PID=619, 执行时间=52 ms
+[Task 11结束] 名字=fft, PID=620, 执行时间=50 ms
+[Task 12] 启动: filterbank
+[Task 12结束] 名字=filterbank, PID=621, 执行时间=71 ms
+本轮实际用时: 143 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=622, 执行时间=35 ms
+[Task 2结束] 名字=bitcount, PID=623, 执行时间=37 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=624, 执行时间=50 ms
+[Task 4] 启动: bsort
+[Task 4结束] 名字=bsort, PID=625, 执行时间=52 ms
+[Task 5结束] 名字=complex_updates, PID=626, 执行时间=49 ms
+[Task 6结束] 名字=cosf, PID=627, 执行时间=48 ms
+[Task 7结束] 名字=countnegative, PID=628, 执行时间=48 ms
+[Task 8结束] 名字=cubic, PID=629, 执行时间=45 ms
+[Task 9结束] 名字=deg2rad, PID=630, 执行时间=47 ms
+[Task 10结束] 名字=fac, PID=631, 执行时间=45 ms
+[Task 11结束] 名字=fft, PID=632, 执行时间=48 ms
+[Task 12结束] 名字=filterbank, PID=633, 执行时间=51 ms
+本轮实际用时: 85 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 4] 启动: bsort
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=634, 执行时间=44 ms
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=635, 执行时间=55 ms
+[Task 3结束] 名字=bitonic, PID=636, 执行时间=54 ms
+[Task 4结束] 名字=bsort, PID=637, 执行时间=52 ms
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=638, 执行时间=55 ms
+[Task 6结束] 名字=cosf, PID=639, 执行时间=53 ms
+[Task 7结束] 名字=countnegative, PID=640, 执行时间=51 ms
+[Task 8结束] 名字=cubic, PID=641, 执行时间=59 ms
+[Task 9结束] 名字=deg2rad, PID=642, 执行时间=54 ms
+[Task 10] 启动: fac
+[Task 10结束] 名字=fac, PID=643, 执行时间=63 ms
+[Task 11结束] 名字=fft, PID=644, 执行时间=61 ms
+[Task 12结束] 名字=filterbank, PID=645, 执行时间=64 ms
+本轮实际用时: 111 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=646, 执行时间=50 ms
+[Task 2结束] 名字=bitcount, PID=647, 执行时间=52 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=648, 执行时间=64 ms
+[Task 4结束] 名字=bsort, PID=649, 执行时间=66 ms
+[Task 5结束] 名字=complex_updates, PID=650, 执行时间=63 ms
+[Task 12] 启动: filterbank
+[Task 6结束] 名字=cosf, PID=651, 执行时间=61 ms
+[Task 7结束] 名字=countnegative, PID=652, 执行时间=62 ms
+[Task 8结束] 名字=cubic, PID=653, 执行时间=59 ms
+[Task 9结束] 名字=deg2rad, PID=654, 执行时间=53 ms
+[Task 10结束] 名字=fac, PID=655, 执行时间=52 ms
+[Task 11结束] 名字=fft, PID=656, 执行时间=52 ms
+[Task 12结束] 名字=filterbank, PID=657, 执行时间=68 ms
+本轮实际用时: 112 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=658, 执行时间=46 ms
+[Task 2结束] 名字=bitcount, PID=659, 执行时间=50 ms
+[Task 3] 启动: bitonic
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 4] 启动: bsort
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=660, 执行时间=75 ms
+[Task 4结束] 名字=bsort, PID=661, 执行时间=76 ms
+[Task 5结束] 名字=complex_updates, PID=662, 执行时间=77 ms
+[Task 6结束] 名字=cosf, PID=663, 执行时间=75 ms
+[Task 7结束] 名字=countnegative, PID=664, 执行时间=79 ms
+[Task 8结束] 名字=cubic, PID=665, 执行时间=72 ms
+[Task 9结束] 名字=deg2rad, PID=666, 执行时间=69 ms
+[Task 12] 启动: filterbank
+[Task 10结束] 名字=fac, PID=667, 执行时间=73 ms
+[Task 11结束] 名字=fft, PID=668, 执行时间=77 ms
+[Task 12结束] 名字=filterbank, PID=669, 执行时间=93 ms
+本轮实际用时: 136 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=670, 执行时间=61 ms
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 2结束] 名字=bitcount, PID=671, 执行时间=85 ms
+[Task 3结束] 名字=bitonic, PID=672, 执行时间=87 ms
+[Task 4结束] 名字=bsort, PID=673, 执行时间=84 ms
+[Task 5结束] 名字=complex_updates, PID=674, 执行时间=84 ms
+[Task 6结束] 名字=cosf, PID=675, 执行时间=80 ms
+[Task 7结束] 名字=countnegative, PID=676, 执行时间=76 ms
+[Task 8结束] 名字=cubic, PID=677, 执行时间=84 ms
+[Task 9结束] 名字=deg2rad, PID=678, 执行时间=73 ms
+[Task 10结束] 名字=fac, PID=679, 执行时间=62 ms
+[Task 11结束] 名字=fft, PID=680, 执行时间=58 ms
+[Task 12结束] 名字=filterbank, PID=681, 执行时间=55 ms
+本轮实际用时: 113 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=682, 执行时间=45 ms
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=683, 执行时间=44 ms
+[Task 11] 启动: fft
+[Task 7] 启动: countnegative
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=684, 执行时间=56 ms
+[Task 4结束] 名字=bsort, PID=685, 执行时间=55 ms
+[Task 5结束] 名字=complex_updates, PID=686, 执行时间=54 ms
+[Task 6结束] 名字=cosf, PID=687, 执行时间=54 ms
+[Task 7结束] 名字=countnegative, PID=688, 执行时间=50 ms
+[Task 8结束] 名字=cubic, PID=689, 执行时间=49 ms
+[Task 9结束] 名字=deg2rad, PID=690, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=691, 执行时间=44 ms
+[Task 11结束] 名字=fft, PID=692, 执行时间=49 ms
+[Task 12结束] 名字=filterbank, PID=693, 执行时间=66 ms
+本轮实际用时: 110 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=694, 执行时间=68 ms
+[Task 2结束] 名字=bitcount, PID=695, 执行时间=66 ms
+[Task 3结束] 名字=bitonic, PID=696, 执行时间=61 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=697, 执行时间=55 ms
+[Task 5] 启动: complex_updates
+[Task 5结束] 名字=complex_updates, PID=698, 执行时间=72 ms
+[Task 6结束] 名字=cosf, PID=699, 执行时间=70 ms
+[Task 7结束] 名字=countnegative, PID=700, 执行时间=72 ms
+[Task 8结束] 名字=cubic, PID=701, 执行时间=70 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=702, 执行时间=79 ms
+[Task 10结束] 名字=fac, PID=703, 执行时间=78 ms
+[Task 11结束] 名字=fft, PID=704, 执行时间=72 ms
+[Task 12结束] 名字=filterbank, PID=705, 执行时间=87 ms
+本轮实际用时: 151 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4107 ms
+CPU利用率估算: 177.99%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=532 ms, 平均每轮=53 ms
+[Task 2] 名字=bitcount, 总时间=569 ms, 平均每轮=56 ms
+[Task 3] 名字=bitonic, 总时间=640 ms, 平均每轮=64 ms
+[Task 4] 名字=bsort, 总时间=639 ms, 平均每轮=63 ms
+[Task 5] 名字=complex_updates, 总时间=640 ms, 平均每轮=64 ms
+[Task 6] 名字=cosf, 总时间=632 ms, 平均每轮=63 ms
+[Task 7] 名字=countnegative, 总时间=604 ms, 平均每轮=60 ms
+[Task 8] 名字=cubic, 总时间=601 ms, 平均每轮=60 ms
+[Task 9] 名字=deg2rad, 总时间=600 ms, 平均每轮=60 ms
+[Task 10] 名字=fac, 总时间=596 ms, 平均每轮=59 ms
+[Task 11] 名字=fft, 总时间=587 ms, 平均每轮=58 ms
+[Task 12] 名字=filterbank, 总时间=670 ms, 平均每轮=67 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=706 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 3] 启动: bitonic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=707, 执行时间=75 ms
+[Task 2结束] 名字=bitcount, PID=708, 执行时间=73 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 3结束] 名字=bitonic, PID=709, 执行时间=93 ms
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=710, 执行时间=109 ms
+[Task 5结束] 名字=complex_updates, PID=711, 执行时间=109 ms
+[Task 6结束] 名字=cosf, PID=712, 执行时间=109 ms
+[Task 7结束] 名字=countnegative, PID=713, 执行时间=109 ms
+[Task 8结束] 名字=cubic, PID=714, 执行时间=110 ms
+[Task 9结束] 名字=deg2rad, PID=715, 执行时间=101 ms
+[Task 10结束] 名字=fac, PID=716, 执行时间=91 ms
+[Task 11结束] 名字=fft, PID=717, 执行时间=86 ms
+[Task 12结束] 名字=filterbank, PID=718, 执行时间=74 ms
+本轮实际用时: 143 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=719, 执行时间=41 ms
+[Task 2结束] 名字=bitcount, PID=720, 执行时间=41 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=721, 执行时间=54 ms
+[Task 4结束] 名字=bsort, PID=722, 执行时间=52 ms
+[Task 5结束] 名字=complex_updates, PID=723, 执行时间=59 ms
+[Task 6结束] 名字=cosf, PID=724, 执行时间=54 ms
+[Task 9] 启动: deg2rad
+[Task 7结束] 名字=countnegative, PID=725, 执行时间=53 ms
+[Task 8结束] 名字=cubic, PID=726, 执行时间=54 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=727, 执行时间=59 ms
+[Task 10结束] 名字=fac, PID=728, 执行时间=56 ms
+[Task 11结束] 名字=fft, PID=729, 执行时间=52 ms
+[Task 12结束] 名字=filterbank, PID=730, 执行时间=73 ms
+本轮实际用时: 112 ms
+=== 第3轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=731, 执行时间=81 ms
+[Task 2结束] 名字=bitcount, PID=732, 执行时间=84 ms
+[Task 3结束] 名字=bitonic, PID=733, 执行时间=77 ms
+[Task 4结束] 名字=bsort, PID=734, 执行时间=77 ms
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=735, 执行时间=87 ms
+[Task 6结束] 名字=cosf, PID=736, 执行时间=84 ms
+[Task 7结束] 名字=countnegative, PID=737, 执行时间=76 ms
+[Task 8结束] 名字=cubic, PID=738, 执行时间=72 ms
+[Task 11] 启动: fft
+[Task 9结束] 名字=deg2rad, PID=739, 执行时间=63 ms
+[Task 12] 启动: filterbank
+[Task 10结束] 名字=fac, PID=740, 执行时间=52 ms
+[Task 11结束] 名字=fft, PID=741, 执行时间=45 ms
+[Task 12结束] 名字=filterbank, PID=742, 执行时间=55 ms
+本轮实际用时: 136 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 1结束] 名字=binarysearch, PID=743, 执行时间=63 ms
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=744, 执行时间=74 ms
+[Task 3结束] 名字=bitonic, PID=745, 执行时间=73 ms
+[Task 4结束] 名字=bsort, PID=746, 执行时间=70 ms
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=747, 执行时间=58 ms
+[Task 6结束] 名字=cosf, PID=748, 执行时间=58 ms
+[Task 7结束] 名字=countnegative, PID=749, 执行时间=56 ms
+[Task 8结束] 名字=cubic, PID=750, 执行时间=56 ms
+[Task 9结束] 名字=deg2rad, PID=751, 执行时间=54 ms
+[Task 10结束] 名字=fac, PID=752, 执行时间=49 ms
+[Task 11结束] 名字=fft, PID=753, 执行时间=49 ms
+[Task 12结束] 名字=filterbank, PID=754, 执行时间=45 ms
+本轮实际用时: 103 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 2] 启动: bitcount
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=755, 执行时间=76 ms
+[Task 2结束] 名字=bitcount, PID=756, 执行时间=80 ms
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 12] 启动: filterbank
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=757, 执行时间=97 ms
+[Task 4结束] 名字=bsort, PID=758, 执行时间=89 ms
+[Task 5结束] 名字=complex_updates, PID=759, 执行时间=94 ms
+[Task 11] 启动: fft
+[Task 6结束] 名字=cosf, PID=760, 执行时间=77 ms
+[Task 7结束] 名字=countnegative, PID=761, 执行时间=81 ms
+[Task 8结束] 名字=cubic, PID=762, 执行时间=78 ms
+[Task 9结束] 名字=deg2rad, PID=763, 执行时间=78 ms
+[Task 10结束] 名字=fac, PID=764, 执行时间=73 ms
+[Task 11结束] 名字=fft, PID=765, 执行时间=68 ms
+[Task 12结束] 名字=filterbank, PID=766, 执行时间=71 ms
+本轮实际用时: 145 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=767, 执行时间=65 ms
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=768, 执行时间=77 ms
+[Task 3结束] 名字=bitonic, PID=769, 执行时间=70 ms
+[Task 4结束] 名字=bsort, PID=770, 执行时间=62 ms
+[Task 12] 启动: filterbank
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=771, 执行时间=48 ms
+[Task 6结束] 名字=cosf, PID=772, 执行时间=51 ms
+[Task 7结束] 名字=countnegative, PID=773, 执行时间=48 ms
+[Task 11] 启动: fft
+[Task 8结束] 名字=cubic, PID=774, 执行时间=54 ms
+[Task 9结束] 名字=deg2rad, PID=775, 执行时间=52 ms
+[Task 10结束] 名字=fac, PID=776, 执行时间=49 ms
+[Task 11结束] 名字=fft, PID=777, 执行时间=45 ms
+[Task 12结束] 名字=filterbank, PID=778, 执行时间=59 ms
+本轮实际用时: 121 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 1结束] 名字=binarysearch, PID=779, 执行时间=69 ms
+[Task 2结束] 名字=bitcount, PID=780, 执行时间=77 ms
+[Task 3结束] 名字=bitonic, PID=781, 执行时间=74 ms
+[Task 8] 启动: cubic
+[Task 4结束] 名字=bsort, PID=782, 执行时间=74 ms
+[Task 5结束] 名字=complex_updates, PID=783, 执行时间=70 ms
+[Task 6结束] 名字=cosf, PID=784, 执行时间=63 ms
+[Task 7结束] 名字=countnegative, PID=785, 执行时间=61 ms
+[Task 10] 启动: fac
+[Task 8结束] 名字=cubic, PID=786, 执行时间=59 ms
+[Task 9结束] 名字=deg2rad, PID=787, 执行时间=57 ms
+[Task 10结束] 名字=fac, PID=788, 执行时间=64 ms
+[Task 11结束] 名字=fft, PID=789, 执行时间=60 ms
+[Task 12结束] 名字=filterbank, PID=790, 执行时间=58 ms
+本轮实际用时: 125 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=791, 执行时间=35 ms
+[Task 2结束] 名字=bitcount, PID=792, 执行时间=34 ms
+[Task 3结束] 名字=bitonic, PID=793, 执行时间=34 ms
+[Task 4结束] 名字=bsort, PID=794, 执行时间=33 ms
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=795, 执行时间=34 ms
+[Task 6结束] 名字=cosf, PID=796, 执行时间=34 ms
+[Task 7结束] 名字=countnegative, PID=797, 执行时间=30 ms
+[Task 8结束] 名字=cubic, PID=798, 执行时间=30 ms
+[Task 9结束] 名字=deg2rad, PID=799, 执行时间=34 ms
+[Task 10结束] 名字=fac, PID=800, 执行时间=33 ms
+[Task 11] 启动: fft
+[Task 11结束] 名字=fft, PID=801, 执行时间=48 ms
+[Task 12结束] 名字=filterbank, PID=802, 执行时间=47 ms
+本轮实际用时: 80 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=803, 执行时间=54 ms
+[Task 2结束] 名字=bitcount, PID=804, 执行时间=53 ms
+[Task 5] 启动: complex_updates
+[Task 3结束] 名字=bitonic, PID=805, 执行时间=43 ms
+[Task 4结束] 名字=bsort, PID=806, 执行时间=52 ms
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=807, 执行时间=66 ms
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 6结束] 名字=cosf, PID=808, 执行时间=69 ms
+[Task 7结束] 名字=countnegative, PID=809, 执行时间=63 ms
+[Task 8结束] 名字=cubic, PID=810, 执行时间=71 ms
+[Task 9结束] 名字=deg2rad, PID=811, 执行时间=71 ms
+[Task 10结束] 名字=fac, PID=812, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=813, 执行时间=67 ms
+[Task 12结束] 名字=filterbank, PID=814, 执行时间=75 ms
+本轮实际用时: 127 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=815, 执行时间=43 ms
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 2结束] 名字=bitcount, PID=816, 执行时间=58 ms
+[Task 3结束] 名字=bitonic, PID=817, 执行时间=60 ms
+[Task 4结束] 名字=bsort, PID=818, 执行时间=60 ms
+[Task 5结束] 名字=complex_updates, PID=819, 执行时间=57 ms
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=820, 执行时间=67 ms
+[Task 7结束] 名字=countnegative, PID=821, 执行时间=63 ms
+[Task 8结束] 名字=cubic, PID=822, 执行时间=65 ms
+[Task 9结束] 名字=deg2rad, PID=823, 执行时间=64 ms
+[Task 12] 启动: filterbank
+[Task 10结束] 名字=fac, PID=824, 执行时间=65 ms
+[Task 11结束] 名字=fft, PID=825, 执行时间=63 ms
+[Task 12结束] 名字=filterbank, PID=826, 执行时间=82 ms
+本轮实际用时: 124 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4096 ms
+CPU利用率估算: 187.94%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=602 ms, 平均每轮=60 ms
+[Task 2] 名字=bitcount, 总时间=651 ms, 平均每轮=65 ms
+[Task 3] 名字=bitonic, 总时间=675 ms, 平均每轮=67 ms
+[Task 4] 名字=bsort, 总时间=678 ms, 平均每轮=67 ms
+[Task 5] 名字=complex_updates, 总时间=682 ms, 平均每轮=68 ms
+[Task 6] 名字=cosf, 总时间=666 ms, 平均每轮=66 ms
+[Task 7] 名字=countnegative, 总时间=640 ms, 平均每轮=64 ms
+[Task 8] 名字=cubic, 总时间=649 ms, 平均每轮=64 ms
+[Task 9] 名字=deg2rad, 总时间=633 ms, 平均每轮=63 ms
+[Task 10] 名字=fac, 总时间=600 ms, 平均每轮=60 ms
+[Task 11] 名字=fft, 总时间=583 ms, 平均每轮=58 ms
+[Task 12] 名字=filterbank, 总时间=639 ms, 平均每轮=63 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=827 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=828, 执行时间=26 ms
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=829, 执行时间=27 ms
+[Task 12] 启动: filterbank
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 7] 启动: countnegative
+[Task 3结束] 名字=bitonic, PID=830, 执行时间=37 ms
+[Task 4结束] 名字=bsort, PID=831, 执行时间=43 ms
+[Task 5结束] 名字=complex_updates, PID=832, 执行时间=42 ms
+[Task 6结束] 名字=cosf, PID=833, 执行时间=43 ms
+[Task 7结束] 名字=countnegative, PID=834, 执行时间=46 ms
+[Task 8结束] 名字=cubic, PID=835, 执行时间=60 ms
+[Task 9结束] 名字=deg2rad, PID=836, 执行时间=61 ms
+[Task 10] 启动: fac
+[Task 10结束] 名字=fac, PID=837, 执行时间=73 ms
+[Task 11结束] 名字=fft, PID=838, 执行时间=70 ms
+[Task 12结束] 名字=filterbank, PID=839, 执行时间=71 ms
+本轮实际用时: 97 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 10] 启动: fac
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=840, 执行时间=31 ms
+[Task 8] 启动: cubic
+[Task 2结束] 名字=bitcount, PID=841, 执行时间=30 ms
+[Task 3结束] 名字=bitonic, PID=842, 执行时间=29 ms
+[Task 4结束] 名字=bsort, PID=843, 执行时间=30 ms
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=844, 执行时间=50 ms
+[Task 6结束] 名字=cosf, PID=845, 执行时间=46 ms
+[Task 7结束] 名字=countnegative, PID=846, 执行时间=47 ms
+[Task 8结束] 名字=cubic, PID=847, 执行时间=46 ms
+[Task 9结束] 名字=deg2rad, PID=848, 执行时间=51 ms
+[Task 10结束] 名字=fac, PID=849, 执行时间=57 ms
+[Task 11结束] 名字=fft, PID=850, 执行时间=55 ms
+[Task 12结束] 名字=filterbank, PID=851, 执行时间=56 ms
+本轮实际用时: 84 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=852, 执行时间=49 ms
+[Task 2结束] 名字=bitcount, PID=853, 执行时间=45 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=854, 执行时间=70 ms
+[Task 4结束] 名字=bsort, PID=855, 执行时间=70 ms
+[Task 5结束] 名字=complex_updates, PID=856, 执行时间=71 ms
+[Task 6结束] 名字=cosf, PID=857, 执行时间=68 ms
+[Task 7结束] 名字=countnegative, PID=858, 执行时间=65 ms
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 8结束] 名字=cubic, PID=859, 执行时间=87 ms
+[Task 9结束] 名字=deg2rad, PID=860, 执行时间=85 ms
+[Task 10结束] 名字=fac, PID=861, 执行时间=83 ms
+[Task 11结束] 名字=fft, PID=862, 执行时间=78 ms
+[Task 12结束] 名字=filterbank, PID=863, 执行时间=85 ms
+本轮实际用时: 128 ms
+=== 第4轮 ===
+[Task 3] 启动: bitonic
+[Task 1] 启动: binarysearch
+[Task 4] 启动: bsort
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=864, 执行时间=72 ms
+[Task 10] 启动: fac
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 2结束] 名字=bitcount, PID=865, 执行时间=101 ms
+[Task 3结束] 名字=bitonic, PID=866, 执行时间=101 ms
+[Task 4结束] 名字=bsort, PID=867, 执行时间=88 ms
+[Task 5结束] 名字=complex_updates, PID=868, 执行时间=85 ms
+[Task 6结束] 名字=cosf, PID=869, 执行时间=75 ms
+[Task 12] 启动: filterbank
+[Task 7结束] 名字=countnegative, PID=870, 执行时间=76 ms
+[Task 8结束] 名字=cubic, PID=871, 执行时间=78 ms
+[Task 9结束] 名字=deg2rad, PID=872, 执行时间=78 ms
+[Task 10结束] 名字=fac, PID=873, 执行时间=82 ms
+[Task 11结束] 名字=fft, PID=874, 执行时间=82 ms
+[Task 12结束] 名字=filterbank, PID=875, 执行时间=88 ms
+本轮实际用时: 154 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 5] 启动: complex_updates
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=876, 执行时间=22 ms
+[Task 2结束] 名字=bitcount, PID=877, 执行时间=22 ms
+[Task 12] 启动: filterbank
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 3结束] 名字=bitonic, PID=878, 执行时间=47 ms
+[Task 4结束] 名字=bsort, PID=879, 执行时间=47 ms
+[Task 9] 启动: deg2rad
+[Task 5结束] 名字=complex_updates, PID=880, 执行时间=49 ms
+[Task 11] 启动: fft
+[Task 6结束] 名字=cosf, PID=881, 执行时间=58 ms
+[Task 7结束] 名字=countnegative, PID=882, 执行时间=58 ms
+[Task 8结束] 名字=cubic, PID=883, 执行时间=56 ms
+[Task 9结束] 名字=deg2rad, PID=884, 执行时间=63 ms
+[Task 10结束] 名字=fac, PID=885, 执行时间=62 ms
+[Task 11结束] 名字=fft, PID=886, 执行时间=70 ms
+[Task 12结束] 名字=filterbank, PID=887, 执行时间=69 ms
+本轮实际用时: 88 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=888, 执行时间=43 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=889, 执行时间=53 ms
+[Task 3结束] 名字=bitonic, PID=890, 执行时间=55 ms
+[Task 9] 启动: deg2rad
+[Task 4结束] 名字=bsort, PID=891, 执行时间=60 ms
+[Task 5结束] 名字=complex_updates, PID=892, 执行时间=61 ms
+[Task 6结束] 名字=cosf, PID=893, 执行时间=60 ms
+[Task 7结束] 名字=countnegative, PID=894, 执行时间=61 ms
+[Task 8] 启动: cubic
+[Task 8结束] 名字=cubic, PID=895, 执行时间=80 ms
+[Task 9结束] 名字=deg2rad, PID=896, 执行时间=79 ms
+[Task 10结束] 名字=fac, PID=897, 执行时间=79 ms
+[Task 11结束] 名字=fft, PID=898, 执行时间=81 ms
+[Task 12结束] 名字=filterbank, PID=899, 执行时间=80 ms
+本轮实际用时: 95 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 4] 启动: bsort
+[Task 1结束] 名字=binarysearch, PID=900, 执行时间=71 ms
+[Task 2结束] 名字=bitcount, PID=901, 执行时间=69 ms
+[Task 6] 启动: cosf
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=902, 执行时间=81 ms
+[Task 4结束] 名字=bsort, PID=903, 执行时间=77 ms
+[Task 5] 启动: complex_updates
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 5结束] 名字=complex_updates, PID=904, 执行时间=93 ms
+[Task 6结束] 名字=cosf, PID=905, 执行时间=94 ms
+[Task 7结束] 名字=countnegative, PID=906, 执行时间=84 ms
+[Task 8结束] 名字=cubic, PID=907, 执行时间=78 ms
+[Task 9结束] 名字=deg2rad, PID=908, 执行时间=74 ms
+[Task 10结束] 名字=fac, PID=909, 执行时间=69 ms
+[Task 11结束] 名字=fft, PID=910, 执行时间=59 ms
+[Task 12结束] 名字=filterbank, PID=911, 执行时间=72 ms
+本轮实际用时: 141 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=912, 执行时间=23 ms
+[Task 2结束] 名字=bitcount, PID=913, 执行时间=26 ms
+[Task 3结束] 名字=bitonic, PID=914, 执行时间=37 ms
+[Task 11] 启动: fft
+[Task 10] 启动: fac
+[Task 4结束] 名字=bsort, PID=915, 执行时间=41 ms
+[Task 5结束] 名字=complex_updates, PID=916, 执行时间=46 ms
+[Task 6结束] 名字=cosf, PID=917, 执行时间=45 ms
+[Task 7结束] 名字=countnegative, PID=918, 执行时间=44 ms
+[Task 9] 启动: deg2rad
+[Task 8结束] 名字=cubic, PID=919, 执行时间=45 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=920, 执行时间=56 ms
+[Task 10结束] 名字=fac, PID=921, 执行时间=55 ms
+[Task 11结束] 名字=fft, PID=922, 执行时间=54 ms
+[Task 12结束] 名字=filterbank, PID=923, 执行时间=66 ms
+本轮实际用时: 88 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 6] 启动: cosf
+[Task 3] 启动: bitonic
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=924, 执行时间=51 ms
+[Task 2结束] 名字=bitcount, PID=925, 执行时间=53 ms
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=926, 执行时间=61 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=927, 执行时间=56 ms
+[Task 5结束] 名字=complex_updates, PID=928, 执行时间=56 ms
+[Task 12] 启动: filterbank
+[Task 6结束] 名字=cosf, PID=929, 执行时间=57 ms
+[Task 7结束] 名字=countnegative, PID=930, 执行时间=58 ms
+[Task 8结束] 名字=cubic, PID=931, 执行时间=69 ms
+[Task 9结束] 名字=deg2rad, PID=932, 执行时间=76 ms
+[Task 10] 启动: fac
+[Task 10结束] 名字=fac, PID=933, 执行时间=87 ms
+[Task 11结束] 名字=fft, PID=934, 执行时间=85 ms
+[Task 12结束] 名字=filterbank, PID=935, 执行时间=83 ms
+本轮实际用时: 128 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=936, 执行时间=84 ms
+[Task 2结束] 名字=bitcount, PID=937, 执行时间=82 ms
+[Task 6] 启动: cosf
+[Task 3结束] 名字=bitonic, PID=938, 执行时间=83 ms
+[Task 4结束] 名字=bsort, PID=939, 执行时间=77 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=940, 执行时间=68 ms
+[Task 6结束] 名字=cosf, PID=941, 执行时间=53 ms
+[Task 7结束] 名字=countnegative, PID=942, 执行时间=51 ms
+[Task 8结束] 名字=cubic, PID=943, 执行时间=64 ms
+[Task 9结束] 名字=deg2rad, PID=944, 执行时间=60 ms
+[Task 10结束] 名字=fac, PID=945, 执行时间=58 ms
+[Task 11结束] 名字=fft, PID=946, 执行时间=60 ms
+[Task 12结束] 名字=filterbank, PID=947, 执行时间=58 ms
+本轮实际用时: 127 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4077 ms
+CPU利用率估算: 182.81%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=472 ms, 平均每轮=47 ms
+[Task 2] 名字=bitcount, 总时间=508 ms, 平均每轮=50 ms
+[Task 3] 名字=bitonic, 总时间=601 ms, 平均每轮=60 ms
+[Task 4] 名字=bsort, 总时间=589 ms, 平均每轮=58 ms
+[Task 5] 名字=complex_updates, 总时间=621 ms, 平均每轮=62 ms
+[Task 6] 名字=cosf, 总时间=599 ms, 平均每轮=59 ms
+[Task 7] 名字=countnegative, 总时间=590 ms, 平均每轮=59 ms
+[Task 8] 名字=cubic, 总时间=663 ms, 平均每轮=66 ms
+[Task 9] 名字=deg2rad, 总时间=683 ms, 平均每轮=68 ms
+[Task 10] 名字=fac, 总时间=705 ms, 平均每轮=70 ms
+[Task 11] 名字=fft, 总时间=694 ms, 平均每轮=69 ms
+[Task 12] 名字=filterbank, 总时间=728 ms, 平均每轮=72 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=948 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 1结束] 名字=binarysearch, PID=949, 执行时间=36 ms
+[Task 2结束] 名字=bitcount, PID=950, 执行时间=51 ms
+[Task 3结束] 名字=bitonic, PID=951, 执行时间=50 ms
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=952, 执行时间=71 ms
+[Task 5结束] 名字=complex_updates, PID=953, 执行时间=68 ms
+[Task 6结束] 名字=cosf, PID=954, 执行时间=70 ms
+[Task 7结束] 名字=countnegative, PID=955, 执行时间=71 ms
+[Task 8结束] 名字=cubic, PID=956, 执行时间=70 ms
+[Task 9结束] 名字=deg2rad, PID=957, 执行时间=67 ms
+[Task 10结束] 名字=fac, PID=958, 执行时间=65 ms
+[Task 11结束] 名字=fft, PID=959, 执行时间=64 ms
+[Task 12结束] 名字=filterbank, PID=960, 执行时间=71 ms
+本轮实际用时: 99 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 1结束] 名字=binarysearch, PID=961, 执行时间=69 ms
+[Task 2结束] 名字=bitcount, PID=962, 执行时间=66 ms
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 3结束] 名字=bitonic, PID=963, 执行时间=66 ms
+[Task 6] 启动: cosf
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=964, 执行时间=76 ms
+[Task 5结束] 名字=complex_updates, PID=965, 执行时间=66 ms
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=966, 执行时间=73 ms
+[Task 7结束] 名字=countnegative, PID=967, 执行时间=69 ms
+[Task 11] 启动: fft
+[Task 8结束] 名字=cubic, PID=968, 执行时间=65 ms
+[Task 9结束] 名字=deg2rad, PID=969, 执行时间=66 ms
+[Task 10结束] 名字=fac, PID=970, 执行时间=58 ms
+[Task 11结束] 名字=fft, PID=971, 执行时间=62 ms
+[Task 12结束] 名字=filterbank, PID=972, 执行时间=65 ms
+本轮实际用时: 132 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=973, 执行时间=75 ms
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 9] 启动: deg2rad
+[Task 2结束] 名字=bitcount, PID=974, 执行时间=92 ms
+[Task 3结束] 名字=bitonic, PID=975, 执行时间=90 ms
+[Task 4结束] 名字=bsort, PID=976, 执行时间=90 ms
+[Task 11] 启动: fft
+[Task 5结束] 名字=complex_updates, PID=977, 执行时间=97 ms
+[Task 6结束] 名字=cosf, PID=978, 执行时间=96 ms
+[Task 7结束] 名字=countnegative, PID=979, 执行时间=94 ms
+[Task 8结束] 名字=cubic, PID=980, 执行时间=86 ms
+[Task 9结束] 名字=deg2rad, PID=981, 执行时间=90 ms
+[Task 10结束] 名字=fac, PID=982, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=983, 执行时间=61 ms
+[Task 12结束] 名字=filterbank, PID=984, 执行时间=71 ms
+本轮实际用时: 142 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 3] 启动: bitonic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=985, 执行时间=33 ms
+[Task 2结束] 名字=bitcount, PID=986, 执行时间=35 ms
+[Task 3结束] 名字=bitonic, PID=987, 执行时间=43 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=988, 执行时间=42 ms
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=989, 执行时间=42 ms
+[Task 6结束] 名字=cosf, PID=990, 执行时间=46 ms
+[Task 7结束] 名字=countnegative, PID=991, 执行时间=41 ms
+[Task 10] 启动: fac
+[Task 8结束] 名字=cubic, PID=992, 执行时间=50 ms
+[Task 9结束] 名字=deg2rad, PID=993, 执行时间=49 ms
+[Task 10结束] 名字=fac, PID=994, 执行时间=58 ms
+[Task 11结束] 名字=fft, PID=995, 执行时间=57 ms
+[Task 12结束] 名字=filterbank, PID=996, 执行时间=58 ms
+本轮实际用时: 89 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=997, 执行时间=28 ms
+[Task 2结束] 名字=bitcount, PID=998, 执行时间=26 ms
+[Task 11] 启动: fft
+[Task 10] 启动: fac
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 3结束] 名字=bitonic, PID=999, 执行时间=31 ms
+[Task 9] 启动: deg2rad
+[Task 4结束] 名字=bsort, PID=1000, 执行时间=45 ms
+[Task 5结束] 名字=complex_updates, PID=1001, 执行时间=48 ms
+[Task 6结束] 名字=cosf, PID=1002, 执行时间=46 ms
+[Task 7结束] 名字=countnegative, PID=1003, 执行时间=45 ms
+[Task 8结束] 名字=cubic, PID=1004, 执行时间=44 ms
+[Task 9结束] 名字=deg2rad, PID=1005, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=1006, 执行时间=45 ms
+[Task 11结束] 名字=fft, PID=1007, 执行时间=43 ms
+[Task 12结束] 名字=filterbank, PID=1008, 执行时间=52 ms
+本轮实际用时: 78 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=1009, 执行时间=66 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=1010, 执行时间=75 ms
+[Task 3结束] 名字=bitonic, PID=1011, 执行时间=72 ms
+[Task 4结束] 名字=bsort, PID=1012, 执行时间=55 ms
+[Task 10] 启动: fac
+[Task 5结束] 名字=complex_updates, PID=1013, 执行时间=40 ms
+[Task 6结束] 名字=cosf, PID=1014, 执行时间=36 ms
+[Task 7结束] 名字=countnegative, PID=1015, 执行时间=34 ms
+[Task 8结束] 名字=cubic, PID=1016, 执行时间=33 ms
+[Task 9结束] 名字=deg2rad, PID=1017, 执行时间=39 ms
+[Task 10结束] 名字=fac, PID=1018, 执行时间=38 ms
+[Task 11结束] 名字=fft, PID=1019, 执行时间=33 ms
+[Task 12结束] 名字=filterbank, PID=1020, 执行时间=48 ms
+本轮实际用时: 112 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=1021, 执行时间=34 ms
+[Task 2结束] 名字=bitcount, PID=1022, 执行时间=32 ms
+[Task 3结束] 名字=bitonic, PID=1023, 执行时间=39 ms
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=1024, 执行时间=43 ms
+[Task 11] 启动: fft
+[Task 5结束] 名字=complex_updates, PID=1025, 执行时间=49 ms
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=1026, 执行时间=50 ms
+[Task 7结束] 名字=countnegative, PID=1027, 执行时间=50 ms
+[Task 8结束] 名字=cubic, PID=1028, 执行时间=50 ms
+[Task 9结束] 名字=deg2rad, PID=1029, 执行时间=49 ms
+[Task 10结束] 名字=fac, PID=1030, 执行时间=59 ms
+[Task 11结束] 名字=fft, PID=1031, 执行时间=59 ms
+[Task 12结束] 名字=filterbank, PID=1032, 执行时间=72 ms
+本轮实际用时: 105 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 5] 启动: complex_updates
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1033, 执行时间=36 ms
+[Task 2结束] 名字=bitcount, PID=1034, 执行时间=35 ms
+[Task 10] 启动: fac
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 3结束] 名字=bitonic, PID=1035, 执行时间=35 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1036, 执行时间=40 ms
+[Task 5结束] 名字=complex_updates, PID=1037, 执行时间=38 ms
+[Task 6结束] 名字=cosf, PID=1038, 执行时间=38 ms
+[Task 12] 启动: filterbank
+[Task 7结束] 名字=countnegative, PID=1039, 执行时间=38 ms
+[Task 8结束] 名字=cubic, PID=1040, 执行时间=37 ms
+[Task 9结束] 名字=deg2rad, PID=1041, 执行时间=37 ms
+[Task 10结束] 名字=fac, PID=1042, 执行时间=36 ms
+[Task 11结束] 名字=fft, PID=1043, 执行时间=35 ms
+[Task 12结束] 名字=filterbank, PID=1044, 执行时间=47 ms
+本轮实际用时: 83 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 7] 启动: countnegative
+[Task 10] 启动: fac
+[Task 1结束] 名字=binarysearch, PID=1045, 执行时间=50 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=1046, 执行时间=59 ms
+[Task 3结束] 名字=bitonic, PID=1047, 执行时间=62 ms
+[Task 4结束] 名字=bsort, PID=1048, 执行时间=64 ms
+[Task 11] 启动: fft
+[Task 5结束] 名字=complex_updates, PID=1049, 执行时间=66 ms
+[Task 6] 启动: cosf
+[Task 6结束] 名字=cosf, PID=1050, 执行时间=75 ms
+[Task 7结束] 名字=countnegative, PID=1051, 执行时间=69 ms
+[Task 8结束] 名字=cubic, PID=1052, 执行时间=67 ms
+[Task 9结束] 名字=deg2rad, PID=1053, 执行时间=67 ms
+[Task 10结束] 名字=fac, PID=1054, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=1055, 执行时间=65 ms
+[Task 12结束] 名字=filterbank, PID=1056, 执行时间=63 ms
+本轮实际用时: 109 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1057, 执行时间=51 ms
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=1058, 执行时间=65 ms
+[Task 3结束] 名字=bitonic, PID=1059, 执行时间=68 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1060, 执行时间=80 ms
+[Task 5结束] 名字=complex_updates, PID=1061, 执行时间=78 ms
+[Task 6结束] 名字=cosf, PID=1062, 执行时间=69 ms
+[Task 7结束] 名字=countnegative, PID=1063, 执行时间=62 ms
+[Task 8结束] 名字=cubic, PID=1064, 执行时间=71 ms
+[Task 9结束] 名字=deg2rad, PID=1065, 执行时间=70 ms
+[Task 10结束] 名字=fac, PID=1066, 执行时间=68 ms
+[Task 11结束] 名字=fft, PID=1067, 执行时间=69 ms
+[Task 12结束] 名字=filterbank, PID=1068, 执行时间=68 ms
+本轮实际用时: 122 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4111 ms
+CPU利用率估算: 165.87%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=478 ms, 平均每轮=47 ms
+[Task 2] 名字=bitcount, 总时间=536 ms, 平均每轮=53 ms
+[Task 3] 名字=bitonic, 总时间=556 ms, 平均每轮=55 ms
+[Task 4] 名字=bsort, 总时间=606 ms, 平均每轮=60 ms
+[Task 5] 名字=complex_updates, 总时间=592 ms, 平均每轮=59 ms
+[Task 6] 名字=cosf, 总时间=599 ms, 平均每轮=59 ms
+[Task 7] 名字=countnegative, 总时间=573 ms, 平均每轮=57 ms
+[Task 8] 名字=cubic, 总时间=573 ms, 平均每轮=57 ms
+[Task 9] 名字=deg2rad, 总时间=580 ms, 平均每轮=58 ms
+[Task 10] 名字=fac, 总时间=563 ms, 平均每轮=56 ms
+[Task 11] 名字=fft, 总时间=548 ms, 平均每轮=54 ms
+[Task 12] 名字=filterbank, 总时间=615 ms, 平均每轮=61 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=1069 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 11] 启动: fft
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=1070, 执行时间=34 ms
+[Task 5] 启动: complex_updates
+[Task 2结束] 名字=bitcount, PID=1071, 执行时间=37 ms
+[Task 3结束] 名字=bitonic, PID=1072, 执行时间=36 ms
+[Task 4结束] 名字=bsort, PID=1073, 执行时间=32 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=1074, 执行时间=43 ms
+[Task 6结束] 名字=cosf, PID=1075, 执行时间=49 ms
+[Task 7结束] 名字=countnegative, PID=1076, 执行时间=50 ms
+[Task 8结束] 名字=cubic, PID=1077, 执行时间=55 ms
+[Task 9结束] 名字=deg2rad, PID=1078, 执行时间=51 ms
+[Task 10结束] 名字=fac, PID=1079, 执行时间=57 ms
+[Task 11结束] 名字=fft, PID=1080, 执行时间=57 ms
+[Task 12结束] 名字=filterbank, PID=1081, 执行时间=67 ms
+本轮实际用时: 96 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=1082, 执行时间=47 ms
+[Task 2结束] 名字=bitcount, PID=1083, 执行时间=52 ms
+[Task 3结束] 名字=bitonic, PID=1084, 执行时间=50 ms
+[Task 4结束] 名字=bsort, PID=1085, 执行时间=58 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 5结束] 名字=complex_updates, PID=1086, 执行时间=69 ms
+[Task 6结束] 名字=cosf, PID=1087, 执行时间=51 ms
+[Task 7结束] 名字=countnegative, PID=1088, 执行时间=48 ms
+[Task 11] 启动: fft
+[Task 8结束] 名字=cubic, PID=1089, 执行时间=58 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=1090, 执行时间=59 ms
+[Task 10结束] 名字=fac, PID=1091, 执行时间=61 ms
+[Task 11结束] 名字=fft, PID=1092, 执行时间=60 ms
+[Task 12结束] 名字=filterbank, PID=1093, 执行时间=72 ms
+本轮实际用时: 115 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1094, 执行时间=67 ms
+[Task 2结束] 名字=bitcount, PID=1095, 执行时间=62 ms
+[Task 3结束] 名字=bitonic, PID=1096, 执行时间=64 ms
+[Task 5] 启动: complex_updates
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1097, 执行时间=68 ms
+[Task 12] 启动: filterbank
+[Task 5结束] 名字=complex_updates, PID=1098, 执行时间=61 ms
+[Task 6结束] 名字=cosf, PID=1099, 执行时间=58 ms
+[Task 7结束] 名字=countnegative, PID=1100, 执行时间=65 ms
+[Task 8结束] 名字=cubic, PID=1101, 执行时间=73 ms
+[Task 9结束] 名字=deg2rad, PID=1102, 执行时间=67 ms
+[Task 10结束] 名字=fac, PID=1103, 执行时间=64 ms
+[Task 11结束] 名字=fft, PID=1104, 执行时间=62 ms
+[Task 12结束] 名字=filterbank, PID=1105, 执行时间=63 ms
+本轮实际用时: 127 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=1106, 执行时间=59 ms
+[Task 2结束] 名字=bitcount, PID=1107, 执行时间=61 ms
+[Task 9] 启动: deg2rad
+[Task 3结束] 名字=bitonic, PID=1108, 执行时间=71 ms
+[Task 11] 启动: fft
+[Task 6] 启动: cosf
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=1109, 执行时间=89 ms
+[Task 5结束] 名字=complex_updates, PID=1110, 执行时间=87 ms
+[Task 10] 启动: fac
+[Task 6结束] 名字=cosf, PID=1111, 执行时间=96 ms
+[Task 7结束] 名字=countnegative, PID=1112, 执行时间=93 ms
+[Task 8结束] 名字=cubic, PID=1113, 执行时间=97 ms
+[Task 9结束] 名字=deg2rad, PID=1114, 执行时间=88 ms
+[Task 10结束] 名字=fac, PID=1115, 执行时间=86 ms
+[Task 11结束] 名字=fft, PID=1116, 执行时间=79 ms
+[Task 12结束] 名字=filterbank, PID=1117, 执行时间=76 ms
+本轮实际用时: 129 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=1118, 执行时间=35 ms
+[Task 2结束] 名字=bitcount, PID=1119, 执行时间=34 ms
+[Task 3结束] 名字=bitonic, PID=1120, 执行时间=37 ms
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1121, 执行时间=40 ms
+[Task 5结束] 名字=complex_updates, PID=1122, 执行时间=40 ms
+[Task 6结束] 名字=cosf, PID=1123, 执行时间=40 ms
+[Task 10] 启动: fac
+[Task 7结束] 名字=countnegative, PID=1124, 执行时间=41 ms
+[Task 8结束] 名字=cubic, PID=1125, 执行时间=41 ms
+[Task 9结束] 名字=deg2rad, PID=1126, 执行时间=50 ms
+[Task 10结束] 名字=fac, PID=1127, 执行时间=49 ms
+[Task 11结束] 名字=fft, PID=1128, 执行时间=49 ms
+[Task 12结束] 名字=filterbank, PID=1129, 执行时间=48 ms
+本轮实际用时: 84 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=1130, 执行时间=50 ms
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=1131, 执行时间=51 ms
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 4] 启动: bsort
+[Task 3结束] 名字=bitonic, PID=1132, 执行时间=76 ms
+[Task 4结束] 名字=bsort, PID=1133, 执行时间=79 ms
+[Task 5结束] 名字=complex_updates, PID=1134, 执行时间=71 ms
+[Task 6结束] 名字=cosf, PID=1135, 执行时间=67 ms
+[Task 7结束] 名字=countnegative, PID=1136, 执行时间=63 ms
+[Task 8结束] 名字=cubic, PID=1137, 执行时间=62 ms
+[Task 9结束] 名字=deg2rad, PID=1138, 执行时间=62 ms
+[Task 10结束] 名字=fac, PID=1139, 执行时间=61 ms
+[Task 11结束] 名字=fft, PID=1140, 执行时间=61 ms
+[Task 12结束] 名字=filterbank, PID=1141, 执行时间=68 ms
+本轮实际用时: 114 ms
+=== 第7轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 3] 启动: bitonic
+[Task 1结束] 名字=binarysearch, PID=1142, 执行时间=75 ms
+[Task 2结束] 名字=bitcount, PID=1143, 执行时间=71 ms
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 3结束] 名字=bitonic, PID=1144, 执行时间=86 ms
+[Task 10] 启动: fac
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1145, 执行时间=90 ms
+[Task 5结束] 名字=complex_updates, PID=1146, 执行时间=86 ms
+[Task 6结束] 名字=cosf, PID=1147, 执行时间=85 ms
+[Task 7结束] 名字=countnegative, PID=1148, 执行时间=65 ms
+[Task 8结束] 名字=cubic, PID=1149, 执行时间=57 ms
+[Task 12] 启动: filterbank
+[Task 9结束] 名字=deg2rad, PID=1150, 执行时间=51 ms
+[Task 10结束] 名字=fac, PID=1151, 执行时间=48 ms
+[Task 11结束] 名字=fft, PID=1152, 执行时间=52 ms
+[Task 12结束] 名字=filterbank, PID=1153, 执行时间=65 ms
+本轮实际用时: 140 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=1154, 执行时间=32 ms
+[Task 11] 启动: fft
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=1155, 执行时间=39 ms
+[Task 3结束] 名字=bitonic, PID=1156, 执行时间=38 ms
+[Task 4结束] 名字=bsort, PID=1157, 执行时间=38 ms
+[Task 5结束] 名字=complex_updates, PID=1158, 执行时间=33 ms
+[Task 6结束] 名字=cosf, PID=1159, 执行时间=35 ms
+[Task 7结束] 名字=countnegative, PID=1160, 执行时间=35 ms
+[Task 8结束] 名字=cubic, PID=1161, 执行时间=35 ms
+[Task 9结束] 名字=deg2rad, PID=1162, 执行时间=35 ms
+[Task 10结束] 名字=fac, PID=1163, 执行时间=32 ms
+[Task 11结束] 名字=fft, PID=1164, 执行时间=30 ms
+[Task 12结束] 名字=filterbank, PID=1165, 执行时间=42 ms
+本轮实际用时: 69 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 1结束] 名字=binarysearch, PID=1166, 执行时间=36 ms
+[Task 2结束] 名字=bitcount, PID=1167, 执行时间=35 ms
+[Task 3结束] 名字=bitonic, PID=1168, 执行时间=33 ms
+[Task 9] 启动: deg2rad
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1169, 执行时间=40 ms
+[Task 5结束] 名字=complex_updates, PID=1170, 执行时间=46 ms
+[Task 6结束] 名字=cosf, PID=1171, 执行时间=47 ms
+[Task 7结束] 名字=countnegative, PID=1172, 执行时间=44 ms
+[Task 8结束] 名字=cubic, PID=1173, 执行时间=48 ms
+[Task 9结束] 名字=deg2rad, PID=1174, 执行时间=43 ms
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 10结束] 名字=fac, PID=1175, 执行时间=51 ms
+[Task 11结束] 名字=fft, PID=1176, 执行时间=51 ms
+[Task 12结束] 名字=filterbank, PID=1177, 执行时间=62 ms
+本轮实际用时: 98 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=1178, 执行时间=28 ms
+[Task 2结束] 名字=bitcount, PID=1179, 执行时间=26 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 11] 启动: fft
+[Task 3结束] 名字=bitonic, PID=1180, 执行时间=48 ms
+[Task 4结束] 名字=bsort, PID=1181, 执行时间=50 ms
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=1182, 执行时间=61 ms
+[Task 6结束] 名字=cosf, PID=1183, 执行时间=59 ms
+[Task 7结束] 名字=countnegative, PID=1184, 执行时间=61 ms
+[Task 8结束] 名字=cubic, PID=1185, 执行时间=71 ms
+[Task 9结束] 名字=deg2rad, PID=1186, 执行时间=72 ms
+[Task 10结束] 名字=fac, PID=1187, 执行时间=70 ms
+[Task 11结束] 名字=fft, PID=1188, 执行时间=76 ms
+[Task 12结束] 名字=filterbank, PID=1189, 执行时间=78 ms
+本轮实际用时: 104 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4100 ms
+CPU利用率估算: 165.24%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=463 ms, 平均每轮=46 ms
+[Task 2] 名字=bitcount, 总时间=468 ms, 平均每轮=46 ms
+[Task 3] 名字=bitonic, 总时间=539 ms, 平均每轮=53 ms
+[Task 4] 名字=bsort, 总时间=584 ms, 平均每轮=58 ms
+[Task 5] 名字=complex_updates, 总时间=597 ms, 平均每轮=59 ms
+[Task 6] 名字=cosf, 总时间=587 ms, 平均每轮=58 ms
+[Task 7] 名字=countnegative, 总时间=565 ms, 平均每轮=56 ms
+[Task 8] 名字=cubic, 总时间=597 ms, 平均每轮=59 ms
+[Task 9] 名字=deg2rad, 总时间=578 ms, 平均每轮=57 ms
+[Task 10] 名字=fac, 总时间=579 ms, 平均每轮=57 ms
+[Task 11] 名字=fft, 总时间=577 ms, 平均每轮=57 ms
+[Task 12] 名字=filterbank, 总时间=641 ms, 平均每轮=64 ms
+~ # [6n~ # /bin/tacle_kernel_test[J
+=== TacleBench Kernel 12任务集周期测试 ===
+父进程PID=1190 成功设置为YAT_CASCHED调度策略
+=== 第1轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 1结束] 名字=binarysearch, PID=1191, 执行时间=60 ms
+[Task 10] 启动: fac
+[Task 2结束] 名字=bitcount, PID=1192, 执行时间=70 ms
+[Task 3结束] 名字=bitonic, PID=1193, 执行时间=62 ms
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=1194, 执行时间=66 ms
+[Task 5结束] 名字=complex_updates, PID=1195, 执行时间=67 ms
+[Task 9] 启动: deg2rad
+[Task 6结束] 名字=cosf, PID=1196, 执行时间=70 ms
+[Task 7结束] 名字=countnegative, PID=1197, 执行时间=66 ms
+[Task 8结束] 名字=cubic, PID=1198, 执行时间=65 ms
+[Task 9结束] 名字=deg2rad, PID=1199, 执行时间=66 ms
+[Task 10结束] 名字=fac, PID=1200, 执行时间=68 ms
+[Task 11] 启动: fft
+[Task 11结束] 名字=fft, PID=1201, 执行时间=80 ms
+[Task 12结束] 名字=filterbank, PID=1202, 执行时间=79 ms
+本轮实际用时: 132 ms
+=== 第2轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=1203, 执行时间=77 ms
+[Task 12] 启动: filterbank
+[Task 10] 启动: fac
+[Task 9] 启动: deg2rad
+[Task 2结束] 名字=bitcount, PID=1204, 执行时间=86 ms
+[Task 3结束] 名字=bitonic, PID=1205, 执行时间=88 ms
+[Task 4结束] 名字=bsort, PID=1206, 执行时间=83 ms
+[Task 5结束] 名字=complex_updates, PID=1207, 执行时间=66 ms
+[Task 6结束] 名字=cosf, PID=1208, 执行时间=58 ms
+[Task 7结束] 名字=countnegative, PID=1209, 执行时间=54 ms
+[Task 8结束] 名字=cubic, PID=1210, 执行时间=52 ms
+[Task 9结束] 名字=deg2rad, PID=1211, 执行时间=50 ms
+[Task 10结束] 名字=fac, PID=1212, 执行时间=47 ms
+[Task 11结束] 名字=fft, PID=1213, 执行时间=45 ms
+[Task 12结束] 名字=filterbank, PID=1214, 执行时间=43 ms
+本轮实际用时: 120 ms
+=== 第3轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 6] 启动: cosf
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=1215, 执行时间=31 ms
+[Task 12] 启动: filterbank
+[Task 4] 启动: bsort
+[Task 8] 启动: cubic
+[Task 2结束] 名字=bitcount, PID=1216, 执行时间=38 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=1217, 执行时间=42 ms
+[Task 4结束] 名字=bsort, PID=1218, 执行时间=47 ms
+[Task 5结束] 名字=complex_updates, PID=1219, 执行时间=46 ms
+[Task 6结束] 名字=cosf, PID=1220, 执行时间=48 ms
+[Task 7结束] 名字=countnegative, PID=1221, 执行时间=50 ms
+[Task 8结束] 名字=cubic, PID=1222, 执行时间=49 ms
+[Task 9结束] 名字=deg2rad, PID=1223, 执行时间=46 ms
+[Task 10结束] 名字=fac, PID=1224, 执行时间=50 ms
+[Task 11结束] 名字=fft, PID=1225, 执行时间=49 ms
+[Task 12结束] 名字=filterbank, PID=1226, 执行时间=48 ms
+本轮实际用时: 78 ms
+=== 第4轮 ===
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 2] 启动: bitcount
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 11] 启动: fft
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1227, 执行时间=85 ms
+[Task 2结束] 名字=bitcount, PID=1228, 执行时间=80 ms
+[Task 6] 启动: cosf
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=1229, 执行时间=93 ms
+[Task 8] 启动: cubic
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=1230, 执行时间=106 ms
+[Task 5结束] 名字=complex_updates, PID=1231, 执行时间=107 ms
+[Task 6结束] 名字=cosf, PID=1232, 执行时间=105 ms
+[Task 7结束] 名字=countnegative, PID=1233, 执行时间=98 ms
+[Task 8结束] 名字=cubic, PID=1234, 执行时间=111 ms
+[Task 9结束] 名字=deg2rad, PID=1235, 执行时间=109 ms
+[Task 10结束] 名字=fac, PID=1236, 执行时间=99 ms
+[Task 11结束] 名字=fft, PID=1237, 执行时间=87 ms
+[Task 12结束] 名字=filterbank, PID=1238, 执行时间=82 ms
+本轮实际用时: 149 ms
+=== 第5轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 4] 启动: bsort
+[Task 7] 启动: countnegative
+[Task 11] 启动: fft
+[Task 1结束] 名字=binarysearch, PID=1239, 执行时间=25 ms
+[Task 9] 启动: deg2rad
+[Task 8] 启动: cubic
+[Task 2结束] 名字=bitcount, PID=1240, 执行时间=39 ms
+[Task 3结束] 名字=bitonic, PID=1241, 执行时间=39 ms
+[Task 4结束] 名字=bsort, PID=1242, 执行时间=42 ms
+[Task 5结束] 名字=complex_updates, PID=1243, 执行时间=44 ms
+[Task 6结束] 名字=cosf, PID=1244, 执行时间=42 ms
+[Task 10] 启动: fac
+[Task 7结束] 名字=countnegative, PID=1245, 执行时间=43 ms
+[Task 12] 启动: filterbank
+[Task 8结束] 名字=cubic, PID=1246, 执行时间=45 ms
+[Task 9结束] 名字=deg2rad, PID=1247, 执行时间=40 ms
+[Task 10结束] 名字=fac, PID=1248, 执行时间=45 ms
+[Task 11结束] 名字=fft, PID=1249, 执行时间=45 ms
+[Task 12结束] 名字=filterbank, PID=1250, 执行时间=60 ms
+本轮实际用时: 83 ms
+=== 第6轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 7] 启动: countnegative
+[Task 4] 启动: bsort
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1251, 执行时间=95 ms
+[Task 2结束] 名字=bitcount, PID=1252, 执行时间=101 ms
+[Task 3结束] 名字=bitonic, PID=1253, 执行时间=99 ms
+[Task 4结束] 名字=bsort, PID=1254, 执行时间=86 ms
+[Task 10] 启动: fac
+[Task 12] 启动: filterbank
+[Task 8] 启动: cubic
+[Task 5结束] 名字=complex_updates, PID=1255, 执行时间=83 ms
+[Task 11] 启动: fft
+[Task 6结束] 名字=cosf, PID=1256, 执行时间=68 ms
+[Task 7结束] 名字=countnegative, PID=1257, 执行时间=63 ms
+[Task 8结束] 名字=cubic, PID=1258, 执行时间=67 ms
+[Task 9结束] 名字=deg2rad, PID=1259, 执行时间=61 ms
+[Task 10结束] 名字=fac, PID=1260, 执行时间=59 ms
+[Task 11结束] 名字=fft, PID=1261, 执行时间=67 ms
+[Task 12结束] 名字=filterbank, PID=1262, 执行时间=64 ms
+本轮实际用时: 158 ms
+=== 第7轮 ===
+[Task 2] 启动: bitcount
+[Task 1] 启动: binarysearch
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 7] 启动: countnegative
+[Task 9] 启动: deg2rad
+[Task 1结束] 名字=binarysearch, PID=1263, 执行时间=51 ms
+[Task 2结束] 名字=bitcount, PID=1264, 执行时间=51 ms
+[Task 3结束] 名字=bitonic, PID=1265, 执行时间=56 ms
+[Task 4结束] 名字=bsort, PID=1266, 执行时间=53 ms
+[Task 11] 启动: fft
+[Task 6] 启动: cosf
+[Task 5结束] 名字=complex_updates, PID=1267, 执行时间=74 ms
+[Task 12] 启动: filterbank
+[Task 6结束] 名字=cosf, PID=1268, 执行时间=71 ms
+[Task 7结束] 名字=countnegative, PID=1269, 执行时间=77 ms
+[Task 8] 启动: cubic
+[Task 10] 启动: fac
+[Task 8结束] 名字=cubic, PID=1270, 执行时间=92 ms
+[Task 9结束] 名字=deg2rad, PID=1271, 执行时间=89 ms
+[Task 10结束] 名字=fac, PID=1272, 执行时间=76 ms
+[Task 11结束] 名字=fft, PID=1273, 执行时间=75 ms
+[Task 12结束] 名字=filterbank, PID=1274, 执行时间=73 ms
+本轮实际用时: 122 ms
+=== 第8轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 6] 启动: cosf
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 7] 启动: countnegative
+[Task 1结束] 名字=binarysearch, PID=1275, 执行时间=73 ms
+[Task 8] 启动: cubic
+[Task 11] 启动: fft
+[Task 2结束] 名字=bitcount, PID=1276, 执行时间=88 ms
+[Task 3结束] 名字=bitonic, PID=1277, 执行时间=86 ms
+[Task 12] 启动: filterbank
+[Task 4结束] 名字=bsort, PID=1278, 执行时间=85 ms
+[Task 5结束] 名字=complex_updates, PID=1279, 执行时间=80 ms
+[Task 6结束] 名字=cosf, PID=1280, 执行时间=80 ms
+[Task 7结束] 名字=countnegative, PID=1281, 执行时间=77 ms
+[Task 8结束] 名字=cubic, PID=1282, 执行时间=74 ms
+[Task 9结束] 名字=deg2rad, PID=1283, 执行时间=69 ms
+[Task 10结束] 名字=fac, PID=1284, 执行时间=66 ms
+[Task 11结束] 名字=fft, PID=1285, 执行时间=71 ms
+[Task 12结束] 名字=filterbank, PID=1286, 执行时间=63 ms
+本轮实际用时: 129 ms
+=== 第9轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 4] 启动: bsort
+[Task 5] 启动: complex_updates
+[Task 8] 启动: cubic
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=1287, 执行时间=56 ms
+[Task 2结束] 名字=bitcount, PID=1288, 执行时间=52 ms
+[Task 9] 启动: deg2rad
+[Task 10] 启动: fac
+[Task 3结束] 名字=bitonic, PID=1289, 执行时间=70 ms
+[Task 11] 启动: fft
+[Task 4结束] 名字=bsort, PID=1290, 执行时间=66 ms
+[Task 5结束] 名字=complex_updates, PID=1291, 执行时间=77 ms
+[Task 6结束] 名字=cosf, PID=1292, 执行时间=73 ms
+[Task 12] 启动: filterbank
+[Task 7] 启动: countnegative
+[Task 7结束] 名字=countnegative, PID=1293, 执行时间=78 ms
+[Task 8结束] 名字=cubic, PID=1294, 执行时间=72 ms
+[Task 9结束] 名字=deg2rad, PID=1295, 执行时间=70 ms
+[Task 10结束] 名字=fac, PID=1296, 执行时间=70 ms
+[Task 11结束] 名字=fft, PID=1297, 执行时间=70 ms
+[Task 12结束] 名字=filterbank, PID=1298, 执行时间=80 ms
+本轮实际用时: 134 ms
+=== 第10轮 ===
+[Task 1] 启动: binarysearch
+[Task 2] 启动: bitcount
+[Task 3] 启动: bitonic
+[Task 5] 启动: complex_updates
+[Task 4] 启动: bsort
+[Task 6] 启动: cosf
+[Task 1结束] 名字=binarysearch, PID=1299, 执行时间=118 ms
+[Task 11] 启动: fft
+[Task 9] 启动: deg2rad
+[Task 12] 启动: filterbank
+[Task 2结束] 名字=bitcount, PID=1300, 执行时间=134 ms
+[Task 3结束] 名字=bitonic, PID=1301, 执行时间=125 ms
+[Task 10] 启动: fac
+[Task 4结束] 名字=bsort, PID=1302, 执行时间=100 ms
+[Task 5结束] 名字=complex_updates, PID=1303, 执行时间=97 ms
+[Task 7] 启动: countnegative
+[Task 6结束] 名字=cosf, PID=1304, 执行时间=92 ms
+[Task 8] 启动: cubic
+[Task 7结束] 名字=countnegative, PID=1305, 执行时间=98 ms
+[Task 8结束] 名字=cubic, PID=1306, 执行时间=92 ms
+[Task 9结束] 名字=deg2rad, PID=1307, 执行时间=88 ms
+[Task 10结束] 名字=fac, PID=1308, 执行时间=84 ms
+[Task 11结束] 名字=fft, PID=1309, 执行时间=81 ms
+[Task 12结束] 名字=filterbank, PID=1310, 执行时间=70 ms
+本轮实际用时: 177 ms
+=== 所有TacleBench Kernel任务完成 ===
+总运行时间: 4074 ms
+CPU利用率估算: 207.63%
+
+--- 每个任务的总时间和平均每轮执行时间（按任务ID排序） ---
+[Task 1] 名字=binarysearch, 总时间=671 ms, 平均每轮=67 ms
+[Task 2] 名字=bitcount, 总时间=739 ms, 平均每轮=73 ms
+[Task 3] 名字=bitonic, 总时间=760 ms, 平均每轮=76 ms
+[Task 4] 名字=bsort, 总时间=734 ms, 平均每轮=73 ms
+[Task 5] 名字=complex_updates, 总时间=741 ms, 平均每轮=74 ms
+[Task 6] 名字=cosf, 总时间=707 ms, 平均每轮=70 ms
+[Task 7] 名字=countnegative, 总时间=704 ms, 平均每轮=70 ms
+[Task 8] 名字=cubic, 总时间=719 ms, 平均每轮=71 ms
+[Task 9] 名字=deg2rad, 总时间=688 ms, 平均每轮=68 ms
+[Task 10] 名字=fac, 总时间=664 ms, 平均每轮=66 ms
+[Task 11] 名字=fft, 总时间=670 ms, 平均每轮=67 ms
+[Task 12] 名字=filterbank, 总时间=662 ms, 平均每轮=66 ms
+~ # [6n

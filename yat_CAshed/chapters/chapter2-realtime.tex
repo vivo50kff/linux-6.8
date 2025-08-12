@@ -1,0 +1,269 @@
+% 第二章：实时系统知识
+
+
+\section{实时系统相关概念} \label{sec:realtime}
+
+本章主要介绍项目的前置知识，展示我们在初期调研中获得的学习成果。主要概述实时系统知识和Linux下缓存感知调度的理论基础，首先介绍实时系统的分类和任务模型，接着介绍实时系统下的调度算法分类，然后讨论多核环境下的缓存问题，最后介绍Linux中实时调度算法的实现现状。
+
+\subsection{实时系统基本概念}
+
+按照时间约束的严格程度，实时系统可以分为强实时系统和弱实时系统两种。
+
+\subsubsection{强实时系统}
+
+强实时系统（Hard Real-Time System，也称硬实时系统）：在军事、航空航天等关键领域中，任务执行时间的约束性必须要得到完全满足，否则就会造成重大的安全事故。因此，在这类系统的设计和实现过程中，应采用各种方法，保证在各种情况下时间约束性和功能需求都得到满足。
+
+\subsubsection{弱实时系统}
+
+弱实时系统（Soft Real-Time System，也称软实时系统）：任务执行提出了时间约束性，但是可以偶尔违反这种约束性，并且对系统不会造成严重影响。例如视频系统就是弱实时系统，系统只需要保证绝大多数情况下视频数据能够及时传输给用户，偶尔的数据传输延迟对使用不会造成大的影响。
+
+本项目涉及到Linux操作系统。Linux操作系统是一种分时操作系统，有较好的平均响应时间和较高的吞吐量。为了支持实时调度，Linux添加了两种调度算法：SCHED\_RR和SCHED\_FIFO。这两种并不是针对多核条件下的实时调度算法，而是为任务赋予了实时任务的高优先级，然后根据优先级不同进行调度的算法。而实时系统主要考虑任务按时完成，尽量减少进程运行的不可预测性等。所以Linux不是一种专门的实时系统，但与商业嵌入式操作系统相比，Linux遵循GPL，具有源代码开放、定制方便、支持广泛的计算机硬件等优点，所以通过修改内核调度部分，Linux是可以很好地支持实时调度的。
+
+\subsection{实时系统中任务模型}
+
+在实时系统中，有多个处理器，用m（m>=1）表示。
+
+在系统中，用任务（task）表示进程或程序，任务分为两种：随机任务（sporadic task）和周期任务（periodic task），用$T_i$表示第i个任务，$1 \leq i \leq N$，N是指任务总数目。
+
+任务（task）包含一个或多个作业（job），用$j^{th}$表示任务中第j个作业，用$T_i^j$表示第i个任务的第j个作业。
+
+对于不同的任务，其在系统中调度的顺序，是根据任务优先级（priority）的大小或者其他规则，如先到先服务算法，进行排序；而对于一个任务中的不同作业，其在该任务中的顺序是按照作业释放顺序排序的，即先释放的作业先调度。
+
+对于作业$T_i^j$，在系统中，有以下几个基本时间概念：
+
+\begin{enumerate}
+    \item \textbf{释放时间}（release time），即在释放时间之后的某个时间（可长可短），作业可以执行，用$r(T_i^j)$表示。
+    
+    \item \textbf{周期}（period），对于随机任务，周期是指任务中两个相邻作业的释放时间之间最短的时间间隔；对于周期任务，周期是固定的。对于一个任务的作业，周期是一个固定值，用$p(T_i)$表示。
+    
+    \item \textbf{执行开销}（execution cost），是指一个任务的所有作业的执行时间的最大值，即最坏情况下作业的执行时间。对于一个任务的作业，执行开销是一个固定值，用WCET（worst-case execution time）表示，记为$C_i$。
+    
+    \item \textbf{绝对截止时间}（absolute deadline），是指作业应该在绝对截止时间之前执行完毕，否则称为丢失截止时间，也称为延迟（tardy）。作业$T_i^j$的绝对截止时间为$d(T_i^j) = r(T_i^j) + p(T_i)$，那么作业$T_i^{j+1}$的释放时间$r(T_i^{j+1}) \geq r(T_i^j) + p(T_i)$。如果对于一个任务的任意相邻两个任务总满足$r(T_i^{j+1}) = r(T_i^j) + p(T_i)$，那么这个任务称为周期任务。
+\end{enumerate}
+
+\subsubsection{重要的调度理论公式}
+
+在实时系统调度分析中，几个关键的数学公式起到重要作用：
+
+\textbf{处理器利用率}：任务集$\mathcal{T} = \{T_1, T_2, ..., T_n\}$在单处理器上的总利用率定义为：
+$$U = \sum_{i=1}^{n} \frac{C_i}{p_i}$$
+
+其中$C_i$是任务$T_i$的WCET，$p_i$是任务$T_i$的周期。
+
+\textbf{RM调度可调度性条件}：对于Rate Monotonic调度算法，任务集可调度的充分条件为：
+$$U \leq n(2^{1/n} - 1)$$
+
+当$n \to \infty$时，该条件趋于$U \leq \ln(2) \approx 0.693$。
+
+\textbf{响应时间分析}：对于固定优先级调度，任务$T_i$的最坏情况响应时间$R_i$满足：
+$$R_i = C_i + \sum_{j \in hp(i)} \left\lceil \frac{R_i}{p_j} \right\rceil C_j$$
+
+其中$hp(i)$表示优先级高于任务$T_i$的任务集合。
+
+在这四个基本时间概念中，释放时间和绝对截止时间是每个作业所特有的，而周期和执行开销是一个任务的所有作业所共有的。
+
+如果在一个系统中，所有作业的截止时间都不允许丢失，那么这个系统称为硬实时系统（hard real-time system）；如果一个系统允许作业的截止时间丢失，并且在截止时间之后的一定的时间内保证该任务完成，那么这个系统称为软实时系统（soft real-time system）。
+
+\subsection{多核环境下的缓存挑战}
+
+在多核处理器中，缓存层次结构的复杂性为实时调度带来了新的挑战。\cite{r4_Cache-Aware_Partitioned_Scheduler_for_Hard_Real-Time}表\ref{tab:cache-challenges}总结了主要的缓存相关问题：
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+挑战类型 & 问题描述 & 影响程度 \\
+\midrule
+缓存亲和性 & 任务迁移导致缓存失效 & 高 \\
+\midrule
+缓存污染 & 不同任务间的缓存干扰 & 中等 \\
+\midrule
+一致性开销 & 多核间缓存同步成本 & 高 \\
+\midrule
+预测困难 & 缓存行为的时间不确定性 & 高 \\
+\bottomrule
+\end{tabular}
+\caption{多核环境下的主要缓存挑战}
+\label{tab:cache-challenges}
+\end{table}
+
+\subsubsection{任务调度中的延迟类型}
+
+在实际环境中，由于物理硬件或者程序等原因，任务的调度过程中会经常出现延迟（latency），而延迟会出现在任务的释放与开始执行之间以及由于优先级不同导致任务抢占的过程中。在讲解延迟情况之前，先说明两个概念：1）转入执行（switch to），就是作业被CPU调度，开始执行；2）转出停止（switch away），就是作业不再被CPU调度，停止执行。下面介绍三种延迟：
+
+\begin{enumerate}
+    \item \textbf{空闲CPU延迟}：在空闲的CPU上，一个作业的释放与开始执行之间的延迟，完成与不再被CPU调度之间的延迟。
+    
+    \item \textbf{高优先级阻塞}：在工作的CPU上，当前执行的任务的优先级高于已经释放的任务的优先级，那么新的任务必须等待旧的任务（当前执行的任务）执行完毕，才能执行。
+    
+    \item \textbf{抢占切换延迟}：在工作的CPU上，当前执行的任务的优先级低于已经释放的任务的优先级，那么旧的任务必须停止，然后新的任务执行。
+\end{enumerate}
+
+任务在生成之后，会被添加到释放队列（release queue）中，如果条件允许，在释放队列中的任务会被添加到就绪队列（ready queue）中，供CPU调度。正在运行的任务位于运行队列（run queue）中。
+
+\subsection{实时系统下的调度算法分类}
+
+实时调度算法可以从多个维度进行分类，这里主要按照优先级策略和抢占机制进行分类。
+
+
+\subsubsection{按照优先级对调度算法进行分类}
+
+\begin{itemize}
+    \item \textbf{固定优先级调度}：任务的优先级在系统运行过程中保持不变，如Rate Monotonic (RM)算法。
+    \item \textbf{动态优先级调度}：任务的优先级会根据系统状态动态调整，如Earliest Deadline First (EDF)算法。
+\end{itemize}
+
+\subsubsection{按照抢占发生的原因对调度算法进行分类}
+
+\begin{itemize}
+    \item \textbf{非抢占式调度}：任务一旦开始执行，就会一直执行到完成，不会被其他任务中断。
+    \item \textbf{抢占式调度}：高优先级任务可以中断低优先级任务的执行。
+    \item \textbf{协作式调度}：任务主动让出CPU控制权。
+\end{itemize}
+
+\subsubsection{多核调度算法}
+
+在多核环境下，调度算法需要考虑任务在多个处理器间的分配策略：
+
+\begin{itemize}
+    \item \textbf{全局调度}（Global Scheduling）：所有任务共享一个全局就绪队列，任何空闲的处理器都可以执行队列中的任务。
+    \item \textbf{分区调度}（Partitioned Scheduling）：任务在系统启动时就被分配到特定的处理器上，每个处理器维护自己的就绪队列。
+    \item \textbf{半分区调度}（Semi-Partitioned Scheduling）：结合全局调度和分区调度的优点，大部分任务采用分区调度，少数任务可以在多个处理器间迁移。
+\end{itemize}
+
+\subsection{Linux中实时调度算法的实现}
+
+Linux内核提供了多种调度策略来支持不同类型的应用：
+
+\subsubsection{传统调度策略}
+
+\begin{itemize}
+    \item \textbf{SCHED\_NORMAL}：默认的完全公平调度器(CFS)，适用于普通交互式任务。
+    \item \textbf{SCHED\_BATCH}：批处理任务调度，适用于CPU密集型后台任务。
+    \item \textbf{SCHED\_IDLE}：空闲任务调度，只在系统空闲时运行。
+\end{itemize}
+
+\subsubsection{实时调度策略}
+
+\begin{itemize}
+    \item \textbf{SCHED\_FIFO}：先入先出实时调度，同优先级任务按FIFO顺序执行。
+    \item \textbf{SCHED\_RR}：轮转实时调度，同优先级任务使用时间片轮转。
+    \item \textbf{SCHED\_DEADLINE}：截止时间调度，基于EDF算法实现。
+\end{itemize}
+
+\subsubsection{现有实时Linux项目调研}
+
+为了提升Linux的实时性能，社区开发了多个项目：
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc}
+\toprule
+项目名称 & 主要特性 & 应用场景 \\
+\midrule
+PREEMPT\_RT & 内核抢占补丁 & 软实时系统 \\
+\midrule
+Litmus-RT & 多核实时调度框架 & 实时系统研究 \\
+\midrule
+RTLinux & 双内核架构 & 硬实时应用 \\
+\midrule
+Xenomai & 实时内核 & 工业控制系统 \\
+\bottomrule
+\end{tabular}
+\caption{主要的实时Linux项目对比}
+\label{tab:realtime-linux}
+\end{table}
+
+这些项目为我们的缓存感知调度器开发提供了重要的理论基础和实现参考。
+
+\subsection{缓存感知调度理论基础}
+
+随着多核处理器的普及，缓存感知调度成为提升系统性能的关键技术。\cite{r13_Cache-Aware_Scheduling_on_Heterogeneous_Multicore_Systems}\cite{r14_Cache-aware_task_scheduling}\cite{r16_Cache-Aware_Virtua}\cite{r1_面向嵌入式多核系统的缓存调度算法优化}本节简要介绍缓存感知调度的核心理论概念，为后续章节的深入讨论奠定基础。
+
+\subsubsection{Cache Recency Profile理论}
+
+Cache Recency Profile (CRP)是缓存感知调度的核心理论工具，它通过建模任务间的缓存干扰来预测任务迁移对性能的影响。\cite{r6_Miss_Rate_Calculation_of_L2Cache}
+
+\textbf{缓存距离}：定义为两次访问同一缓存块之间的唯一内存块访问数量。对于任务$T_i$中的内存访问序列，缓存距离$d_k$表示第$k$次访问与前一次访问相同内存块之间的距离。\cite{r7_Minimizing_cache_usage}
+
+\textbf{执行时间加速比}：当任务$v_j$被分配到核心$\lambda_k$时，考虑缓存效应的执行时间加速比定义为：
+$$S(v_j, \lambda_k, H, CRP) = C_j - \text{实际执行时间}$$
+
+其中$H$表示历史分配记录，$CRP$是预测模型。
+
+\subsubsection{缓存亲和性量化}
+
+\textbf{缓存热度窗口}：定义一个时间窗口$\Delta t$，在此窗口内执行过的任务被认为在缓存中留有"热"数据。缓存亲和性可以通过以下公式量化：
+$$\text{Affinity}(T_i, \text{core}_k) = \begin{cases}
+\alpha \cdot e^{-\beta \cdot t_{idle}} & \text{if } t_{idle} \leq \Delta t \\
+0 & \text{otherwise}
+\end{cases}$$
+
+其中$t_{idle}$是任务$T_i$在核心$k$上的空闲时间，$\alpha$和$\beta$是经验参数。
+
+\subsubsection{多核调度的权衡原则}
+
+在多核缓存感知调度中，需要平衡以下两个目标：
+
+\begin{enumerate}
+    \item \textbf{缓存局部性最大化}：$\max \sum_{i} \text{CacheHit}(T_i)$
+    \item \textbf{负载均衡}：$\min \max_k \text{Load}(\text{core}_k)$
+\end{enumerate}
+
+这两个目标往往相互冲突，需要通过权重参数进行调节：
+$$\text{Objective} = w_1 \cdot \text{CacheUtility} + w_2 \cdot \text{LoadBalance}$$
+
+其中$w_1 + w_2 = 1$，权重的选择直接影响调度策略的性能特征。
+
+\subsubsection{基本调度策略}
+
+\textbf{最大加速优先}（Maximum Speedup First, MSF）：总是将任务分配给能提供最大执行时间加速比的核心：
+$$\text{core}^* = \arg\max_k S(v_j, \lambda_k, H, CRP)$$
+
+\textbf{最小缓存影响优先}（Least Cache Impact First, LCIF）：当多个核心提供相同加速比时，选择对其他任务缓存影响最小的核心。
+
+这些理论概念构成了我们Yat-CASched调度器的设计基础。在下一章中，我们将详细介绍如何将这些理论应用到具体的系统设计中。
+
+\subsection{DAG调度理论基础}
+
+在实时系统中，任务之间可能存在依赖关系，这些依赖关系可以用有向无环图（Directed Acyclic Graph, DAG）来表示。DAG调度是实时系统中的一个重要研究方向，特别是在多核环境下。
+
+\subsubsection{DAG任务模型}
+
+一个DAG任务可以表示为$G = (V, E)$，其中：
+\begin{itemize}
+    \item $V$表示任务集合，每个任务$v_i \in V$具有执行时间$C_i$。
+    \item $E$表示任务之间的依赖关系集合，每条边$e_{ij} \in E$表示任务$v_i$必须在任务$v_j$之前完成。
+\end{itemize}
+
+每个DAG任务还具有以下属性：
+\begin{itemize}
+    \item \textbf{释放时间}（release time）：任务可以开始执行的时间。
+    \item \textbf{截止时间}（deadline）：任务必须完成的时间。
+    \item \textbf{优先级}（priority）：用于决定任务的调度顺序。
+\end{itemize}
+
+\subsubsection{DAG调度的数学公式}
+
+\textbf{任务完成时间}：对于任务$v_i$，其完成时间$F_i$满足：
+$$F_i = r_i + C_i + \max_{v_j \in pred(v_i)} F_j$$
+其中$r_i$是任务$v_i$的释放时间，$C_i$是任务$v_i$的执行时间，$pred(v_i)$是任务$v_i$的所有前驱任务集合。
+
+\textbf{调度可行性}：一个DAG任务集$\mathcal{G}$在$m$个处理器上可调度的条件为：
+$$\sum_{G \in \mathcal{G}} \frac{\sum_{v_i \in V(G)} C_i}{p(G)} \leq m$$
+其中$p(G)$是DAG任务$G$的周期。
+
+\textbf{响应时间分析}：对于DAG任务$G$中的任意任务$v_i$，其响应时间$R_i$满足：
+$$R_i = C_i + \sum_{v_j \in hp(v_i)} \left\lceil \frac{R_i}{p_j} \right\rceil C_j$$
+其中$hp(v_i)$表示优先级高于任务$v_i$的任务集合。
+
+\subsubsection{DAG调度算法}
+
+常见的DAG调度算法包括：
+\begin{itemize}
+    \item \textbf{全局EDF调度}：基于截止时间的全局优先级调度。
+    \item \textbf{分区调度}：将DAG任务分配到特定的处理器上，每个处理器独立调度。
+    \item \textbf{混合调度}：结合全局调度和分区调度的优点。
+\end{itemize}
+
+这些理论和公式为DAG调度的研究和实现提供了重要的基础。
