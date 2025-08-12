@@ -29,7 +29,7 @@ endif
 # build parallelizes well and finishes roughly at once:
 #
 obj-y += core.o
+obj-$(CONFIG_SCHED_CLASS_YAT_CASCHED) += yat_casched.o
 obj-y += fair.o
 obj-y += build_policy.o
 obj-y += build_utility.o
-obj-$(CONFIG_SCHED_CLASS_YAT_CASCHED) += yat_casched.o

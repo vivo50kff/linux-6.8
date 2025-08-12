@@ -1,0 +1,55 @@
+#!/bin/sh
+
+echo "=== YAT_CASCHED 简化测试环境启动 ==="
+
+# 挂载基本文件系统
+mount -t proc none /proc 2>/dev/null || true
+mount -t sysfs none /sys 2>/dev/null || true
+mkdir -p /sys/kernel/debug
+mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
+
+# # 设置PATH环境变量
+# export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
+echo "系统信息:"
+echo "内核版本: $(uname -r)"
+if [ -f /proc/cpuinfo ]; then
+    echo "CPU信息: $(cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d':' -f2)"
+    echo "CPU核心数: $(nproc 2>/dev/null || echo '1')"
+else
+    echo "CPU信息: 不可用"
+    echo "CPU核心数: 1"
+fi
+
+echo ""
+echo "开始YAT_CASCHED调度器测试..."
+echo "----------------------------------------"
+
+# --- 新增代码：在测试前开启 ftrace ---
+echo "开启 sched_switch 事件跟踪..."
+# 清空旧的跟踪记录
+echo > /sys/kernel/debug/tracing/trace
+# 启用 sched_switch 事件
+echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
+
+# 运行测试程序
+/bin/yat_simple_test
+
+# --- 新增代码：在测试后关闭 ftrace ---
+echo "关闭 sched_switch 事件跟踪..."
+# 关闭 sched_switch 事件
+echo 0 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
+
+echo "----------------------------------------"
+echo "测试完成"
+
+echo ""
+echo "debugfs已挂载到 /sys/kernel/debug"
+echo "您现在可以使用ftrace进行内核跟踪"
+echo "例如: cd /sys/kernel/debug/tracing && echo sched_switch > current_tracer"
+echo "输入 'exit' 或按 Ctrl+C 结束"
+
+# 启动简单的shell
+exec /bin/sh

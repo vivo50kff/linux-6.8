@@ -49,3 +49,11 @@
 #endif
 
 #define NR_syscalls (__NR_syscalls)
+
+#define __NR_landlock_restrict_self 449
+#define __NR_memfd_secret 450
+#define __NR_sched_set_wcet 451
+
+#ifdef __KERNEL__
+#define __NR_syscalls 452
+#endif

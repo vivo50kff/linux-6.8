@@ -120,6 +120,8 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(sched_compute_energy_tp);
 
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
+extern const struct sched_class yat_casched_sched_class;//new 
+
 #ifdef CONFIG_SCHED_DEBUG
 /*
  * Debugging: various feature bits
@@ -2169,6 +2171,10 @@ static inline int __normal_prio(int policy, int rt_prio, int nice)
 		prio = MAX_DL_PRIO - 1;
 	else if (rt_policy(policy))
 		prio = MAX_RT_PRIO - 1 - rt_prio;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(policy))
+		prio = rt_prio;  /* 直接使用设置的优先级 */
+#endif
 	else
 		prio = NICE_TO_PRIO(nice);
 
@@ -4548,7 +4554,8 @@ static void __sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
 	/* Initialize Yat_Casched scheduling entity */
-	INIT_LIST_HEAD(&p->yat_casched.run_list);
+	// INIT_LIST_HEAD(&p->yat_casched.run_list);
+	RB_CLEAR_NODE(&p->yat_casched.rb_node);
 	p->yat_casched.vruntime = 0;
 	p->yat_casched.slice = 0;
 	p->yat_casched.last_cpu = -1;  /* 使用-1表示未初始化状态 */
@@ -4772,6 +4779,13 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 	uclamp_fork(p);
 
+#ifdef CONFIG_SCHED_YAT_CASCHED
+    /* YAT_CASCHED: Inherit WCET from parent */
+    if (p->sched_class == &yat_casched_sched_class) {
+        p->yat_casched.wcet = current->yat_casched.wcet;
+    }
+#endif
+
 	/*
 	 * Revert to default priority/policy on fork if requested.
 	 */
@@ -4793,12 +4807,19 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 		p->sched_reset_on_fork = 0;
 	}
 
-	if (dl_prio(p->prio))
-		return -EAGAIN;
+    if (dl_prio(p->prio))
+        return -EAGAIN;
+		
+	else if (yat_casched_prio(p)){
+		// printk(KERN_INFO "[yat] sched_fork: pid=%d policy=%d, set sched_class yat_casched\n", p->pid, p->policy);
+		p->sched_class = &yat_casched_sched_class;
+	}  
 	else if (rt_prio(p->prio))
-		p->sched_class = &rt_sched_class;
-	else
-		p->sched_class = &fair_sched_class;
+        p->sched_class = &rt_sched_class;
+      
+    else{
+        p->sched_class = &fair_sched_class;
+	}
 
 	init_entity_runnable_average(&p->se);
 
@@ -7076,6 +7097,10 @@ static void __setscheduler_prio(struct task_struct *p, int prio)
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(prio))
 		p->sched_class = &rt_sched_class;
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	else if (yat_casched_policy(p->policy))
+		p->sched_class = &yat_casched_sched_class;
+#endif
 	else
 		p->sched_class = &fair_sched_class;
 
@@ -7603,6 +7628,8 @@ static void __setscheduler_params(struct task_struct *p,
 		__setparam_dl(p, attr);
 	else if (fair_policy(policy))
 		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
+	 else if (yat_casched_policy(policy))
+        p->static_prio = attr->sched_priority; // YAT_CASCHED直接用sched_priority
 
 	/*
 	 * __sched_setscheduler() ensures attr->sched_priority == 0 when
@@ -7673,6 +7700,18 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 			goto req_priv;
 	}
 
+	/*
+	 * YAT_CASCHED policy: Allow priority changes without CAP_SYS_NICE
+	 * for same owner, similar to normal scheduling policies
+	 */
+	if (yat_casched_policy(policy)) {
+		/* Only check same owner for YAT_CASCHED */
+		if (!check_same_owner(p))
+			goto req_priv;
+		/* Skip other privilege checks for YAT_CASCHED */
+		goto skip_priv_checks;
+	}
+
 	/* Can't change other user's priorities: */
 	if (!check_same_owner(p))
 		goto req_priv;
@@ -7680,6 +7719,8 @@ static int user_check_sched_setscheduler(struct task_struct *p,
 	/* Normal users shall not reset the sched_reset_on_fork flag: */
 	if (p->sched_reset_on_fork && !reset_on_fork)
 		goto req_priv;
+
+skip_priv_checks:
 
 	return 0;
 
@@ -7724,13 +7765,18 @@ recheck:
 	/*
 	 * Valid priorities for SCHED_FIFO and SCHED_RR are
 	 * 1..MAX_RT_PRIO-1, valid priority for SCHED_NORMAL,
-	 * SCHED_BATCH and SCHED_IDLE is 0.
+	 * SCHED_BATCH, SCHED_IDLE is 0. SCHED_YAT_CASCHED allows 0-19.
 	 */
-	if (attr->sched_priority > MAX_RT_PRIO-1)
-		return -EINVAL;
+	// if (attr->sched_priority > MAX_RT_PRIO-1)
+	// 	return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
-	    (rt_policy(policy) != (attr->sched_priority != 0)))
+	    (rt_policy(policy) && attr->sched_priority == 0) ||
+	    (!rt_policy(policy) && !dl_policy(policy) && !yat_casched_policy(policy) && attr->sched_priority != 0))
 		return -EINVAL;
+
+	/*
+	 * YAT_CASCHED policy allows priority range 0-19
+	 */
 
 	if (user) {
 		retval = user_check_sched_setscheduler(p, attr, policy, reset_on_fork);
@@ -7881,6 +7927,28 @@ change:
 		__setscheduler_prio(p, newprio);
 	}
 	__setscheduler_uclamp(p, attr);
+
+    /* 关键：根据策略号分发调度类 */
+    switch (policy) {
+    case SCHED_NORMAL:
+    case SCHED_BATCH:
+    case SCHED_IDLE:
+        p->sched_class = &fair_sched_class;
+        break;
+    case SCHED_FIFO:
+    case SCHED_RR:
+        p->sched_class = &rt_sched_class;
+        break;
+    case SCHED_DEADLINE:
+        p->sched_class = &dl_sched_class;
+        break;
+    case SCHED_YAT_CASCHED:
+        p->sched_class = &yat_casched_sched_class;
+        break;
+    default:
+        retval = -EINVAL;
+        goto unlock;
+    }
 
 	if (queued) {
 		/*
@@ -9056,6 +9124,9 @@ SYSCALL_DEFINE1(sched_get_priority_max, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 		break;
 	}
@@ -9083,6 +9154,9 @@ SYSCALL_DEFINE1(sched_get_priority_min, int, policy)
 	case SCHED_NORMAL:
 	case SCHED_BATCH:
 	case SCHED_IDLE:
+#ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
+	case SCHED_YAT_CASCHED:
+#endif
 		ret = 0;
 	}
 	return ret;
@@ -9909,6 +9983,13 @@ static struct kmem_cache *task_group_cache __ro_after_init;
 
 void __init sched_init(void)
 {
+	// sched_class_highest = &stop_sched_class;
+    // stop_sched_class.next = &dl_sched_class;
+    // dl_sched_class.next = &rt_sched_class;
+    // rt_sched_class.next = &yat_casched_class; /* 插入你的调度类 */
+    // yat_casched_class.next = &fair_sched_class; /* 你的类后面是CFS */
+    // fair_sched_class.next = &idle_sched_class;
+
 	unsigned long ptr = 0;
 	int i;
 
@@ -9990,8 +10071,8 @@ void __init sched_init(void)
 		init_rt_rq(&rq->rt);
 		init_dl_rq(&rq->dl);
 #ifdef CONFIG_SCHED_CLASS_YAT_CASCHED
-    printk("======init yat_casched rq======\n");
-    init_yat_casched_rq(&rq->yat_casched);
+    	printk("======init yat_casched rq======\n");
+    	init_yat_casched_rq(&rq->yat_casched);
 #endif
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
@@ -12065,3 +12146,64 @@ void sched_mm_cid_fork(struct task_struct *t)
 	t->mm_cid_active = 1;
 }
 #endif
+
+#include <linux/syscalls.h>
+#include <linux/uaccess.h>
+
+/**
+ * sched_set_wcet - set the worst-case execution time for a task
+ * @pid: the pid of the task.
+ * @wcet: the worst-case execution time in nanoseconds.
+ *
+ * This function sets the wcet for a task with a given pid.
+ * The task must be scheduled under the YAT_CASCHED policy.
+ */
+// 确保这个函数不是 static 的，这样它就可以被内核的其他部分链接。
+// 我们将 SYSCALL_DEFINE 宏的实现移到这里。
+long do_sched_set_wcet(pid_t pid, u64 wcet)
+{
+    struct task_struct *p;
+    int retval;
+
+    // rcu_read_lock();
+    p = find_task_by_vpid(pid);
+    if (!p) {
+        rcu_read_unlock();
+		printk(KERN_ERR "sched_set_wcet: No such process with pid %d\n", pid);
+        return -ESRCH;
+    }
+
+    get_task_struct(p);
+    // rcu_read_unlock();
+
+    // task_lock(p);
+
+    // 检查任务是否属于 YAT_CASCHED 调度类
+    // if (p->sched_class != &yat_casched_sched_class) {
+	// 	printk(KERN_ERR "sched_class err", pid);
+    //     retval = -EINVAL;
+    //     goto out_unlock;
+    // }
+
+    p->yat_casched.wcet = wcet;
+    retval = 0;
+
+out_unlock:
+    // task_unlock(p);
+    put_task_struct(p);
+    return retval;
+}
+
+
+/**
+ * sys_sched_set_wcet - set the worst-case execution time for a task
+ * @pid: the pid of the task.
+ * @wcet: the worst-case execution time in nanoseconds.
+ *
+ * This function sets the wcet for a task with a given pid.
+ * The task must be scheduled under the YAT_CASCHED policy.
+ */
+SYSCALL_DEFINE2(sched_set_wcet, pid_t, pid, u64, wcet)
+{
+    return do_sched_set_wcet(pid, wcet);
+}
