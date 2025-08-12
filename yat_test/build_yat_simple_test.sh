@@ -34,7 +34,7 @@ for idx in "${!TASKS[@]}"; do
 done
 
 # 5. 编译主控测试程序
-gcc -static -O2 -o "$BIN_DIR/tacle_kernel_test" "$YAT_TEST_DIR/tacle_kernel_test.c"
+gcc -static -O2 -o "$BIN_DIR/tacle_kernel_test" "$YAT_TEST_DIR/tacle_kernel_test.c" -lm
 chmod +x "$BIN_DIR/tacle_kernel_test"
 
 # 6. 生成init脚本

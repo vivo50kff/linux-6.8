@@ -30,7 +30,7 @@ chmod 1777 tmp
 
 echo "编译测试程序..."
 cd "$SCRIPT_DIR"
-gcc -static -o yat_simple_test yat_simple_test.c
+gcc -static -o yat_simple_test yat_simple_test.c -lm
 if [ $? -eq 0 ]; then
     echo "测试程序编译成功"
     cp yat_simple_test "$INITRAMFS_DIR/bin/"
@@ -52,6 +52,9 @@ mount -t sysfs none /sys 2>/dev/null || true
 mkdir -p /sys/kernel/debug
 mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
 
+# # 设置PATH环境变量
+# export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
 echo "系统信息:"
 echo "内核版本: $(uname -r)"
 if [ -f /proc/cpuinfo ]; then
@@ -62,29 +65,29 @@ else
     echo "CPU核心数: 1"
 fi
 
-# echo ""
-# echo "开始YAT_CASCHED调度器测试..."
-# echo "----------------------------------------"
+echo ""
+echo "开始YAT_CASCHED调度器测试..."
+echo "----------------------------------------"
 
-# # --- 新增代码：在测试前开启 ftrace ---
-# echo "开启 sched_switch 事件跟踪..."
-# # 清空旧的跟踪记录
-# echo > /sys/kernel/debug/tracing/trace
-# # 启用 sched_switch 事件
-# echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
-# # --- 新增代码结束 ---
+# --- 新增代码：在测试前开启 ftrace ---
+echo "开启 sched_switch 事件跟踪..."
+# 清空旧的跟踪记录
+echo > /sys/kernel/debug/tracing/trace
+# 启用 sched_switch 事件
+echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
 
-# # 运行测试程序
-# #/bin/yat_simple_test
+# 运行测试程序
+/bin/yat_simple_test
 
-# # --- 新增代码：在测试后关闭 ftrace ---
-# echo "关闭 sched_switch 事件跟踪..."
-# # 关闭 sched_switch 事件
-# echo 0 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
-# # --- 新增代码结束 ---
+# --- 新增代码：在测试后关闭 ftrace ---
+echo "关闭 sched_switch 事件跟踪..."
+# 关闭 sched_switch 事件
+echo 0 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
 
-# echo "----------------------------------------"
-# echo "测试完成"
+echo "----------------------------------------"
+echo "测试完成"
 
 echo ""
 echo "debugfs已挂载到 /sys/kernel/debug"

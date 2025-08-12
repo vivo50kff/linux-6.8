@@ -1,12 +1,15 @@
 #!/bin/sh
 
-echo "=== CFS 简化测试环境启动 ==="
+echo "=== YAT_CASCHED 简化测试环境启动 ==="
 
 # 挂载基本文件系统
 mount -t proc none /proc 2>/dev/null || true
 mount -t sysfs none /sys 2>/dev/null || true
 mkdir -p /sys/kernel/debug
 mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
+
+# # 设置PATH环境变量
+# export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 
 echo "系统信息:"
 echo "内核版本: $(uname -r)"
@@ -18,9 +21,9 @@ else
     echo "CPU核心数: 1"
 fi
 
-# echo ""
-# echo "开始CFS调度器测试..."
-# echo "----------------------------------------"
+echo ""
+echo "开始YAT_CASCHED调度器测试..."
+echo "----------------------------------------"
 
 # --- 新增代码：在测试前开启 ftrace ---
 echo "开启 sched_switch 事件跟踪..."
@@ -31,7 +34,7 @@ echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
 # --- 新增代码结束 ---
 
 # 运行测试程序
-/bin/CFS_test
+/bin/yat_simple_test
 
 # --- 新增代码：在测试后关闭 ftrace ---
 echo "关闭 sched_switch 事件跟踪..."

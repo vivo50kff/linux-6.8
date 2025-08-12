@@ -19,7 +19,7 @@
 #define CRITICAL_PRIORITY 101         // 关键进程优先级（高优先级，数值小）
 #define NORMAL_PRIORITY 120          // 普通进程优先级（低优先级，数值大）
 #define CRITICAL_WCET_MS 100         // 关键进程WCET（毫秒）
-#define NORMAL_WCET_MS 1000           // 普通进程WCET（毫秒）
+#define NORMAL_WCET_MS 3000           // 普通进程WCET（毫秒）
 
 #define LOG_FILE "/tmp/schedule_log.txt"
 #define MAX_LOG_ENTRIES 1000
