@@ -22,25 +22,25 @@ fi
 # echo "开始CFS调度器测试..."
 # echo "----------------------------------------"
 
-# # --- 新增代码：在测试前开启 ftrace ---
-# echo "开启 sched_switch 事件跟踪..."
-# # 清空旧的跟踪记录
-# echo > /sys/kernel/debug/tracing/trace
-# # 启用 sched_switch 事件
-# echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
-# # --- 新增代码结束 ---
+# --- 新增代码：在测试前开启 ftrace ---
+echo "开启 sched_switch 事件跟踪..."
+# 清空旧的跟踪记录
+echo > /sys/kernel/debug/tracing/trace
+# 启用 sched_switch 事件
+echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
 
-# # 运行测试程序
-# /bin/CFS_test
+# 运行测试程序
+/bin/CFS_test
 
-# # --- 新增代码：在测试后关闭 ftrace ---
-# echo "关闭 sched_switch 事件跟踪..."
-# # 关闭 sched_switch 事件
-# echo 0 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
-# # --- 新增代码结束 ---
+# --- 新增代码：在测试后关闭 ftrace ---
+echo "关闭 sched_switch 事件跟踪..."
+# 关闭 sched_switch 事件
+echo 0 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+# --- 新增代码结束 ---
 
-# echo "----------------------------------------"
-# echo "测试完成"
+echo "----------------------------------------"
+echo "测试完成"
 
 echo ""
 echo "debugfs已挂载到 /sys/kernel/debug"

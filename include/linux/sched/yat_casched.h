@@ -22,7 +22,7 @@ struct yat_casched_rq {
 
     unsigned int nr_running;        /* 运行任务数量 */
     struct task_struct *agent;     /* 代理任务 */
-    u64 cache_decay_jiffies;       /* 缓存衰减时间 */
+    u64 load;       /* CPU负载 */
     spinlock_t history_lock;       /* 历史表锁 */
     struct task_struct *cpu_history[NR_CPUS]; /* CPU历史表 */
 };

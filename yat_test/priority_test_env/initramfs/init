@@ -1,0 +1,16 @@
+#!/bin/sh
+mount -t proc none /proc 2>/dev/null || true
+mount -t sysfs none /sys 2>/dev/null || true
+
+echo "=== YAT_CASCHED 优先级调度测试 ==="
+echo "系统信息:"
+echo "CPU数量: $(nproc)"
+echo "内存: $(free -m | grep Mem | awk '{print $2}')MB"
+echo ""
+
+echo "开始优先级调度测试..."
+/bin/priority_test
+
+echo ""
+echo "测试完成，进入shell (可用命令有限)"
+exec /bin/sh

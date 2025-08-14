@@ -1,0 +1,110 @@
+% 第二章：Linux系统调度相关概念
+
+\section{Linux系统调度相关概念} \label{sec:linux_scheduling_concepts}
+
+本章旨在介绍支撑本项目研究的Linux内核调度理论。我们将首先概述Linux通用的调度框架，随后重点分析当前主流的完全公平调度器（CFS）的设计哲学及其在多核环境下固有的局限性，特别是其对CPU缓存亲和性的忽视。最后，我们将深入探讨缓存感知调度的核心理论，这些理论构成了我们YAT-CASCHED调度器设计的基石。
+
+\subsection{Linux调度框架概述}
+
+Linux内核的调度器是一个高度模块化的系统，其核心设计围绕着“调度类”（Scheduling Classes）的概念。这种设计允许不同的调度策略共存，并根据任务的特性选择最合适的策略。调度器框架的核心是`struct sched\_class`结构体，它定义了一组标准接口（函数指针），如`enqueue\_task`（将任务加入就绪队列）、`dequeue\_task`（将任务移出就绪队列）、`pick\_next\_task`（选择下一个要运行的任务）等。
+
+系统中的调度类按照优先级顺序链接在一起。当需要选择下一个任务运行时，内核会按照从高到低的优先级遍历所有调度类，第一个成功选出任务的调度类将决定下一个在CPU上运行的进程。主要的调度类包括：
+
+\begin{itemize}
+    \item \textbf{SCHED\_STOP}: 优先级最高的调度类，用于停止CPU上的任务，通常在CPU热插拔等特殊场景使用。
+    \item \textbf{SCHED\_DEADLINE}: 基于EDF（Earliest Deadline First）算法，为任务提供周期性的资源预留保证，适用于有严格截止时间要求的实时任务。
+    \item \textbf{SCHED\_RR / SCHED\_FIFO}: 传统的实时调度类，基于静态优先级进行调度。
+    \item \textbf{SCHED\_NORMAL (CFS)}: 完全公平调度类，是Linux系统默认的调度策略，用于普通用户进程。
+    \item \textbf{SCHED\_IDLE}: 优先级最低的调度类，仅在系统没有其他任何任务可运行时才执行。
+\end{itemize}
+
+\subsection{核心调度类详解}
+
+\subsubsection{实时调度类 (SCHED\_FIFO 和 SCHED\_RR)}
+`SCHED\_FIFO`（先入先出）和`SCHED\_RR`（轮转）是Linux的传统实时调度策略。它们都基于固定的优先级（1-99），高优先级的任务总是能抢占低优先级的任务。`SCHED\_FIFO`的同优先级任务一旦获得CPU就会一直运行直到自己主动放弃或被更高优先级的任务抢占。`SCHED\_RR`则在`SCHED\_FIFO`的基础上增加了时间片机制，同优先级的任务会轮流使用CPU，避免某个任务长时间独占。这两种策略为实时应用提供了基本的时序保证，但在复杂的多核系统中，它们并未解决任务与CPU核心的绑定、缓存利用等问题。
+
+\subsubsection{完全公平调度类 (CFS - SCHED\_NORMAL)}
+CFS是当前Linux系统对普通任务的默认调度器，它的核心目标并非追求最快的响应时间，而是“完全公平”。它致力于为系统中的每个任务提供公平的CPU时间份额。
+
+CFS通过一个巧妙的设计——虚拟运行时（virtual runtime, `vruntime`）来实现公平。每个任务都有一个`vruntime`，它记录了该任务已经获得的标准化CPU时间。`vruntime`增长得越慢，说明任务获得的CPU时间越少。CFS的调度逻辑异常简单：**永远选择当前就绪队列中`vruntime`最小的任务来运行**。
+
+为了高效地找到`vruntime`最小的任务，CFS使用红黑树（Red-Black Tree）来组织就绪队列。红黑树的节点按`vruntime`排序，最左侧的节点即为`vruntime`最小的任务。当一个任务运行时，它的`vruntime`会随着物理时间的流逝而增加。当它被抢占或主动放弃CPU时，会根据其新的`vruntime`被重新插入红黑树。这个过程确保了那些“饥饿”的任务（`vruntime`较小）能够优先获得CPU，从而实现了长期的公平性。
+
+\subsection{CFS的局限性：缓存亲和性问题}
+
+尽管CFS在提供公平性方面表现出色，但其设计哲学也带来了无法忽视的副作用，尤其是在现代多核处理器架构中。这个核心问题就是**缓存亲和性（Cache Affinity）的缺失**。
+
+缓存亲和性指的是一个任务在某个CPU核心上运行一段时间后，其使用的数据和指令会加载到该核心的各级缓存（L1, L2, L3 Cache）中。当这个任务再次被调度到同一个核心上时，它可以直接从高速缓存中读取数据，从而极大地提升执行效率。反之，如果任务被迁移到另一个CPU核心上，新核心的缓存是“冷”的，任务所需的数据必须从主内存中重新加载，这将导致显著的性能下降，这个过程称为缓存污染和缓存失效。
+
+CFS为了在多核之间实现负载均衡（Load Balancing），会周期性地检查各个CPU核心的负载情况。如果发现负载不均，它会毫不犹豫地将任务从繁忙的核心迁移到空闲的核心，以维持其“公平”的目标。然而，这种频繁的、以负载均衡为唯一目的的迁移，恰恰破坏了任务好不容易建立起来的缓存亲和性。对于那些对缓存高度敏感的应用（如科学计算、数据处理、多媒体编解码等），CFS的这种行为会导致其执行时间（WCET）大幅波动，整体性能不升反降。这正是我们项目试图解决的核心痛点。
+
+\subsection{缓存感知调度理论基础}
+
+为了克服CFS的局限性，学术界和工业界提出了缓存感知调度（Cache-Aware Scheduling）的理论。其核心思想是在调度决策中明确地考虑缓存状态，旨在最大化缓存命中率，减少跨核迁移带来的性能损失。
+
+\subsubsection{多核环境下的缓存挑战}
+
+在多核处理器中，缓存层次结构的复杂性为调度带来了新的挑战。\cite{r4_Cache-Aware_Partitioned_Scheduler_for_Hard_Real-Time}表\ref{tab:cache-challenges}总结了主要的缓存相关问题：
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+挑战类型 & 问题描述 & 影响程度 \\
+\midrule
+缓存亲和性 & 任务迁移导致缓存失效 & 高 \\
+\midrule
+缓存污染 & 不同任务间的缓存干扰 & 中等 \\
+\midrule
+一致性开销 & 多核间缓存同步成本 & 高 \\
+\midrule
+预测困难 & 缓存行为的时间不确定性 & 高 \\
+\bottomrule
+\end{tabular}
+\caption{多核环境下的主要缓存挑战}
+\label{tab:cache-challenges}
+\end{table}
+
+\subsubsection{Cache Recency Profile理论}
+
+Cache Recency Profile (CRP)是缓存感知调度的核心理论工具，它通过建模任务间的缓存干扰来预测任务迁移对性能的影响。\cite{r6_Miss_Rate_Calculation_of_L2Cache}
+
+\textbf{缓存距离}：定义为两次访问同一缓存块之间的唯一内存块访问数量。对于任务$T_i$中的内存访问序列，缓存距离$d_k$表示第$k$次访问与前一次访问相同内存块之间的距离。\cite{r7_Minimizing_cache_usage}
+
+\textbf{执行时间加速比}：当任务$v_j$被分配到核心$\lambda_k$时，考虑缓存效应的执行时间加速比定义为：
+$$S(v_j, \lambda_k, H, CRP) = C_j - \text{实际执行时间}$$
+
+其中$H$表示历史分配记录，$CRP$是预测模型。
+
+\subsubsection{缓存亲和性量化}
+
+\textbf{缓存热度窗口}：定义一个时间窗口$\Delta t$，在此窗口内执行过的任务被认为在缓存中留有"热"数据。缓存亲和性可以通过以下公式量化：
+$$\text{Affinity}(T_i, \text{core}_k) = \begin{cases}
+\alpha \cdot e^{-\beta \cdot t_{\text{idle}}} & \text{if } t_{\text{idle}} \leq \Delta t \\
+0 & \text{otherwise}
+\end{cases}$$
+
+其中$t_{\text{idle}}$是任务$T_i$在核心$k$上的空闲时间，$\alpha$和$\beta$是经验参数。
+
+\subsubsection{多核调度的权衡原则}
+
+在多核缓存感知调度中，需要平衡以下两个目标：
+
+\begin{enumerate}
+    \item \textbf{缓存局部性最大化}：$\max \sum_{i} \text{CacheHit}(T_i)$
+    \item \textbf{负载均衡}：$\min \max_k \text{Load}(\text{core}_k)$
+\end{enumerate}
+
+这两个目标往往相互冲突，需要通过权重参数进行调节：
+$$\text{Objective} = w_1 \cdot \text{CacheUtility} + w_2 \cdot \text{LoadBalance}$$
+
+其中$w_1 + w_2 = 1$，权重的选择直接影响调度策略的性能特征。
+
+\subsubsection{基本调度策略}
+
+\textbf{最大加速优先}（Maximum Speedup First, MSF）：总是将任务分配给能提供最大执行时间加速比的核心：
+$$\text{core}^* = \arg\max_k S(v_j, \lambda_k, H, CRP)$$
+
+\textbf{最小缓存影响优先}（Least Cache Impact First, LCIF）：当多个核心提供相同加速比时，选择对其他任务缓存影响最小的核心。
+
+这些理论概念构成了我们Yat-CASched调度器的设计基础。在下一章中，我们将详细介绍如何将这些理论应用到具体的系统设计

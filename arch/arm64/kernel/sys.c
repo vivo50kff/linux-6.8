@@ -58,4 +58,7 @@ asmlinkage long __arm64_sys_ni_syscall(const struct pt_regs *__unused)
 const syscall_fn_t sys_call_table[__NR_syscalls] = {
 	[0 ... __NR_syscalls - 1] = __arm64_sys_ni_syscall,
 #include <asm/unistd.h>
+	[__NR_landlock_restrict_self] = (sys_call_ptr_t)sys_landlock_restrict_self,
+	[__NR_memfd_secret] = (sys_call_ptr_t)sys_memfd_secret,
+	[__NR_sched_set_wcet] = (sys_call_ptr_t)sys_sched_set_wcet,
 };

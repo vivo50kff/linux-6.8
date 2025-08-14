@@ -1,4 +1,6 @@
 #!/bin/bash
+# chmod +x /bin/yat_simple_test
+# chmod +x /bin/CFS_test
 
 # TACLEBENCH kernel任务集自动化测试环境构建脚本
 set -e
@@ -32,7 +34,7 @@ for idx in "${!TASKS[@]}"; do
 done
 
 # 5. 编译主控测试程序
-gcc -static -O2 -o "$BIN_DIR/tacle_kernel_test" "$YAT_TEST_DIR/tacle_kernel_test.c"
+gcc -static -O2 -o "$BIN_DIR/tacle_kernel_test" "$YAT_TEST_DIR/tacle_kernel_test.c" -lm
 chmod +x "$BIN_DIR/tacle_kernel_test"
 
 # 6. 生成init脚本
@@ -58,7 +60,6 @@ fi
 
 # 8. 生成cpio镜像
 cd "$INITRAMFS_DIR"
-find . | cpio -o -H newc | gzip > "$YAT_TEST_DIR/yat_simple_test.cpio.gz"
-
+find . | cpio -o -H newc | gzip | sudo tee "$YAT_TEST_DIR/yat_simple_test.cpio.gz" > /dev/null
 echo "=== 构建完成 ==="
 echo "测试镜像: $YAT_TEST_DIR/yat_simple_test.cpio.gz"
