@@ -43,3 +43,58 @@ echo 1 > /sys/kernel/debug/tracing/tracing_on
 /bin/CFS_test
 echo 0 > /sys/kernel/debug/tracing/tracing_on
 cat /sys/kernel/debug/tracing/trace
+
+# YAT调度开销
+
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo > /sys/kernel/debug/tracing/set_ftrace_filter
+
+echo 'select_task_rq_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'pick_next_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'enqueue_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'dequeue_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'set_next_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'put_prev_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'balance_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'task_tick_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'wakeup_preempt_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'pick_task_yat_casched' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo '__schedule' >> /sys/kernel/debug/tracing/set_ftrace_filter
+
+echo 2 > /sys/kernel/debug/tracing/max_graph_depth
+echo funcgraph-proc > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-duration > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-overhead > /sys/kernel/debug/tracing/trace_options
+
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+/bin/tacle_kernel_test
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace
+
+
+# CFS调度开销
+
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo > /sys/kernel/debug/tracing/set_ftrace_filter
+
+echo 'select_task_rq_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'pick_next_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'enqueue_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'dequeue_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'set_next_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'put_prev_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'balance_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'task_tick_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'check_preempt_wakeup_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo 'pick_task_fair' >> /sys/kernel/debug/tracing/set_ftrace_filter
+echo '__schedule' >> /sys/kernel/debug/tracing/set_ftrace_filter
+
+echo 2 > /sys/kernel/debug/tracing/max_graph_depth
+echo funcgraph-proc > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-duration > /sys/kernel/debug/tracing/trace_options
+echo funcgraph-overhead > /sys/kernel/debug/tracing/trace_options
+
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+/bin/tacle_kernel_test
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+cat /sys/kernel/debug/tracing/trace

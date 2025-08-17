@@ -55,5 +55,5 @@
 #define __NR_sched_set_wcet 451
 
 #ifdef __KERNEL__
-#define __NR_syscalls 452
+#define __NR_syscalls 480
 #endif

@@ -42,8 +42,10 @@ cat > "$INITRAMFS_DIR/init" << 'EOF'
 #!/bin/sh
 mount -t proc none /proc 2>/dev/null || true
 mount -t sysfs none /sys 2>/dev/null || true
+mkdir -p /sys/kernel/debug
+mount -t debugfs none /sys/kernel/debug 2>/dev/null || true
 echo "=== 启动TACLEBENCH kernel任务集测试 ==="
-/bin/tacle_kernel_test
+# /bin/tacle_kernel_test
 echo "=== 所有测试任务完成，进入shell ==="
 exec /bin/sh
 EOF

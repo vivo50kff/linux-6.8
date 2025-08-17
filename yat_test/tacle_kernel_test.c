@@ -14,7 +14,7 @@
 #define WCET_NS (10 * 1000 * 1000) // 默认WCET: 10ms
 
 #define NUM_TASKS 12
-#define NUM_COPIES 100 //每个任务启动100个副本
+#define NUM_COPIES 20 //每个任务启动100个副本
 #define SCHED_YAT_CASCHED 8  // YAT_CASCHED调度策略
 #define PERIOD_MS 400
 #define RUN_TIMES 10
@@ -216,11 +216,11 @@ int main() {
     long total_exec_time = 0;  // 保留原有的时间统计
     
     // 父进程设置YAT_CASCHED调度策略
-    // if (set_yat_scheduler(0, 101) == 0) {
-    //     printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
-    // } else {
-    //     printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());
-    // }
+    if (set_yat_scheduler(0, 101) == 0) {
+        printf("父进程PID=%d 成功设置为YAT_CASCHED调度策略\n", getpid());
+    } else {
+        printf("父进程PID=%d 设置YAT_CASCHED失败，使用默认策略\n", getpid());
+    }
     
     gettimeofday(&total_start, NULL);
     
@@ -236,9 +236,9 @@ int main() {
         int f_pid = getpid(); // 父进程PID
         
         for (int i = 0; i < NUM_TASKS; i++) {
-            if (syscall(__NR_sched_set_wcet, f_pid, wcet[i]) != 0) {
-                fprintf(stderr, "为PID %d 设置WCET失败: %s\n", f_pid, strerror(errno));
-            }
+            // if (syscall(__NR_sched_set_wcet, f_pid, wcet[i]) != 0) {
+            //     fprintf(stderr, "为PID %d 设置WCET失败: %s\n", f_pid, strerror(errno));
+            // }
             
             for (int j = 0; j < NUM_COPIES; j++) {
                 pid_t pid = fork();
