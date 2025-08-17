@@ -3,9 +3,7 @@
  *
  * 这是一个基于缓存感知性的调度器实现。
  * 主要特性：
- * - 维护CPU历史表，记录每个任务上次运行的CPU
- * - 优先将任务调度到上次运行的CPU核心以提高缓存局部性
- * - 在需要负载均衡时智能选择新的CPU核心
+ * - 维护缓存历史表，记录每个任务上次运行的CPU
  */
 
 #include "sched.h"
@@ -55,9 +53,9 @@ struct cache_history_table {
 // L1, L2, L3 缓存的历史表
 // L1 cache is per-cpu
 static struct cache_history_table L1_caches[NR_CPUS];
-// 假设每个L2缓存集群有4个核心
+//根据内核宏定义计算集群核心数，适配不同架构
 #define L2_CACHE_CLUSTERS (NR_CPUS / CPU_NUM_PER_SET)
-static struct cache_history_table L2_caches[NR_CPUS/CPU_NUM_PER_SET]; // 每个集群一个历史表
+static struct cache_history_table L2_caches[NR_CPUS/CPU_NUM_PER_SET]; // 每个集群缓存一个历史表
 // L3 cache is global
 static struct cache_history_table L3_cache;
 
