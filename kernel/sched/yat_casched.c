@@ -34,7 +34,7 @@
 static void yat_debugfs_init(void);
 static void yat_debugfs_cleanup(void);
 
-/* --- 核心数据结构定义 (v2.2 - 最终版) --- */
+
 
 // 历史记录: 使用双向链表，按时间戳顺序记录历史
 struct history_record {
@@ -83,9 +83,7 @@ struct accelerator_entry {
 };
 
 // 加速表: 全局哈希表，用于加速查找最佳(任务,核心)对
-#define ACCELERATOR_BITS 10
-static DEFINE_HASHTABLE(accelerator_table, ACCELERATOR_BITS);
-static DEFINE_SPINLOCK(accelerator_lock);
+
 
 /* --- 静态分配优化：定义 Slab 缓存和内存池 --- */
 static struct kmem_cache *history_record_cache;
@@ -294,24 +292,21 @@ static u64 calculate_recency(struct task_struct *p, int cpu_id) {
  */
 static u64 get_crp_ratio(u64 recency)
 {
-    // v2.4: 分段线性折线函数，模拟论文CRP曲线
+    // 分段线性折线函数，CRP曲线
     // 单位：ns
-    if (recency < 1000000) { // 0~1ms (L1)
-        // 600~800线性递增
-        // y = 600 + (recency / 1000000) * (800-600)
+    if (recency < 1000000) { //  (L1)
+       
         return 600 + (recency * 200) / 1000000;
     }
-    if (recency < 10000000) { // 1ms~10ms (L2)
-        // 800~950线性递增
-        // y = 800 + ((recency-1000000) / 9000000) * (950-800)
+    if (recency < 10000000) { // (L2)
+   
         return 800 + ((recency - 1000000) * 150) / 9000000;
     }
-    if (recency < 50000000) { // 10ms~50ms (L3)
-        // 950~1000线性递增
-        // y = 950 + ((recency-10000000) / 40000000) * (1000-950)
+    if (recency < 50000000) {    //(L3)
+    
         return 950 + ((recency - 10000000) * 50) / 40000000;
     }
-    return 1000; // 超过50ms，完全冷
+    return 1000; 
 }
 
 /*
@@ -322,7 +317,7 @@ static u64 get_wcet(struct task_struct *p)
     // 返回 1~10ms 的随机值（单位：纳秒）
     // u32 rand_ms = (get_random_u32() % 100000)+1; // 1~100000
     // return (u64)rand_ms  ;   // 1~100ms
-    u64 test_wcet=50+p->pid+113; // 测试用，假设WCET为10ms
+    u64 test_wcet=50+p->pid+113; 
     return test_wcet;
 }
 
@@ -418,7 +413,7 @@ void update_curr_yat_casched(struct rq *rq)
 // }
 
 
-// 计算CPU核心的负载（基于队列中所有任务的WCET之和）
+// 计算CPU核心的负载（基于队列中所有任务的WCET之和）已废弃
 static u64 calculate_cpu_load(int cpu)
 {
     struct rq *rq = cpu_rq(cpu);
@@ -443,7 +438,7 @@ static u64 calculate_cpu_load(int cpu)
     return total_load;
 }
 
-// 为任务寻找最佳CPU（4种情况处理）
+// 为任务寻找最佳CPU（5种情况处理）
 int select_task_rq_yat_casched(struct task_struct *p, int task_cpu, int flags)
 {
     // int min_load_cpu = -1;
@@ -565,7 +560,7 @@ out:
 }
 
 /*
- * 将任务加入本地运行队列 (v3.0)
+ * 将任务加入本地运行队列 
 
  */
 void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
@@ -634,7 +629,7 @@ void enqueue_task_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 }
 
 /*
- * 将任务从本地运行队列移除 (v3.0)
+ * 将任务从本地运行队列移除 
  * 任务执行完毕或被抢占时调用。
  * 关键职责：释放其占用的核心，将其标记为空闲，并触发一次调度检查。
  */
@@ -718,7 +713,7 @@ void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
     update_curr_yat_casched(rq);
 
     /*
-     * --- 关键修复：检查时间片 ---
+     * ---检查时间片 ---
      * 1. 计算自上次检查以来，任务已经运行了多久。
      *    我们借用 prev_sum_exec_runtime 来记录上次检查时的时间。
      * 2. 如果运行时间超过了我们定义的时间片 YAT_TIME_SLICE，
@@ -737,7 +732,7 @@ void task_tick_yat_casched(struct rq *rq, struct task_struct *p, int queued)
 void wakeup_preempt_yat_casched(struct rq *rq, struct task_struct *p, int flags)
 {
     /*
-     * 关键修复：如果CPU当前正在运行空闲任务(swapper)，
+     * 如果CPU当前正在运行空闲任务(swapper)，
      * 任何一个新唤醒的任务都必须触发一次重新调度来抢占它。
      * 否则，新任务将被困在运行队列中，永远无法执行，导致系统卡死。
      */
@@ -975,7 +970,7 @@ static int yat_history_show(struct seq_file *m, void *v)
     seq_printf(m, "\nYat_Casched History Table (L2 Caches):\nL2$ | PID | Timestamp | ExecTime\n");
     for (i = 0; i < NR_CPUS/CPU_NUM_PER_SET; i++) {
         spin_lock(&L2_caches[i].lock);
-        // --- 修复：使用正确的成员名 time_list_node ---
+ 
         list_for_each_entry(rec, &L2_caches[i].time_list, time_list_node) {
             seq_printf(m, "%3d | %5d | %10llu | %8llu\n", i, rec->task_id, rec->timestamp, rec->exec_time);
             count++;
